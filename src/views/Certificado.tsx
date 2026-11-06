@@ -26,14 +26,21 @@ function idCertificado(fecha: string, nombre: string): string {
 export function Certificado({ go }: { go: (r: Ruta) => void }) {
   const [p] = useProgreso();
   const [nombre, setNombre] = useState(p.estudiante);
+  const [verEjemplo, setVerEjemplo] = useState(false);
   const aprobado = p.examenMejor >= APROBADO;
-  const completados = nivelesCompletos(p);
+  const demo = !aprobado && verEjemplo;
 
-  const fecha = p.ultimoExamen?.fecha ?? new Date().toISOString();
+  // En el ejemplo se muestra el documento completo, con datos de muestra.
+  const nota = demo ? 92 : p.examenMejor;
+  const completados = demo ? totalNiveles : nivelesCompletos(p);
+  const labsHechos = demo ? LABS.length : p.labs.length;
+  const retosHechos = demo ? C.retos.length : p.retos.length;
+
+  const fecha = demo ? new Date().toISOString() : p.ultimoExamen?.fecha ?? new Date().toISOString();
   const fechaTxt = new Date(fecha).toLocaleDateString("es", { day: "2-digit", month: "2-digit", year: "numeric" });
   const id = idCertificado(fecha, nombre || "anonimo");
 
-  if (!aprobado) {
+  if (!aprobado && !demo) {
     return (
       <main id="main" className="mx-auto max-w-[760px] px-4 py-12 text-center">
         <PixelIcon name="chest" size={54} />
@@ -42,15 +49,32 @@ export function Certificado({ go }: { go: (r: Ruta) => void }) {
           El certificado se desbloquea aprobando el examen final con {APROBADO} o más. Ahora mismo tu mejor
           nota es <b className="text-[var(--accent)]">{p.examenMejor}/100</b>.
         </p>
-        <button className="btn btn-primary mt-6" onClick={() => go({ v: "examen" })}>
-          <PixelIcon name="sword" size={14} /> Ir al examen final
-        </button>
+        <div className="mt-6 flex flex-wrap justify-center gap-2">
+          <button className="btn btn-primary" onClick={() => go({ v: "examen" })}>
+            <PixelIcon name="sword" size={14} /> Ir al examen final
+          </button>
+          <button className="btn" onClick={() => setVerEjemplo(true)}>
+            <PixelIcon name="chest" size={14} /> Ver un ejemplo del diseño
+          </button>
+        </div>
       </main>
     );
   }
 
   return (
     <main id="main" className="mx-auto max-w-[1120px] px-4 py-8">
+      {demo && (
+        <div className="no-print mb-3 flex flex-wrap items-center gap-3 border-2 border-black bg-[#2a1d0c] p-3">
+          <span className="chip !text-[var(--accent)]">ejemplo</span>
+          <p className="text-[15px] text-[var(--text-2)]">
+            Así se verá tu certificado cuando apruebes el examen. Los datos son de muestra.
+          </p>
+          <button className="btn btn-xs ml-auto" onClick={() => setVerEjemplo(false)}>
+            volver ✕
+          </button>
+        </div>
+      )}
+
       <div className="no-print flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="label !text-[var(--accent)]">Certificado</p>
@@ -104,7 +128,7 @@ export function Certificado({ go }: { go: (r: Ruta) => void }) {
           <p className="cert-cuerpo">
             Por completar la ruta de {C.mundos.length} mundos de FactionVault —{totalNiveles} niveles,{" "}
             {LABS.length} laboratorios y {C.retos.length} retos CTF— y aprobar el examen final con una nota de{" "}
-            <b>{p.examenMejor}/100</b>, demostrando criterio técnico en redes, sistemas operativos, Python,
+            <b>{nota}/100</b>, demostrando criterio técnico en redes, sistemas operativos, Python,
             criptografía, ingeniería social y seguridad informática.
           </p>
 
@@ -112,17 +136,17 @@ export function Certificado({ go }: { go: (r: Ruta) => void }) {
             <div className="cert-datos">
               <p className="cert-etiqueta">PROGRESO</p>
               <p className="cert-dato">
-                {completados}/{totalNiveles} niveles · {p.labs.length}/{LABS.length} labs · {p.retos.length}/{C.retos.length} retos
+                {completados}/{totalNiveles} niveles · {labsHechos}/{LABS.length} labs · {retosHechos}/{C.retos.length} retos
               </p>
               <p className="cert-etiqueta mt-3">NOTA FINAL</p>
-              <p className="cert-nota">{p.examenMejor}/100</p>
+              <p className="cert-nota">{nota}/100</p>
             </div>
 
             <div className="cert-sello">
               <span className="cert-sello-cinta cert-cinta-a" />
               <span className="cert-sello-cinta cert-cinta-b" />
               <span className="cert-sello-cara">FV</span>
-              <span className="cert-sello-pct">{p.examenMejor}%</span>
+              <span className="cert-sello-pct">{nota}%</span>
             </div>
 
             <div className="cert-firmas">
