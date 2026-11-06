@@ -9,9 +9,9 @@ Hecha por **@abdiellzz** · [github.com/abdiellzz](https://github.com/abdiellzz)
 
 | Sección | Contenido |
 |---|---|
-| 6 mundos | Seguridad (5 niveles), Redes (8), Sistemas Operativos (8), Python (8), Criptografía (6), Ingeniería Social (4) |
+| 6 mundos | Seguridad (5 niveles), Redes (8), Sistemas Operativos (8), Python (8), Criptografía (8), Ingeniería Social (8) · 45 niveles en total |
 | Laboratorio | Laboratorio abierto en el inicio: entras directo a la práctica, sin pasar por la teoría. Cada práctica cierra con un bloque «¿por qué funciona así?». Incluye Terminal Linux con mini-CTF, firewall, calculadora de subredes, binario, encapsulamiento, procesos, planificador de CPU, memoria, chmod, código Python con salida verificada, César, SHA-256, medidor de contraseñas, AES-GCM real, Diffie-Hellman, ordenar pasos, escribir respuesta y detector de phishing |
-| Retos CTF | 25 retos con pista, solución y puntos |
+| Retos CTF | 39 retos con pista, solución y puntos |
 | Detector de phishing | 12 mensajes (SMS, WhatsApp, correo, Discord), rondas de 10 |
 | Guías | 8 tutoriales paso a paso |
 | Glosario | 72 términos con buscador y filtros |

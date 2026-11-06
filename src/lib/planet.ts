@@ -676,8 +676,19 @@ function colorMasCercano(r: number, g: number, b: number): number {
  * Convierte el buffer RGBA de `renderGlobe` (SIZE×SIZE) en un sprite de
  * bloques de `pix` píxeles dentro de `dst` (low×low RGBA).
  */
+/* Buffers reutilizados entre frames: evita reservar memoria 30 veces por
+   segundo y mantiene el giro suave incluso en móviles modestos. */
+let bufIdx: Int16Array | null = null;
+let bufSalida: Int16Array | null = null;
+
 export function pixelarTierra(src: Uint8ClampedArray, pix: number, dst: Uint8ClampedArray, low = SIZE / pix): void {
-  const idx = new Int16Array(low * low).fill(-1);
+  const n = low * low;
+  if (!bufIdx || bufIdx.length !== n) {
+    bufIdx = new Int16Array(n);
+    bufSalida = new Int16Array(n);
+  }
+  const idx = bufIdx.fill(-1);
+  const salida = bufSalida!;
   const centro = (low - 1) / 2;
   const radio = low / 2;
 
@@ -718,7 +729,7 @@ export function pixelarTierra(src: Uint8ClampedArray, pix: number, dst: Uint8Cla
   }
 
   const opaco = (xx: number, yy: number) => xx >= 0 && yy >= 0 && xx < low && yy < low && idx[yy * low + xx] >= 0;
-  const salida = idx.slice();
+  salida.set(idx);
 
   for (let y = 0; y < low; y++) {
     for (let x = 0; x < low; x++) {
