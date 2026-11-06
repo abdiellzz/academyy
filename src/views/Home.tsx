@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState, type CSSProperties } from "react";
 import { Globe } from "../components/Globe";
 import { Adventurer, PixelIcon, type PixelIconName } from "../components/PixelArt";
+import { BiomaGrid } from "../components/Biome";
 import { Bar, GameBox, Logo, SectionHead } from "../components/ui";
 import { C, totalNiveles } from "../lib/content";
 import { LOGROS, nivelCompleto, nivelDe, nivelesCompletos, useProgreso, xpDe } from "../lib/store";
@@ -20,15 +21,18 @@ const COORDS: Record<string, { lat: number; lon: number }> = {
 
 /* Laboratorios: se buscan en el contenido para que los enlaces nunca queden viejos. */
 const LABS: { key: string; label: string; icon: PixelIconName; desc: string }[] = [
-  { key: "w:terminal", label: "Terminal Linux", icon: "monitor", desc: "Un mini-CTF dentro de una terminal." },
+  { key: "w:terminal", label: "Terminal Linux", icon: "monitor", desc: "Un mini-CTF dentro de una terminal real." },
   { key: "w:subnet", label: "Subredes", icon: "globe", desc: "Máscaras, hosts y rangos sin fórmulas raras." },
   { key: "w:firewall", label: "Firewall", icon: "shield", desc: "Abre y cierra puertos y mira quién pasa." },
   { key: "w:chmod", label: "Permisos chmod", icon: "key", desc: "r/w/x sobre archivos, con binario incluido." },
   { key: "password", label: "Medidor de contraseñas", icon: "key", desc: "Entropía real y tiempo de descifrado." },
-  { key: "cesar", label: "Cifrado César", icon: "chest", desc: "Cifra y descifra moviendo letras." },
-  { key: "hash", label: "Hash SHA-256", icon: "diamond", desc: "Comprueba integridad con tu propio texto." },
-  { key: "aes", label: "AES de verdad", icon: "diamond", desc: "Cifra con contraseña, sal y WebCrypto." },
   { key: "phishing", label: "Detector de phishing", icon: "flag", desc: "Diez mensajes: legítimo o anzuelo." },
+  { key: "w:xor", label: "XOR bit a bit", icon: "diamond", desc: "El ladrillo de todo cifrado, torciendo bits." },
+  { key: "w:vigenere", label: "Vigenère", icon: "chest", desc: "La clave que se repite, y por qué se cae." },
+  { key: "w:frecuencia", label: "Criptoanálisis", icon: "torch", desc: "Rompe un cifrado con estadística del idioma." },
+  { key: "w:rsa", label: "RSA paso a paso", icon: "globe", desc: "Clave pública y privada con números pequeños." },
+  { key: "w:kdf", label: "PBKDF2 y sales", icon: "key", desc: "Cómo se guarda (de verdad) una contraseña." },
+  { key: "w:brute", label: "Fuerza bruta", icon: "sword", desc: "10 000 intentos reales contra un PIN de 4 cifras." },
 ];
 
 function coords(lat: number, lon: number) {
@@ -189,15 +193,20 @@ export function Home({ go }: { go: (r: Ruta) => void }) {
   return (
     <main id="main">
       {/* ── Centro de mando ── */}
-      <section className="cmd-hero" onMouseMove={onMove} aria-labelledby="destino-title">
-        <div className="cmd-hero-grid" aria-hidden />
+      <section className="cmd-hero" onMouseMove={onMove} aria-labelledby="destino-title" style={{ ["--world" as string]: mundo.color }}>
+        <div className="cmd-hero-bg" aria-hidden>
+          <span className="px-a" />
+          <span className="px-b" />
+          <span className="px-c" />
+          <span className="px-d" />
+        </div>
 
         {/* Marca y nivel: arriba a la izquierda, como el HUD de la nave */}
         <div className="hero-brand">
           <div className="flex flex-wrap items-end gap-3">
             <div className="squad">
-              <Adventurer who="allen" height={66} className="bob" />
-              <span className="squad-name">Allen</span>
+              <Adventurer who="diel" height={66} className="bob" />
+              <span className="squad-name">Diel</span>
             </div>
             <div className="squad">
               <Adventurer who="hailey" height={66} className="bob squad-b" />
@@ -215,7 +224,7 @@ export function Home({ go }: { go: (r: Ruta) => void }) {
                 </span>
               </p>
               <p className="mt-1.5 max-w-[220px] text-[13px] leading-snug text-[var(--text-3)]">
-                Allen y Hailey despegan contigo: cada mundo es una misión y cada nivel, una expedición.
+                Diel y Hailey despegan contigo: cada mundo es una misión y cada nivel, una expedición.
               </p>
             </div>
           </div>
@@ -333,7 +342,7 @@ export function Home({ go }: { go: (r: Ruta) => void }) {
               </div>
 
               <p className="mt-2 text-[13px] text-[var(--text-3)]">
-                💡 Arrastra la Tierra para girarla: Allen y Hailey te marcan el destino.
+                💡 Arrastra la Tierra para girarla: Diel y Hailey te marcan el destino.
               </p>
 
               <div className="mt-3 flex flex-wrap items-center gap-1.5">
@@ -421,6 +430,21 @@ export function Home({ go }: { go: (r: Ruta) => void }) {
         </div>
       </section>
 
+      {/* ── Los seis biomas ── */}
+      <section className="mx-auto max-w-[1240px] px-4 pb-4" aria-labelledby="biomas-title">
+        <SectionHead kicker="Seis mundos, seis terrenos" title="Los biomas de la bóveda">
+          <p className="max-w-[460px] text-[14px] text-[var(--text-3)]">
+            Cada mundo tiene su propio terreno, su color y sus reglas. Entra al que te pida el cuerpo.
+          </p>
+        </SectionHead>
+        <h2 id="biomas-title" className="sr-only">
+          Biomas
+        </h2>
+        <div className="mt-6">
+          <BiomaGrid mundos={C.mundos} go={(id) => go({ v: "mundo", id })} />
+        </div>
+      </section>
+
       {/* ── Todo lo que hay en la bóveda ── */}
       <section className="mx-auto max-w-[1240px] px-4 pb-4" aria-labelledby="vault-title">
         <SectionHead kicker="Todo en un solo lugar" title="Explora la bóveda">
@@ -429,7 +453,7 @@ export function Home({ go }: { go: (r: Ruta) => void }) {
           </p>
         </SectionHead>
         <h2 id="vault-title" className="sr-only">
-          Secciones de la academia
+          Secciones de la bóveda
         </h2>
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {secciones.map((s) => (

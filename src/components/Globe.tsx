@@ -1,6 +1,9 @@
 import { useEffect, useRef } from "react";
 import { SIZE, hexToRgb, renderGlobe, type Marker } from "../lib/planet";
 
+/** Cuántos píxeles del render se juntan en un bloque de pixel art. */
+const PIX = 4;
+
 /* Tierra en canvas: gira sola, se puede arrastrar y su atmósfera toma
    el color del mundo que tengas elegido. */
 
@@ -30,16 +33,47 @@ export function Globe({
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-    canvas.width = SIZE;
-    canvas.height = SIZE;
+    // Se renderiza a 1/PIX de resolución y el navegador lo amplía con nearest
+    // neighbor: así la Tierra queda en pixel art de bloques grandes.
+    const LOW = SIZE / PIX;
+    canvas.width = LOW;
+    canvas.height = LOW;
     const img = ctx.createImageData(SIZE, SIZE);
+    const small = ctx.createImageData(LOW, LOW);
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const start = performance.now();
 
     const draw = (now: number) => {
       const { accent: ac, markers: mk } = cfg.current;
       renderGlobe(img.data, rot.current, hexToRgb(ac), now - start, mk);
-      ctx.putImageData(img, 0, 0);
+      // Cada bloque de PIX×PIX se convierte en UN píxel (media ponderada por
+      // alfa): así el borde del planeta queda en escalones limpios, sin motas.
+      const src = img.data;
+      const dst = small.data;
+      for (let y = 0; y < LOW; y++) {
+        for (let x = 0; x < LOW; x++) {
+          let r = 0, g = 0, b = 0, a = 0;
+          for (let dy = 0; dy < PIX; dy++) {
+            const fila = (y * PIX + dy) * SIZE;
+            for (let dx = 0; dx < PIX; dx++) {
+              const si = (fila + x * PIX + dx) * 4;
+              const al = src[si + 3];
+              r += src[si] * al;
+              g += src[si + 1] * al;
+              b += src[si + 2] * al;
+              a += al;
+            }
+          }
+          const di = (y * LOW + x) * 4;
+          dst[di + 3] = a / (PIX * PIX);
+          if (a > 0) {
+            dst[di] = r / a;
+            dst[di + 1] = g / a;
+            dst[di + 2] = b / a;
+          }
+        }
+      }
+      ctx.putImageData(small, 0, 0);
     };
     drawRef.current = draw;
 

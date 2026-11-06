@@ -3,7 +3,7 @@
 Dueño y autor: **@abdiellzz** (github.com/abdiellzz). El crédito «HECHA POR @abdiellzz (github.com/abdiellzz)» vive en el Footer, los avisos de consola y LICENSE. **No eliminarlo.**
 
 ## Qué es
-Academia pixel de ciberseguridad en español panameño, siempre oscura. Cada nivel tiene 4 fases: **Teoría → Ejemplo → Práctica → Reto**.
+Ciberseguridad de verdad, en español panameño, siempre oscura y en pixel art. Cada nivel tiene 4 fases: **Teoría → Ejemplo → Práctica → Reto**.
 El entregable es `dist/index.html`, un único archivo autocontenido generado con Vite + `vite-plugin-singlefile`. No necesita servidor ni dependencias en tiempo de ejecución, salvo Google Fonts, que es opcional y tiene fallback.
 
 ## Fuente de datos
@@ -25,6 +25,8 @@ src/App.tsx           router por hash (#/, #/mundo/:id, #/mundo/:id/:nivel, #/re
 src/index.css         sistema visual: paleta oficial, .card .chip .btn .btn-primary .label .term .vault-table .mono,
                       cielo con estrellas, .grass, .warp, reduced-motion
 src/lib/content.ts    C = window.FV_CONTENT; helpers
+src/assets/logo.ts    logo oficial (mono + cofre) en data URI: el build sigue siendo un archivo
+src/lib/busqueda.ts   puente de una línea para que el buscador rellene el glosario
 src/lib/planet.ts     motor de la Tierra en 3D sin DOM: máscara de continentes (equirect 256×128),
                       albedo, geometría precalculada y render de un frame RGBA (atmósfera, nubes
                       girando, luces de ciudades, luna, cohete en órbita con estela y pines de
@@ -41,8 +43,13 @@ src/components/
   Practices.tsx       PracticaView dispatcher + motores: Codigo, Orden, Escribir, PhishingGame, Cesar, Hash,
                       Password, Aes, DH, Widget (puente a widgets/)
   widgets/            motores heredados y probados de la v3 (Common/Net/Os)
-  PixelArt.tsx        PixelArt, MONKEY_GRID (logo del mono), Adventurer (Allen y Hailey,
-                      los monos astronautas del hero), 17 PixelIcon
+  PixelArt.tsx        PixelArt, MONKEY_GRID, Adventurer (Diel y Hailey, los monos
+                      astronautas del hero), 18 PixelIcon (incluye search y shield)
+  Biome.tsx           paisaje de cada mundo: siluetas escalonadas generadas con semilla
+                      fija (BiomeScene), banner del mundo (BiomeBanner) y rejilla (BiomaGrid)
+  CommandPalette.tsx  buscador global ⌘K sobre mundos, niveles, retos, glosario, guías
+                      y snippets; navega con ↑↓/Enter
+  widgets/CryptoWidgets.tsx  xor, vigenere, frecuencia, rsa, firma, kdf y brute
   Nav.tsx / Footer.tsx
 src/views/            Home («centro de mando»: Allen y Hailey, Tierra 3D con cohete en la esquina,
                       lista de destinos con preview, tablero, laboratorio abierto y accesos a todas

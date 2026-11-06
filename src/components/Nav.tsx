@@ -15,7 +15,7 @@ const ITEMS: { v: Ruta["v"]; label: string; icon: PixelIconName }[] = [
   { v: "progreso", label: "Progreso", icon: "diamond" },
 ];
 
-export function Nav({ ruta, go }: { ruta: Ruta; go: (r: Ruta) => void }) {
+export function Nav({ ruta, go, onBuscar }: { ruta: Ruta; go: (r: Ruta) => void; onBuscar?: () => void }) {
   const [open, setOpen] = useState(false);
   useEffect(() => setOpen(false), [ruta]);
   const isActive = (v: Ruta["v"]) => v === ruta.v || (v === "inicio" && (ruta.v === "mundo" || ruta.v === "nivel"));
@@ -33,6 +33,27 @@ export function Nav({ ruta, go }: { ruta: Ruta; go: (r: Ruta) => void }) {
             </button>
           ))}
         </nav>
+        {onBuscar && (
+          <button
+            onClick={onBuscar}
+            className="ml-auto flex items-center gap-2 border-2 border-black bg-[var(--surface-2)] px-2 py-1.5 text-[var(--text-2)] hover:bg-[var(--surface-3)] hover:text-[var(--text)] min-[1360px]:hidden"
+            aria-label="Buscar en FactionVault (Ctrl+K)"
+          >
+            <PixelIcon name="search" size={14} />
+            <span className="label hidden sm:inline">Buscar</span>
+          </button>
+        )}
+        {onBuscar && (
+          <button
+            onClick={onBuscar}
+            className="hidden items-center gap-2 border-2 border-black bg-[var(--surface-2)] px-2.5 py-1.5 text-[var(--text-2)] hover:bg-[var(--surface-3)] hover:text-[var(--text)] min-[1360px]:flex"
+            aria-label="Buscar en FactionVault (Ctrl+K)"
+          >
+            <PixelIcon name="search" size={13} />
+            <span className="label">Buscar</span>
+            <span className="label !text-[9px] text-[var(--text-3)]">⌘K</span>
+          </button>
+        )}
         <div className="ml-auto min-[1360px]:ml-3"><Hud compact /></div>
         <button className="grid h-10 w-10 place-items-center border-2 border-black bg-[var(--surface-2)] min-[1360px]:hidden" aria-label={open ? "Cerrar menú" : "Abrir menú"} aria-expanded={open} aria-controls="menu-movil" onClick={() => setOpen((v) => !v)}>
           <Icon name={open ? "x" : "menu"} size={18} />

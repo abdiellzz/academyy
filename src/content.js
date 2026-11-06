@@ -9,7 +9,7 @@
 const FV_CONTENT = {
  "meta": {
   "nombre": "FactionVault",
-  "subtitulo": "academia pixel de ciberseguridad",
+  "subtitulo": "ciberseguridad de verdad",
   "autor": "@abdiellzz",
   "github": "https://github.com/abdiellzz",
   "version": "4.0"
@@ -592,7 +592,8 @@ const FV_CONTENT = {
       "explicacion": "Cortar el acceso es lo urgente: contraseña nueva, sesiones cerradas y 2FA. Revisar reenvíos y cuentas conectadas viene justo después."
      }
     }
-   ]
+   ],
+   "biomaDesc": "Una fortaleza de piedra en una isla: murallas, foso y antorchas que hay que encender una por una. Cada defensa cuesta, y cada puerta que falta es una entrada."
   },
   {
    "id": "redes",
@@ -1515,7 +1516,8 @@ const FV_CONTENT = {
       "explicacion": "Es la política más segura: si no hay una regla que lo permita, se bloquea. Así lo desconocido no entra."
      }
     }
-   ]
+   ],
+   "biomaDesc": "Un océano de islas unidas por cables: los paquetes viajan como barcos, hay tormentas de latencia y faros que dicen por dónde ir. Nada llega por arte de magia."
   },
   {
    "id": "sistemas",
@@ -2222,7 +2224,8 @@ const FV_CONTENT = {
       "explicacion": "Con copias de seguridad fuera del alcance del malware, puedes restaurar tus archivos sin pagar."
      }
     }
-   ]
+   ],
+   "biomaDesc": "Una cueva con salas y pasillos: el kernel vive en el fondo, los procesos son criaturas que van y vienen, y los permisos son puertas que solo abren algunos."
   },
   {
    "id": "python",
@@ -2893,7 +2896,8 @@ const FV_CONTENT = {
       "explicacion": "connect_ex devuelve 0 si la conexión tuvo éxito. Cualquier otro número indica error (cerrado, filtrado, timeout…)."
      }
     }
-   ]
+   ],
+   "biomaDesc": "Una jungla que crece sola: todo se ramifica y se automatiza. Con las herramientas correctas te abres camino; sin ellas, te come la maleza."
   },
   {
    "id": "cripto",
@@ -2911,7 +2915,7 @@ const FV_CONTENT = {
      "nivel": 0,
      "titulo": "¿Qué es la criptografía?",
      "subtitulo": "Nivel 0: no es esconder, es que aunque lo vean no lo entiendan.",
-     "minutos": 7,
+     "minutos": 13,
      "icono": "chest",
      "objetivos": [
       "Distinguir cifrar, codificar y hashear.",
@@ -2963,6 +2967,10 @@ const FV_CONTENT = {
       {
        "t": "tip",
        "text": "Principio de Kerckhoffs: un sistema debe ser seguro aunque el enemigo conozca el algoritmo. El secreto es la clave, nunca el método. Si alguien te dice «es seguro porque nadie sabe cómo funciona», desconfía."
+      },
+      {
+       "t": "porque",
+       "text": "La criptografía es matemática aplicada a un problema concreto: que dos desconocidos puedan hablar sin que un tercero entienda ni pueda cambiar nada. Confidencialidad, integridad y autenticidad son tres problemas distintos y cada uno necesita su herramienta."
       }
      ],
      "ejemplos": [
@@ -3005,7 +3013,13 @@ const FV_CONTENT = {
           "Cifrar (clave 0-25)"
          ]
         ]
-       }
+       },
+       "porque": "Distinguir confidencialidad de integridad y de autenticidad evita el error clásico de creer que «está cifrado» significa «está protegido»."
+      },
+      {
+       "tipo": "widget",
+       "w": "xor",
+       "porque": "XOR es la operación que hace posible casi todo: si cifras con una clave y vuelves a aplicar la misma, recuperas el mensaje. Entenderla a nivel de bit explica por qué los cifrados modernos son tan sensibles a repetir la clave y por qué un cifrado sin comprobación de integridad se puede manipular sin romperlo."
       }
      ],
      "reto": {
@@ -3025,7 +3039,7 @@ const FV_CONTENT = {
      "nivel": 1,
      "titulo": "El cifrado César",
      "subtitulo": "Rota el alfabeto… y rómpelo en segundos.",
-     "minutos": 9,
+     "minutos": 15,
      "icono": "key",
      "objetivos": [
       "Cifrar y descifrar con un desplazamiento.",
@@ -3070,6 +3084,10 @@ const FV_CONTENT = {
       {
        "t": "result",
        "text": "«HOLA» con clave 3 da «KROD». Con la rueda puedes ver la tabla completa de equivalencias."
+      },
+      {
+       "t": "porque",
+       "text": "César falla porque el espacio de claves es minúsculo (25) y porque conserva la estructura del idioma. Con esos dos defectos no hace falta ser un genio: basta con probar o contar letras. Es el ejemplo perfecto de que un algoritmo «secreto» no es un algoritmo seguro."
       }
      ],
      "ejemplos": [
@@ -3086,7 +3104,8 @@ const FV_CONTENT = {
      ],
      "practica": [
       {
-       "tipo": "cesar"
+       "tipo": "cesar",
+       "porque": "Probar los 26 desplazamientos a mano es la lección: el cifrado no esconde el mensaje, solo lo disfraza. Cualquiera con paciencia lo abre en un minuto."
       },
       {
        "tipo": "escribir",
@@ -3096,6 +3115,16 @@ const FV_CONTENT = {
        ],
        "pista": "Retrocede 3 letras: F→C, D→A…",
        "explicacion": "F-3=C, D-3=A, Q-3=N, D-3=A, O-3=L → CANAL."
+      },
+      {
+       "tipo": "widget",
+       "w": "vigenere",
+       "porque": "Vigenère usa una clave que se repite, y ahí está su perdición: cada posición de la clave genera una columna que vuelve a ser un César normal. Con suficiente texto, cada columna se rompe por frecuencia. Cualquier cifrado cuyo patrón se repita con periodo fijo cae igual."
+      },
+      {
+       "tipo": "widget",
+       "w": "frecuencia",
+       "porque": "El criptoanálisis no adivina: mide. La estadística del idioma (E ≈ 13,7%) es una grieta que el cifrado César no tapa porque conserva la forma del texto. Los cifrados modernos difunden cada bit por todo el bloque justo para que esa grieta desaparezca."
       }
      ],
      "reto": {
@@ -3115,7 +3144,7 @@ const FV_CONTENT = {
      "nivel": 2,
      "titulo": "Hashes: la huella digital",
      "subtitulo": "Mismo texto, misma huella. Una letra distinta, huella irreconocible.",
-     "minutos": 9,
+     "minutos": 15,
      "icono": "diamond",
      "objetivos": [
       "Explicar qué es una función hash.",
@@ -3147,6 +3176,10 @@ const FV_CONTENT = {
       {
        "t": "result",
        "text": "En el simulador, «factionvault» y «Factionvault» dan huellas totalmente distintas. Fíjate en el porcentaje de diferencia: anda por el 90% de caracteres."
+      },
+      {
+       "t": "porque",
+       "text": "Un hash es una huella: misma entrada, misma huella; entrada distinta, huella completamente distinta. No se puede revertir porque se pierde información a propósito. Esa irreversibilidad permite verificar descargas, guardar contraseñas y detectar cambios de un solo bit."
       }
      ],
      "ejemplos": [
@@ -3163,7 +3196,13 @@ const FV_CONTENT = {
      ],
      "practica": [
       {
-       "tipo": "hash"
+       "tipo": "hash",
+       "porque": "Cambiar una mayúscula y ver la huella entera cambiar es entender el efecto avalancha. Esa sensibilidad es la que hace inútiles las tablas precalculadas cuando hay una sal de por medio."
+      },
+      {
+       "tipo": "widget",
+       "w": "firma",
+       "porque": "Un hash solo comprueba integridad, no autenticidad: si el atacante puede recalcularlo, no sirve de nada. La firma mezcla el mensaje con una clave secreta (HMAC) o con tu clave privada (RSA/Ed25519), así que cambiar un carácter invalida la firma entera. Eso es lo que usan las actualizaciones de tu móvil para no instalar malware."
       }
      ],
      "reto": {
@@ -3183,7 +3222,7 @@ const FV_CONTENT = {
      "nivel": 3,
      "titulo": "Contraseñas que aguantan",
      "subtitulo": "Por qué «P@ssw0rd!» es mala y una frase larga es buena.",
-     "minutos": 8,
+     "minutos": 14,
      "icono": "key",
      "objetivos": [
       "Medir la entropía de una contraseña.",
@@ -3244,6 +3283,10 @@ const FV_CONTENT = {
       {
        "t": "tip",
        "text": "Nadie legítimo te va a pedir tu contraseña ni tu código de verificación por WhatsApp. Ni tu banco, ni Epic, ni Mojang, ni «el primo que trabaja en la compañía»."
+      },
+      {
+       "t": "porque",
+       "text": "La contraseña es el eslabón que más se rompe, y casi nunca por criptografía: se rompe por reutilización, por filtraciones y por fuerza bruta sobre espacios pequeños. Defensas que funcionan: frase larga única, gestor de contraseñas y 2FA."
       }
      ],
      "ejemplos": [
@@ -3260,7 +3303,18 @@ const FV_CONTENT = {
      ],
      "practica": [
       {
-       "tipo": "password"
+       "tipo": "password",
+       "porque": "La entropía no mide «cuántos símbolos usaste» sino cuántas combinaciones tendría que probar un atacante. Longitud primero, rareza después."
+      },
+      {
+       "tipo": "widget",
+       "w": "kdf",
+       "porque": "Una contraseña nunca se guarda: se guarda su derivación con una sal única y muchas iteraciones. La sal hace que la misma contraseña dé claves distintas en cada cuenta (adiós a las rainbow tables) y las iteraciones convierten un milisegundo tuyo en siglos del atacante."
+      },
+      {
+       "tipo": "widget",
+       "w": "brute",
+       "porque": "La fuerza bruta es el ataque más tonto y el más efectivo: no rompe el algoritmo, prueba todo lo que cabe en el espacio de claves. Un PIN de 4 cifras son 10 000 intentos; cada carácter extra multiplica esa cuenta. Por eso importa la longitud y por eso existen los límites de intentos."
       }
      ],
      "reto": {
@@ -3312,6 +3366,10 @@ const FV_CONTENT = {
       {
        "t": "result",
        "text": "En el simulador, cifra un mensaje dos veces: saldrán dos textos distintos (por la sal y el IV aleatorios). Altera una letra del cifrado y descifra: verás el error de autenticación."
+      },
+      {
+       "t": "porque",
+       "text": "AES es un cifrado por bloques: mezcla cada bloque de 128 bits con la clave en varias rondas hasta que no queda relación con el original. Con GCM añades integridad, así que si alguien cambia un byte el descifrado falla en vez de devolver basura. Ese detalle es el 90% de la seguridad real."
       }
      ],
      "ejemplos": [
@@ -3328,7 +3386,8 @@ const FV_CONTENT = {
      ],
      "practica": [
       {
-       "tipo": "aes"
+       "tipo": "aes",
+       "porque": "Cifrar de verdad con WebCrypto, en vez de simular, te muestra el flujo real: contraseña → sal → clave → IV → bloques cifrados → etiqueta de integridad."
       }
      ],
      "reto": {
@@ -3348,7 +3407,7 @@ const FV_CONTENT = {
      "nivel": 5,
      "titulo": "Clave pública y el candado HTTPS",
      "subtitulo": "Cómo dos desconocidos crean un secreto a la vista de todos.",
-     "minutos": 11,
+     "minutos": 17,
      "icono": "globe",
      "objetivos": [
       "Diferenciar clave pública y privada.",
@@ -3396,6 +3455,10 @@ const FV_CONTENT = {
       {
        "t": "warn",
        "text": "El candado NO significa que la página sea honesta: solo que la conexión está cifrada. Una web de phishing también puede tener candado. Revisa siempre el dominio exacto."
+      },
+      {
+       "t": "porque",
+       "text": "La clave pública resuelve el problema del huevo y la gallina: ¿cómo acordamos un secreto por un canal donde todos escuchan? Con matemáticas donde una dirección es fácil y la contraria imposible. El candado del navegador es eso más un certificado que dice a quién pertenece la clave."
       }
      ],
      "ejemplos": [
@@ -3412,7 +3475,13 @@ const FV_CONTENT = {
      ],
      "practica": [
       {
-       "tipo": "dh"
+       "tipo": "dh",
+       "porque": "Diffie-Hellman es la razón por la que puedes escribir una contraseña en una wifi pública y que no la lea el de al lado: se acuerda un secreto que nunca viaja."
+      },
+      {
+       "tipo": "widget",
+       "w": "rsa",
+       "porque": "RSA funciona porque multiplicar dos primos es fácil y separar el resultado es dificilísimo. Aquí ves las cuentas completas: la clave pública cifra, la privada descifra, y firmar es hacerlo al revés. Con n de 4 cifras lo rompes a mano; por eso en la realidad n tiene 617 cifras."
       }
      ],
      "reto": {
@@ -3427,7 +3496,8 @@ const FV_CONTENT = {
       "explicacion": "El candado indica cifrado, no honestidad. Los estafadores consiguen certificados gratis. La defensa es revisar el dominio letra por letra."
      }
     }
-   ]
+   ],
+   "biomaDesc": "El Nether de las matemáticas: calor, lava y cerraduras. Se entra con la clave correcta o no se sale, y los atajos que parecen fáciles son trampas."
   },
   {
    "id": "social",
@@ -3837,7 +3907,8 @@ const FV_CONTENT = {
       "explicacion": "Quien controla tu correo puede pedir «olvidé mi contraseña» en todos tus servicios. Es la llave maestra."
      }
     }
-   ]
+   ],
+   "biomaDesc": "Una aldea donde todos hablan: el vector de ataque más viejo del mundo es una conversación. La muralla más alta no sirve si abres la puerta tú mismo."
   }
  ],
  "retos": [
@@ -4471,7 +4542,7 @@ const FV_CONTENT = {
    "termino": "Diceware",
    "categoria": "Fundamentos",
    "definicion": "Método de contraseñas con palabras aleatorias lanzando dados.",
-   "detalle": "4-6 palabras de una lista de 7776 dan 50-77 bits de entropía real y son memorizables. La receta recomendada en esta academia."
+   "detalle": "4-6 palabras de una lista de 7776 dan 50-77 bits de entropía real y son memorizables. La receta que recomiendo."
   },
   {
    "termino": "Diffie-Hellman",

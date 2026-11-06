@@ -1,4 +1,4 @@
-# FactionVault — academia pixel de ciberseguridad
+# FactionVault — ciberseguridad de verdad
 
 ¡Qué xopá! FactionVault enseña ciberseguridad **desde cero absoluto**, en español de Panamá y con estética pixel-art.
 Cada nivel sigue la misma promesa: **teoría + ejemplo + práctica + reto**.

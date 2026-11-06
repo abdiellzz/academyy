@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { CommandPalette } from "./components/CommandPalette";
 import { Nav } from "./components/Nav";
 import { Footer } from "./components/Footer";
 import { Avisos, Hud } from "./components/ui";
@@ -30,6 +31,7 @@ function toHash(r: Ruta): string {
 export default function App() {
   const [ruta, setRuta] = useState<Ruta>(parse);
   const [warp, setWarp] = useState<{ color: string; k: number } | null>(null);
+  const [buscar, setBuscar] = useState(false);
   const [p] = useProgreso();
   const { lvl } = nivelDe(xpDe(p));
   const [lastLvl, setLastLvl] = useState(lvl);
@@ -57,8 +59,21 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    const atajo = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setBuscar((v) => !v);
+      } else if (e.key === "Escape") {
+        setBuscar(false);
+      }
+    };
+    window.addEventListener("keydown", atajo);
+    return () => window.removeEventListener("keydown", atajo);
+  }, []);
+
+  useEffect(() => {
     const titles: Record<string, string> = { retos: "Retos CTF", phishing: "Detector de phishing", tutoriales: "Guías", glosario: "Glosario", snippets: "Snippets", progreso: "Tu progreso" };
-    let t = "academia pixel de ciberseguridad";
+    let t = "ciberseguridad de verdad";
     if (ruta.v === "mundo") t = mundoById(ruta.id)?.nombre ?? t;
     else if (ruta.v === "nivel") t = mundoById(ruta.mundo)?.niveles.find((n) => n.id === ruta.nivel)?.titulo ?? t;
     else if (titles[ruta.v]) t = titles[ruta.v];
@@ -67,9 +82,11 @@ export default function App() {
 
   return (
     <>
-      <div className="space" aria-hidden><div className="nebula" /><div className="stars" /><div className="stars2" /><div className="stars3" /></div>
+      <div className="space" aria-hidden><div className="nebula" /><div className="stars" /><div className="stars2" /><div className="stars3" /><div className="space-dither" />
+        <div className="space-dither" /></div>
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-2 focus:top-2 focus:z-[300] focus:bg-[var(--accent)] focus:p-2 focus:text-black">Saltar al contenido</a>
-      <Nav ruta={ruta} go={go} />
+      <Nav ruta={ruta} go={go} onBuscar={() => setBuscar(true)} />
+      <CommandPalette abierto={buscar} onCerrar={() => setBuscar(false)} go={go} />
       {ruta.v === "inicio" && <Home go={go} />}
       {ruta.v === "mundo" && <WorldView id={ruta.id} go={go} />}
       {ruta.v === "nivel" && <LevelView mundo={ruta.mundo} nivel={ruta.nivel} lab={ruta.lab} go={go} />}

@@ -1,21 +1,20 @@
 import { useCallback, useState, type ReactNode } from "react";
-import { MonkeyMascot, PixelIcon, type PixelIconName } from "./PixelArt";
+import { LOGO_SRC } from "../assets/logo";
+import { PixelIcon, type PixelIconName } from "./PixelArt";
 import { nivelDe, useAvisos, useProgreso, xpDe, type Aviso } from "../lib/store";
 import type { TeoriaBloque } from "../types";
 import { cn } from "../utils/cn";
 
-export function Logo({ size = 34, texto = true }: { size?: number; texto?: boolean }) {
-  const fs = Math.max(8, Math.round(size * 0.29));
+/** Logo oficial: el mono con el cofre y el wordmark FACTION VAULT. */
+export function Logo({ size = 34, className }: { size?: number; className?: string }) {
   return (
-    <span className="inline-flex select-none items-center gap-2">
-      <MonkeyMascot height={size} className="bob" />
-      {texto && (
-        <span className="flex flex-col leading-[1.08]" style={{ fontFamily: "var(--font-title)" }}>
-          <span style={{ fontSize: fs, color: "#f8d9a8", textShadow: "2px 2px 0 #000" }}>FACTION</span>
-          <span style={{ fontSize: fs, color: "#f07a1e", textShadow: "2px 2px 0 #000" }}>VAULT</span>
-        </span>
-      )}
-    </span>
+    <img
+      src={LOGO_SRC}
+      alt="FactionVault"
+      draggable={false}
+      className={cn("logo-img select-none", className)}
+      style={{ height: size, width: "auto" }}
+    />
   );
 }
 

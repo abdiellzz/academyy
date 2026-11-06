@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { tomarBusqueda } from "../lib/busqueda";
 import { PixelIcon, type PixelIconName } from "../components/PixelArt";
 import { PhishingGame } from "../components/Practices";
 import { Bar, CopyBtn, SectionHead, Term } from "../components/ui";
@@ -184,7 +185,7 @@ export function Tutoriales({ go }: { go: (r: Ruta) => void }) {
 
 /* ═════════ GLOSARIO ═════════ */
 export function Glosario() {
-  const [q, setQ] = useState("");
+  const [q, setQ] = useState(() => tomarBusqueda());
   const [cat, setCat] = useState("Todos");
   const cats = ["Todos", ...Array.from(new Set(C.glosario.map((g) => g.categoria))).sort()];
   const list = useMemo(() => C.glosario.filter((g) => (cat === "Todos" || g.categoria === cat) && (!q || normalizar(g.termino + " " + g.definicion + " " + g.detalle).includes(normalizar(q)))), [q, cat]);

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { BiomeBanner } from "../components/Biome";
 import { PixelIcon } from "../components/PixelArt";
 import { PracticaView } from "../components/Practices";
 import { Bar, Bloque, GameBox } from "../components/ui";
@@ -24,6 +25,7 @@ export function WorldView({ id, go }: { id: string; go: (r: Ruta) => void }) {
               <h1 className="mt-4" style={{ color: m.color }}>{m.nombre}</h1>
               <p className="mt-3 text-[19px]">{m.tagline}</p>
               <p className="mt-2 text-[var(--text-2)]">{m.intro}</p>
+              <BiomeBanner mundo={m} />
             </div>
             <div className="card w-full max-w-[280px] p-4">
               <div className="flex items-center gap-3"><PixelIcon name={m.icono} size={40} /><div><p className="text-[18px]" style={{ fontFamily: "var(--font-title)", color: m.color }}>{Math.round((done / m.niveles.length) * 100)}%</p><p className="label mt-1">{done}/{m.niveles.length} niveles</p></div></div>

@@ -107,7 +107,7 @@ export function monkeyFaviconSvg(): string {
 
 /* ───────────── Iconos pixel ───────────── */
 
-/* ───────────── Allen y Hailey: los aventureros ───────────── */
+/* ───────────── Diel y Hailey: los aventureros ───────────── */
 
 export const ADVENTURER_PALETTE: Palette = {
   B: "#0f2a4a", // contorno del casco
@@ -120,7 +120,7 @@ export const ADVENTURER_PALETTE: Palette = {
   C: "#f8d9a8", // cara
   P: "#f39a6b", // mejillas
   E: "#2b1a12", // ojos y boca
-  G: "#2fb24a", // traje de Allen
+  G: "#2fb24a", // traje de Diel
   g: "#208c3a",
   V: "#8b4dff", // traje de Hailey
   v: "#6840c8",
@@ -128,7 +128,7 @@ export const ADVENTURER_PALETTE: Palette = {
   Y: "#ffcc33", // hebilla
 };
 
-const ALLEN_GRID = [
+const DIEL_GRID = [
     "....................",
     "......BBBBBBBB......",
     "....BBBWWWWWWBBB....",
@@ -182,22 +182,22 @@ const HAILEY_GRID = [
     "....VVVVVVVVVVVV....",
   ];
 
-export function Adventurer({ who, height = 64, className }: { who: "allen" | "hailey"; height?: number; className?: string }) {
-  const allen = who === "allen";
+export function Adventurer({ who, height = 64, className }: { who: "diel" | "hailey"; height?: number; className?: string }) {
+  const esDiel = who === "diel";
   return (
     <PixelArt
-      grid={allen ? ALLEN_GRID : HAILEY_GRID}
+      grid={esDiel ? DIEL_GRID : HAILEY_GRID}
       palette={ADVENTURER_PALETTE}
       height={height}
       className={className}
-      title={allen ? "Allen, el mono aventurero" : "Hailey, la mona aventurera"}
+      title={esDiel ? "Diel, el mono aventurero" : "Hailey, la mona aventurera"}
     />
   );
 }
 
 export type PixelIconName =
   | "grass" | "chest" | "storm" | "diablo" | "ship" | "heart" | "diamond" | "snake"
-  | "monitor" | "globe" | "pickaxe" | "key" | "xp" | "flag" | "torch" | "sword" | "home" | "shield";
+  | "monitor" | "globe" | "pickaxe" | "key" | "xp" | "flag" | "torch" | "sword" | "home" | "shield" | "search";
 
 const ICONS: Record<PixelIconName, { grid: string[]; palette: Palette }> = {
   grass: {
@@ -247,6 +247,10 @@ const ICONS: Record<PixelIconName, { grid: string[]; palette: Palette }> = {
   key: {
     grid: [".YYY....", "Y...Y...", "Y...YYYY", "Y...Y.Y.", ".YYY..YY"],
     palette: { Y: "#ffcc33" },
+  },
+  search: {
+    grid: ["..SSSS..", ".S....S.", "S......S", "S......S", ".S....S.", "..SSSS..", ".....SS.", "......Ss"],
+    palette: { S: "#e9e4ff", s: "#8d81a8" },
   },
   xp: {
     grid: ["..GG..", ".GgGG.", "GgGGGG", "GGGGGG", ".GGGG.", "..GG.."],

@@ -7,7 +7,7 @@ export function Footer({ go }: { go: (r: Ruta) => void }) {
   return (
     <footer className="mt-16">
       <div className="grass" aria-hidden />
-      <div className="bg-[#1e140c]" style={{ backgroundImage: "linear-gradient(90deg, rgba(0,0,0,.15) 0 2px, transparent 2px), linear-gradient(rgba(0,0,0,.15) 0 2px, transparent 2px)", backgroundSize: "32px 32px" }}>
+      <div className="bg-[#1e140c]" style={{ backgroundImage: "repeating-conic-gradient(rgba(0,0,0,.28) 0% 25%, transparent 0% 50%)", backgroundSize: "10px 10px" }}>
         <div className="mx-auto grid max-w-[1240px] gap-8 px-4 py-10 md:grid-cols-[1.3fr_1fr_1.3fr]">
           <div>
             <Logo size={44} />

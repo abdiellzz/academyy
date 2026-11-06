@@ -5,6 +5,7 @@ import { FlowStepper, LayerStack, MatchGame } from "./widgets/CommonWidgets";
 import { BinaryWidget, EncapWidget, FirewallWidget, SubnetWidget } from "./widgets/NetWidgets";
 import { ChmodWidget, MemoryWidget, ProcessWidget, SchedulerWidget, TerminalWidget } from "./widgets/OsWidgets";
 import { aesCifrar, aesDescifrar, caesar, entropia, modPow, normalizar, sha, tiempoCrack } from "../lib/crypto";
+import { BruteLab, FirmaLab, FrecuenciaLab, KdfLab, RsaLab, VigenereLab, XorLab } from "./widgets/CryptoWidgets";
 import { C } from "../lib/content";
 import type { MensajePhishing, Practica } from "../types";
 import { cn } from "../utils/cn";
@@ -304,6 +305,8 @@ function Widget({ w, props, onDone }: { w: string; props?: any; onDone: Done }) 
     binary: <BinaryWidget />, subnet: <SubnetWidget />, encap: <EncapWidget />, firewall: <FirewallWidget />,
     procs: <ProcessWidget />, scheduler: <SchedulerWidget />, memory: <MemoryWidget />, chmod: <ChmodWidget />,
     terminal: <TerminalWidget mission={props?.mission} />,
+    xor: <XorLab />, rsa: <RsaLab />, firma: <FirmaLab />, frecuencia: <FrecuenciaLab />,
+    kdf: <KdfLab />, brute: <BruteLab />, vigenere: <VigenereLab />,
   };
   return <div>{map[w] ?? <p>Simulador «{w}» no disponible.</p>}<Hecho onDone={onDone} /></div>;
 }
