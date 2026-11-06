@@ -3,6 +3,7 @@ import { PixelIcon } from "../components/PixelArt";
 import { Bar } from "../components/ui";
 import { C } from "../lib/content";
 import { guardarExamen, useProgreso } from "../lib/store";
+import { sfx } from "../lib/sonido";
 import type { Ruta } from "../types";
 import { cn } from "../utils/cn";
 
@@ -100,6 +101,7 @@ export function Examen({ go }: { go: (r: Ruta) => void }) {
     setNota(n);
     setSegundos(usados);
     guardarExamen({ nota: n, aciertos, total: preguntas.length, fecha: new Date().toISOString(), segundos: usados });
+    sfx(n >= APROBADO ? "subir" : "error");
     setFase("fin");
   }
 
@@ -279,7 +281,7 @@ export function Examen({ go }: { go: (r: Ruta) => void }) {
           <p className="label">Qué significa</p>
           <p className="mt-1 text-[15px] leading-relaxed text-[var(--text-2)]">
             {aprobado
-              ? "Has demostrado que puedes explicar y aplicar los conceptos de los seis mundos. El certificado de finalización ya está disponible con tu nombre."
+              ? `Has demostrado que puedes explicar y aplicar los conceptos de los ${C.mundos.length} mundos. El certificado de finalización ya está disponible con tu nombre.`
               : `Necesitas ${APROBADO} para el certificado. Repasa los mundos donde fallaste y vuelve a intentarlo: puedes repetirlo sin límite.`}
           </p>
           <div className="mt-3 flex flex-wrap gap-2">

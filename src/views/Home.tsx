@@ -521,9 +521,9 @@ export function Home({ go }: { go: (r: Ruta) => void }) {
         </div>
       </section>
 
-      {/* ── Los seis biomas ── */}
+      {/* ── Los biomas ── */}
       <section className="mx-auto max-w-[1240px] px-4 pb-4" aria-labelledby="biomas-title">
-        <SectionHead kicker="Seis mundos, seis terrenos" title="Los biomas de la bóveda">
+        <SectionHead kicker={`${C.mundos.length} mundos, ${C.mundos.length} terrenos`} title="Los biomas de la bóveda">
           <p className="max-w-[460px] text-[14px] text-[var(--text-3)]">
             Cada mundo tiene su propio terreno, su color y sus reglas. Entra al que te pida el cuerpo.
           </p>

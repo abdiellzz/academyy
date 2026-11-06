@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { PixelIcon, type PixelIconName } from "./PixelArt";
+import { C, totalNiveles } from "../lib/content";
 
 /* ═══════════════════════════════════════════════════════════════════
    ONBOARDING · 30 segundos, tres pantallas, la primera vez.
@@ -14,8 +15,8 @@ const PASOS: { icono: PixelIconName; kicker: string; titulo: string; texto: stri
     kicker: "1 de 3 · Qué es esto",
     titulo: "Una bóveda para aprender seguridad de verdad",
     texto:
-      "FactionVault es un curso interactivo de seguridad informática en pixel art. No hay vídeos de dos horas: hay seis mundos, cada uno con su terreno, y dentro se explica, se practica y se comprueba.",
-    puntos: ["6 mundos · 41 niveles", "Todo en español y sin instalar nada", "Se guarda en tu navegador"],
+      `FactionVault es un curso interactivo de seguridad informática en pixel art. No hay vídeos de dos horas: hay ${C.mundos.length} mundos, cada uno con su terreno, y dentro se explica, se practica y se comprueba.`,
+    puntos: [`${C.mundos.length} mundos · ${totalNiveles} niveles`, "Todo en español y sin instalar nada", "Se guarda en tu navegador"],
   },
   {
     icono: "pickaxe",

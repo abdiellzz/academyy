@@ -1,5 +1,6 @@
 import FV_CONTENT from "../content.js";
 import { ampliar } from "../extra-niveles";
+import { agregarMundoWeb } from "../mundo-web";
 import type { Contenido } from "../types";
 
 /** Fuente de verdad: window.FV_CONTENT (content.js). */
@@ -7,6 +8,7 @@ export const C: Contenido = ((typeof window !== "undefined" && (window as unknow
 
 // Niveles añadidos después: ingeniería social (4) y criptografía (2).
 ampliar(C);
+agregarMundoWeb(C);
 
 export const mundoById = (id: string) => C.mundos.find((m) => m.id === id);
 export const totalNiveles = C.mundos.reduce((a, m) => a + m.niveles.length, 0);

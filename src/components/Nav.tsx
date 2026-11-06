@@ -3,6 +3,7 @@ import { Icon } from "./Icon";
 import { PixelIcon, type PixelIconName } from "./PixelArt";
 import { Hud, Logo } from "./ui";
 import { C } from "../lib/content";
+import { alternarSonido, sonidoActivo, suscribirSonido } from "../lib/sonido";
 import type { Ruta } from "../types";
 import { cn } from "../utils/cn";
 
@@ -25,6 +26,7 @@ const PRINCIPAL: { v: Ruta["v"]; label: string; icon: PixelIconName }[] = [
 
 export function Nav({ ruta, go, onBuscar }: { ruta: Ruta; go: (r: Ruta) => void; onBuscar?: () => void }) {
   const [open, setOpen] = useState(false);
+  const [audio, setAudio] = useState(sonidoActivo());
   const [menu, setMenu] = useState<"mundos" | "herr" | null>(null);
   const caja = useRef<HTMLElement | null>(null);
 
@@ -32,6 +34,8 @@ export function Nav({ ruta, go, onBuscar }: { ruta: Ruta; go: (r: Ruta) => void;
     setOpen(false);
     setMenu(null);
   }, [ruta]);
+
+  useEffect(() => suscribirSonido(setAudio), []);
 
   useEffect(() => {
     const fuera = (e: MouseEvent) => {
@@ -151,6 +155,19 @@ export function Nav({ ruta, go, onBuscar }: { ruta: Ruta; go: (r: Ruta) => void;
             <span className="label hidden md:inline">Buscar</span>
           </button>
         )}
+
+        <button
+          onClick={() => setAudio(alternarSonido())}
+          className={cn(
+            "grid h-9 w-9 shrink-0 place-items-center border-2 border-black text-[13px]",
+            audio ? "bg-[var(--accent)] text-[#1a0f00]" : "bg-[var(--surface-2)] text-[var(--text-3)] hover:text-[var(--text)]",
+          )}
+          aria-pressed={audio}
+          title={audio ? "Sonidos activados" : "Sonidos desactivados"}
+          aria-label={audio ? "Desactivar sonidos 8-bit" : "Activar sonidos 8-bit"}
+        >
+          {audio ? "♪" : "×"}
+        </button>
 
         <div className="min-[1180px]:ml-1">
           <Hud compact />

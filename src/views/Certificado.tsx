@@ -3,7 +3,8 @@ import { PixelIcon } from "../components/PixelArt";
 import { LOGO_SRC } from "../assets/logo";
 import { C, totalNiveles } from "../lib/content";
 import { LABS } from "./Labs";
-import { nivelesCompletos, setEstudiante, useProgreso } from "../lib/store";
+import { nivelesCompletos, notify, setEstudiante, useProgreso } from "../lib/store";
+import { descargarPDF, descargarPNG, type DatosCert } from "../lib/certificado";
 import type { Ruta } from "../types";
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -27,6 +28,7 @@ export function Certificado({ go }: { go: (r: Ruta) => void }) {
   const [p] = useProgreso();
   const [nombre, setNombre] = useState(p.estudiante);
   const [verEjemplo, setVerEjemplo] = useState(false);
+  const [generando, setGenerando] = useState<"pdf" | "png" | null>(null);
   const aprobado = p.examenMejor >= APROBADO;
   const demo = !aprobado && verEjemplo;
 
@@ -39,6 +41,31 @@ export function Certificado({ go }: { go: (r: Ruta) => void }) {
   const fecha = demo ? new Date().toISOString() : p.ultimoExamen?.fecha ?? new Date().toISOString();
   const fechaTxt = new Date(fecha).toLocaleDateString("es", { day: "2-digit", month: "2-digit", year: "numeric" });
   const id = idCertificado(fecha, nombre || "anonimo");
+
+  const datos: DatosCert = {
+    nombre: demo ? nombre || "Nombre del estudiante" : nombre || p.estudiante || "Nombre del estudiante",
+    nota,
+    progreso: { niveles: completados, totalNiveles, labs: labsHechos, totalLabs: LABS.length, retos: retosHechos, totalRetos: C.retos.length },
+    mundos: C.mundos.length,
+    fecha,
+    id,
+    demo,
+  };
+
+  async function bajar(tipo: "pdf" | "png") {
+    if (generando) return;
+    setGenerando(tipo);
+    try {
+      if (nombre !== p.estudiante) setEstudiante(nombre);
+      if (tipo === "pdf") await descargarPDF(datos);
+      else await descargarPNG(datos);
+      notify({ titulo: tipo === "pdf" ? "PDF listo" : "PNG listo", texto: "Revisa tus descargas.", icono: "chest" });
+    } catch {
+      notify({ titulo: "No se pudo generar", texto: "Prueba con «Imprimir» y elige Guardar como PDF.", icono: "storm" });
+    } finally {
+      setGenerando(null);
+    }
+  }
 
   if (!aprobado && !demo) {
     return (
@@ -80,8 +107,8 @@ export function Certificado({ go }: { go: (r: Ruta) => void }) {
           <p className="label !text-[var(--accent)]">Certificado</p>
           <h1 className="mt-1">Tu certificado de finalización</h1>
           <p className="mt-2 max-w-[640px] text-[15px] leading-relaxed text-[var(--text-2)]">
-            Escribe tu nombre, y guárdalo con <b>Ctrl+P → Guardar como PDF</b> o imprímelo. El ID de abajo
-            identifica tu emisión.
+            Escribe tu nombre y descárgalo en <b>PDF</b> (A4 horizontal, listo para imprimir) o en PNG. El ID de
+            abajo identifica tu emisión.
           </p>
         </div>
         <div className="flex flex-wrap items-end gap-2">
@@ -96,8 +123,14 @@ export function Certificado({ go }: { go: (r: Ruta) => void }) {
               onBlur={() => setEstudiante(nombre)}
             />
           </label>
-          <button className="btn btn-primary" onClick={() => window.print()}>
-            <PixelIcon name="diamond" size={13} /> Guardar / imprimir
+          <button className="btn btn-primary" onClick={() => bajar("pdf")} disabled={generando !== null}>
+            <PixelIcon name="chest" size={13} /> {generando === "pdf" ? "Generando…" : "Descargar PDF"}
+          </button>
+          <button className="btn" onClick={() => bajar("png")} disabled={generando !== null}>
+            {generando === "png" ? "Generando…" : "PNG"}
+          </button>
+          <button className="btn btn-sm" onClick={() => window.print()} title="Imprimir o guardar como PDF del navegador">
+            Imprimir
           </button>
         </div>
       </div>

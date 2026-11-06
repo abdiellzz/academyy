@@ -9,6 +9,7 @@ import { Footer } from "./components/Footer";
 import { Avisos, Hud } from "./components/ui";
 import { mundoById } from "./lib/content";
 import { nivelDe, notify, useProgreso, xpDe } from "./lib/store";
+import { sfx } from "./lib/sonido";
 import { Home } from "./views/Home";
 import { LevelView, NotFound, WorldView } from "./views/World";
 import { Glosario, Phishing, Progreso, Retos, Snippets, Tutoriales } from "./views/Sections";
@@ -44,9 +45,21 @@ export default function App() {
   const [lastLvl, setLastLvl] = useState(lvl);
 
   useEffect(() => {
-    if (lvl > lastLvl) notify({ titulo: "¡Subiste de nivel!", texto: `Ahora eres nivel ${lvl}`, icono: "xp" });
+    if (lvl > lastLvl) {
+      notify({ titulo: "¡Subiste de nivel!", texto: `Ahora eres nivel ${lvl}`, icono: "xp" });
+      sfx("subir");
+    }
     setLastLvl(lvl);
   }, [lvl, lastLvl]);
+
+  // Un clic suave en cada botón cuando los sonidos están encendidos.
+  useEffect(() => {
+    const clic = (e: MouseEvent) => {
+      if ((e.target as HTMLElement | null)?.closest?.("button")) sfx("click");
+    };
+    document.addEventListener("click", clic);
+    return () => document.removeEventListener("click", clic);
+  }, []);
 
   const go = useCallback((r: Ruta) => {
     // Warp-flash con el color del mundo al entrar a uno

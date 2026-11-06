@@ -23,6 +23,7 @@ const PALETAS: Record<string, Paleta> = {
   python: { cielo: "#151004", lejos: "#463a12", medio: "#2e270d", cerca: "#181307", acento: "#ffd43b", icono: "grass", astro: "#fff3b0" },
   cripto: { cielo: "#1a0800", lejos: "#632e09", medio: "#401e07", cerca: "#220e03", acento: "#ffb02e", icono: "storm", astro: "#ffd9a0" },
   social: { cielo: "#1a060c", lejos: "#53151f", medio: "#360e17", cerca: "#1e070c", acento: "#ff5a6a", icono: "home", astro: "#ffd0d6" },
+  web: { cielo: "#0a0920", lejos: "#2f2a6b", medio: "#1d1845", cerca: "#0c0a26", acento: "#b98bff", icono: "monitor", astro: "#e8dcff" },
 };
 
 const FALLBACK: Paleta = PALETAS.cripto;
@@ -104,7 +105,7 @@ export function BiomeBanner({ mundo }: { mundo: Mundo }) {
   );
 }
 
-/** Rejilla de los seis biomas para el inicio. */
+/** Rejilla de los biomas (uno por mundo) para el inicio. */
 export function BiomaGrid({ mundos, go }: { mundos: Mundo[]; go: (id: string) => void }) {
   return (
     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { C, totalNiveles } from "./content";
+import { sfx } from "./sonido";
 
 export interface ExamenResultado {
   nota: number;      // 0-100
@@ -85,6 +86,7 @@ function commit(next: Progreso) {
   try { localStorage.setItem(KEY, JSON.stringify(state)); } catch { /* sin almacenamiento */ }
   subs.forEach((s) => s(state));
   nuevos.forEach((l) => notify({ titulo: "¡Logro desbloqueado!", texto: l.titulo, icono: l.icono }));
+  if (nuevos.length) sfx("logro");
 }
 
 export function useProgreso() {
@@ -97,13 +99,15 @@ export function useProgreso() {
 export function marcarFase(key: string, fase: "teoria" | "practica" | "reto") {
   if (state.niveles[key]?.[fase]) return;
   commit({ ...state, niveles: { ...state.niveles, [key]: { ...state.niveles[key], [fase]: true } } });
+  sfx("ok");
 }
 
 /** Marca un laboratorio como terminado (una sola vez). */
 export function marcarLab(id: string) {
   if (state.labs.includes(id)) return;
   commit({ ...state, labs: [...state.labs, id] });
-  notify({ titulo: "Laboratorio completado", texto: `+30 XP · ${id}`, icono: "pickaxe" });
+  notify({ titulo: "Laboratorio completado", texto: "+30 XP", icono: "pickaxe" });
+  sfx("ok");
 }
 
 export function guardarExamen(r: ExamenResultado) {
