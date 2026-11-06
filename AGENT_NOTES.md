@@ -1,6 +1,6 @@
 # Notas para el siguiente agente — FactionVault
 
-**Última actualización:** 2026-11-06 · **Rama:** `arena/304dae71-academyy` · **HEAD:** `0714c6a`
+**Última actualización:** 2026-11-06 · **Rama de trabajo:** `arena/304dae71-academyy` (ya fusionada en `main`)
 Documento de traspaso: si algo aquí no coincide con el código, **manda el código** y actualiza este archivo.
 El detalle de producto/arquitectura está en `FACTIONVAULT_CONTEXT.md`; este es el manual operativo.
 
