@@ -317,9 +317,9 @@ const RED: Host[] = [
   { ip: "10.0.0.99", nombre: "desconocido", puertos: [{ p: 3389, servicio: "ms-wbt-server" }, { p: 445, servicio: "microsoft-ds" }], nota: "Este equipo no está en el inventario y tiene escritorio remoto abierto. Eso es lo que hay que investigar." },
 ];
 
-const PISTAS_CMD = ["nmap 10.0.0.0/28", "ping 10.0.0.10", "nmap -p 22,3389 10.0.0.99", "traceroute 8.8.8.8", "arp -a"];
+const PISTAS_CMD = ["nmap 10.0.0.0/24", "ping 10.0.0.10", "nmap -p 22,3389 10.0.0.99", "traceroute 8.8.8.8", "arp -a"];
 
-function ejecutarComando(cmd: string): { salida: string[]; hallazgo?: string } {
+export function ejecutarComando(cmd: string): { salida: string[]; hallazgo?: string } {
   const partes = cmd.trim().split(/\s+/);
   const prog = (partes[0] ?? "").toLowerCase();
 
@@ -385,7 +385,8 @@ function ejecutarComando(cmd: string): { salida: string[]; hallazgo?: string } {
       salida.push("");
     }
     salida.push(`Nmap done: ${hosts.length} host(s) up`);
-    const desconocido = hosts.find((h) => h.nota);
+    // Priorizamos el equipo que no está en el inventario: es el hallazgo de verdad.
+    const desconocido = hosts.find((h) => h.nombre === "desconocido") ?? hosts.find((h) => h.nota);
     return { salida, hallazgo: desconocido ? `${desconocido.ip} (${desconocido.nombre}): ${desconocido.nota}` : undefined };
   }
 
@@ -417,7 +418,7 @@ function ejecutarComando(cmd: string): { salida: string[]; hallazgo?: string } {
 }
 
 export function RedesLab() {
-  const [cmd, setCmd] = useState("nmap 10.0.0.0/28");
+  const [cmd, setCmd] = useState("nmap 10.0.0.0/24");
   const [historial, setHistorial] = useState<{ cmd: string; salida: string[]; hallazgo?: string }[]>([]);
 
   function correr(texto: string) {
