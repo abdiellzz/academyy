@@ -74,13 +74,19 @@ const FASES = [
   { id: "reto", label: "Reto", icon: "sword" },
 ] as const;
 
-export function LevelView({ mundo, nivel, go }: { mundo: string; nivel: string; go: (r: Ruta) => void }) {
+export function LevelView({ mundo, nivel, lab, go }: { mundo: string; nivel: string; lab?: boolean; go: (r: Ruta) => void }) {
   const m = mundoById(mundo);
   const n = m?.niveles.find((x) => x.id === nivel);
   const [fase, setFase] = useState(0);
   const [prog] = useProgreso();
   const hechas = prog.niveles[`${mundo}/${nivel}`] ?? {};
-  useEffect(() => { setFase(0); window.scrollTo({ top: 0 }); }, [mundo, nivel]);
+  useEffect(() => {
+    // Si vienes del laboratorio (o ya viste la teoría) arrancas practicando.
+    const h = prog.niveles[`${mundo}/${nivel}`] ?? {};
+    setFase(lab || (h.teoria && !h.practica) ? 2 : 0);
+    window.scrollTo({ top: 0 });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mundo, nivel, lab]);
   useEffect(() => { window.scrollTo({ top: 0, behavior: "smooth" }); }, [fase]);
   if (!m || !n) return <NotFound go={go} />;
   const idx = m.niveles.indexOf(n);
@@ -95,7 +101,18 @@ export function LevelView({ mundo, nivel, go }: { mundo: string; nivel: string; 
           </nav>
           <div className="mt-4 flex items-start gap-4">
             <span className="hidden h-16 w-16 shrink-0 place-items-center border-2 border-black bg-black/40 sm:grid"><PixelIcon name={n.icono} size={40} /></span>
-            <div><h1>{n.titulo}</h1><p className="mt-2 text-[18px] text-[var(--text-2)]">{n.subtitulo}</p></div>
+            <div>
+              <h1>{n.titulo}</h1>
+              <p className="mt-2 text-[18px] text-[var(--text-2)]">{n.subtitulo}</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <button className="btn btn-xs" onClick={() => setFase(2)}>
+                  <PixelIcon name="pickaxe" size={11} /> Ir al laboratorio
+                </button>
+                <button className="btn btn-xs" onClick={() => setFase(3)}>
+                  <PixelIcon name="sword" size={11} /> Reto del nivel
+                </button>
+              </div>
+            </div>
           </div>
           <div className="card mt-5 p-3.5">
             <p className="label !text-[var(--accent)]">Al terminar podrás…</p>
@@ -125,6 +142,13 @@ export function LevelView({ mundo, nivel, go }: { mundo: string; nivel: string; 
           <Siguiente label="¡A practicar!" onClick={() => setFase(2)} />
         </>}
         {fase === 2 && <>
+          <div className="card p-4" style={{ background: "#141026", borderLeft: "4px solid var(--world)" }}>
+            <p className="label" style={{ color: "var(--world)" }}>Laboratorio · {n.practica.length} {n.practica.length === 1 ? "práctica" : "prácticas"}</p>
+            <p className="mt-1 text-[16px] text-[var(--text-2)]">
+              Se aprende haciendo. Cada práctica te dice <b className="text-[var(--violet)]">por qué funciona así</b>:
+              si algo no te cuadra, vuelve a la teoría solo para esa duda.
+            </p>
+          </div>
           {n.practica.map((pr, i) => <PracticaView key={`${key}-${i}`} p={pr} onDone={() => { if (!hechas.practica) notify({ titulo: "Práctica completada", texto: `${n.titulo} · +40 XP`, icono: "pickaxe" }); marcarFase(key, "practica"); }} />)}
           <Siguiente label="Ir al reto final" onClick={() => setFase(3)} />
         </>}

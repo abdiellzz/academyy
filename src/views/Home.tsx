@@ -1,21 +1,35 @@
 import { useMemo, useRef, useState, type CSSProperties } from "react";
 import { Globe } from "../components/Globe";
-import { PixelIcon, type PixelIconName } from "../components/PixelArt";
+import { Adventurer, PixelIcon, type PixelIconName } from "../components/PixelArt";
 import { Bar, GameBox, Logo, SectionHead } from "../components/ui";
 import { C, totalNiveles } from "../lib/content";
 import { LOGROS, nivelCompleto, nivelDe, nivelesCompletos, useProgreso, xpDe } from "../lib/store";
 import type { Marker } from "../lib/planet";
-import type { Ruta } from "../types";
+import type { Mundo, Nivel, Ruta } from "../types";
 import { cn } from "../utils/cn";
 
 /* Coordenadas del pin de cada mundo en el planeta. */
 const COORDS: Record<string, { lat: number; lon: number }> = {
-  redes: { lat: 8.9, lon: -79.5 }, // Panamá, de donde sale todo
-  sistemas: { lat: 37.4, lon: -122.1 }, // Silicon Valley
+  seguridad: { lat: 9.0, lon: -79.5 }, // Panamá: tu base
+  redes: { lat: 37.4, lon: -122.1 }, // Silicon Valley
+  sistemas: { lat: 47.6, lon: -122.3 }, // Redmond
   python: { lat: 52.3, lon: 4.9 }, // Ámsterdam
-  criptografia: { lat: 47.4, lon: 8.5 }, // Zúrich
+  cripto: { lat: 47.4, lon: 8.5 }, // Zúrich
   social: { lat: 25.2, lon: 55.3 }, // Dubái
 };
+
+/* Laboratorios: se buscan en el contenido para que los enlaces nunca queden viejos. */
+const LABS: { key: string; label: string; icon: PixelIconName; desc: string }[] = [
+  { key: "w:terminal", label: "Terminal Linux", icon: "monitor", desc: "Un mini-CTF dentro de una terminal." },
+  { key: "w:subnet", label: "Subredes", icon: "globe", desc: "Máscaras, hosts y rangos sin fórmulas raras." },
+  { key: "w:firewall", label: "Firewall", icon: "shield", desc: "Abre y cierra puertos y mira quién pasa." },
+  { key: "w:chmod", label: "Permisos chmod", icon: "key", desc: "r/w/x sobre archivos, con binario incluido." },
+  { key: "password", label: "Medidor de contraseñas", icon: "key", desc: "Entropía real y tiempo de descifrado." },
+  { key: "cesar", label: "Cifrado César", icon: "chest", desc: "Cifra y descifra moviendo letras." },
+  { key: "hash", label: "Hash SHA-256", icon: "diamond", desc: "Comprueba integridad con tu propio texto." },
+  { key: "aes", label: "AES de verdad", icon: "diamond", desc: "Cifra con contraseña, sal y WebCrypto." },
+  { key: "phishing", label: "Detector de phishing", icon: "flag", desc: "Diez mensajes: legítimo o anzuelo." },
+];
 
 function coords(lat: number, lon: number) {
   const ns = lat >= 0 ? "N" : "S";
@@ -47,6 +61,22 @@ export function Home({ go }: { go: (r: Ruta) => void }) {
     ],
     [coord.lat, coord.lon, mundo.color],
   );
+
+  const labs = useMemo(() => {
+    const out: { key: string; label: string; icon: PixelIconName; desc: string; mundo: Mundo; nivel: Nivel }[] = [];
+    for (const l of LABS) {
+      buscar: for (const m of C.mundos)
+        for (const n of m.niveles)
+          for (const p of n.practica) {
+            const k = p.tipo === "widget" ? `w:${p.w}` : p.tipo;
+            if (k === l.key) {
+              out.push({ ...l, mundo: m, nivel: n });
+              break buscar;
+            }
+          }
+    }
+    return out;
+  }, []);
 
   const siguiente = useMemo(() => {
     for (const m of C.mundos)
@@ -164,15 +194,31 @@ export function Home({ go }: { go: (r: Ruta) => void }) {
 
         {/* Marca y nivel: arriba a la izquierda, como el HUD de la nave */}
         <div className="hero-brand">
-          <Logo size={58} />
-          <p className="label mt-3" style={{ color: "var(--accent)" }}>▶ Centro de mando</p>
-          <p className="mt-1 flex flex-wrap items-center gap-2 text-[14px] text-[var(--text-3)]">
-            <span className="chip">Nivel {lvl}</span>
-            <span className="chip">{xp} XP</span>
-            <span className="chip">
-              {p.logros.length}/{LOGROS.length} logros
-            </span>
-          </p>
+          <div className="flex flex-wrap items-end gap-3">
+            <div className="squad">
+              <Adventurer who="allen" height={66} className="bob" />
+              <span className="squad-name">Allen</span>
+            </div>
+            <div className="squad">
+              <Adventurer who="hailey" height={66} className="bob squad-b" />
+              <span className="squad-name">Hailey</span>
+            </div>
+            <div className="pb-1">
+              <p className="label" style={{ color: "var(--accent)" }}>
+                ▶ Tu escuadrón
+              </p>
+              <p className="mt-1 flex flex-wrap items-center gap-1.5">
+                <span className="chip">Nivel {lvl}</span>
+                <span className="chip">{xp} XP</span>
+                <span className="chip">
+                  {p.logros.length}/{LOGROS.length} logros
+                </span>
+              </p>
+              <p className="mt-1.5 max-w-[220px] text-[13px] leading-snug text-[var(--text-3)]">
+                Allen y Hailey despegan contigo: cada mundo es una misión y cada nivel, una expedición.
+              </p>
+            </div>
+          </div>
         </div>
 
         <div className="relative z-10 mx-auto max-w-[1240px] px-4">
@@ -182,7 +228,7 @@ export function Home({ go }: { go: (r: Ruta) => void }) {
                 Elige tu <span className="text-[var(--accent)]">destino</span>
               </h1>
               <p className="mt-3 text-[17px] leading-relaxed text-[var(--text-2)]">
-                {C.mundos.length} planetas del conocimiento, todos desde cero. Pasa el mouse para verlos y haz
+                {C.mundos.length} planetas, {C.mundos.length} misiones. Pasa el mouse para explorarlos y haz
                 clic para apuntar la nave. <b className="text-[var(--text)]">{done}</b> de {totalNiveles}{" "}
                 niveles ya están en tu mochila.
               </p>
@@ -286,6 +332,10 @@ export function Home({ go }: { go: (r: Ruta) => void }) {
                 </p>
               </div>
 
+              <p className="mt-2 text-[13px] text-[var(--text-3)]">
+                💡 Arrastra la Tierra para girarla: Allen y Hailey te marcan el destino.
+              </p>
+
               <div className="mt-3 flex flex-wrap items-center gap-1.5">
                 <span className="label">O salta directo a</span>
                 {accesos.map((a) => (
@@ -328,6 +378,45 @@ export function Home({ go }: { go: (r: Ruta) => void }) {
                 </div>
               )}
             </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Laboratorio abierto ── */}
+      <section className="mx-auto max-w-[1240px] px-4 pb-4" aria-labelledby="lab-title">
+        <SectionHead kicker="Aprende haciendo" title="Laboratorio abierto">
+          <p className="max-w-[460px] text-[14px] text-[var(--text-3)]">
+            Simuladores de verdad, sin instalar nada. Entras directo a la práctica y cada una te explica el porqué.
+          </p>
+        </SectionHead>
+        <h2 id="lab-title" className="sr-only">
+          Laboratorio abierto
+        </h2>
+        <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {labs.map((l) => (
+            <button
+              key={l.key}
+              onClick={() => go({ v: "nivel", mundo: l.mundo.id, nivel: l.nivel.id, lab: true })}
+              className="card card-hover flex items-start gap-3 p-3.5 text-left"
+              style={{ ["--world" as string]: l.mundo.color }}
+            >
+              <span
+                className="grid h-11 w-11 shrink-0 place-items-center border-2 border-black"
+                style={{ background: l.mundo.fondo }}
+              >
+                <PixelIcon name={l.icon} size={24} className="bob" />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="label" style={{ color: l.mundo.color }}>
+                  {l.mundo.nombre.replace("Mundo ", "")}
+                </span>
+                <span className="mt-0.5 block text-[17px] font-bold leading-tight">{l.label}</span>
+                <span className="mt-1 block text-[14px] leading-snug text-[var(--text-2)]">{l.desc}</span>
+              </span>
+              <span className="vault-arrow" aria-hidden>
+                →
+              </span>
+            </button>
           ))}
         </div>
       </section>

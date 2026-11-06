@@ -5,13 +5,14 @@ import type { TeoriaBloque } from "../types";
 import { cn } from "../utils/cn";
 
 export function Logo({ size = 34, texto = true }: { size?: number; texto?: boolean }) {
+  const fs = Math.max(8, Math.round(size * 0.29));
   return (
-    <span className="inline-flex items-center gap-2.5 select-none">
+    <span className="inline-flex select-none items-center gap-2">
       <MonkeyMascot height={size} className="bob" />
       {texto && (
-        <span className="flex flex-col leading-none" style={{ fontFamily: "var(--font-title)" }}>
-          <span className="text-[11px] text-[var(--text)]" style={{ textShadow: "2px 2px 0 #000" }}>FACTION<span className="text-[var(--accent)]">VAULT</span></span>
-          <span className="mt-1.5 text-[7px] tracking-[0.12em] text-[var(--text-3)]">ACADEMIA PIXEL</span>
+        <span className="flex flex-col leading-[1.08]" style={{ fontFamily: "var(--font-title)" }}>
+          <span style={{ fontSize: fs, color: "#f8d9a8", textShadow: "2px 2px 0 #000" }}>FACTION</span>
+          <span style={{ fontSize: fs, color: "#f07a1e", textShadow: "2px 2px 0 #000" }}>VAULT</span>
         </span>
       )}
     </span>
@@ -69,6 +70,7 @@ export function Bloque({ b }: { b: TeoriaBloque }) {
       </ul>
     );
     case "why": return <Caja icon="torch" label="¿Por qué aprender esto?" color="var(--green)" bg="#0f2418">{b.text}</Caja>;
+    case "porque": return <Caja icon="shield" label="¿Por qué funciona así?" color="var(--violet)" bg="#1b1233">{b.text}</Caja>;
     case "tip": return <Caja icon="key" label="Tip pro" color="var(--accent)" bg="#2a1d0c">{b.text}</Caja>;
     case "warn": return <Caja icon="heart" label="Cuidado" color="var(--red)" bg="#2a0e14">{b.text}</Caja>;
     case "result": return <Caja icon="diamond" label="Resultado esperado" color="var(--cyan)" bg="#0c1f2c">{b.text}</Caja>;

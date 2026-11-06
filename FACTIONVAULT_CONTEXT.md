@@ -27,7 +27,8 @@ src/index.css         sistema visual: paleta oficial, .card .chip .btn .btn-prim
 src/lib/content.ts    C = window.FV_CONTENT; helpers
 src/lib/planet.ts     motor de la Tierra en 3D sin DOM: máscara de continentes (equirect 256×128),
                       albedo, geometría precalculada y render de un frame RGBA (atmósfera, nubes
-                      girando, luces de ciudades, luna y pines de cada mundo)
+                      girando, luces de ciudades, luna, cohete en órbita con estela y pines de
+                      cada mundo)
 src/lib/store.ts      progreso en localStorage "factionvault-v4", XP (teoría 20 / práctica 40 / reto 60,
                       CTF = puntos, guía 50, phishing 10 por acierto récord), nivelDe (80·n²), 15 LOGROS, notify()
 src/lib/crypto.ts     caesar, normalizar, sha (WebCrypto), entropia, tiempoCrack, modPow, AES-GCM + PBKDF2
@@ -40,10 +41,12 @@ src/components/
   Practices.tsx       PracticaView dispatcher + motores: Codigo, Orden, Escribir, PhishingGame, Cesar, Hash,
                       Password, Aes, DH, Widget (puente a widgets/)
   widgets/            motores heredados y probados de la v3 (Common/Net/Os)
-  PixelArt.tsx        PixelArt, MONKEY_GRID (logo del mono), 16 PixelIcon
+  PixelArt.tsx        PixelArt, MONKEY_GRID (logo del mono), Adventurer (Allen y Hailey,
+                      los monos astronautas del hero), 17 PixelIcon
   Nav.tsx / Footer.tsx
-src/views/            Home («centro de mando»: Tierra 3D en la esquina, lista de destinos con preview,
-                      tablero de progreso y accesos a todas las secciones), World (WorldView + LevelView + reto),
+src/views/            Home («centro de mando»: Allen y Hailey, Tierra 3D con cohete en la esquina,
+                      lista de destinos con preview, tablero, laboratorio abierto y accesos a todas
+                      las secciones), World (WorldView + LevelView + reto),
                       Sections (Retos, Phishing, Tutoriales, Glosario, Snippets, Progreso)
 ```
 
@@ -64,6 +67,12 @@ src/views/            Home («centro de mando»: Tierra 3D en la esquina, lista 
 ## Verificación del planeta
 `node --experimental-strip-types scripts/preview-planet.mjs 4` escribe PPM de cuatro ángulos en /tmp
 para revisar continentes y sombreado sin abrir el navegador (convertir con ImageMagick a PNG).
+
+## Mundo Seguridad (nuevo)
+Primer mundo del juego (id `seguridad`, 5 niveles): tríada CIA, contraseñas y 2FA, enlaces falsos,
+malware/parches/respaldos 3-2-1 y privacidad + plan de incidentes. Es el mundo más práctico: casi
+todo son simuladores y cada práctica cierra con `porque` («¿por qué funciona así?»).
+El bloque de teoría `porque` se pinta con el mismo componente `Caja` que `why`, en violeta.
 
 ## Backlog
 - Fuentes offline embebidas (woff2 en base64) para que el archivo sea 100% autónomo.

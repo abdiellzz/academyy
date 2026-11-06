@@ -181,11 +181,35 @@ input[type="checkbox"] { accent-color: var(--accent); }
 
 /* ── Cielo espacial ── */
 .space { position: fixed; inset: 0; z-index: -1; background: radial-gradient(ellipse at 70% 0%, #241a44 0%, #120e22 40%, var(--bg) 75%); }
-.stars, .stars2 {
+.stars, .stars2, .stars3 {
   position: absolute; inset: 0;
   background-repeat: repeat;
   image-rendering: pixelated;
 }
+/* nebulosas: manchas de color que se mueven muy lento */
+.nebula {
+  position: absolute; inset: -12%;
+  background:
+    radial-gradient(ellipse 42% 32% at 16% 20%, rgba(122, 60, 200, 0.34), transparent 70%),
+    radial-gradient(ellipse 46% 36% at 84% 68%, rgba(30, 110, 200, 0.26), transparent 72%),
+    radial-gradient(ellipse 32% 26% at 62% 8%, rgba(255, 120, 60, 0.13), transparent 70%),
+    radial-gradient(ellipse 30% 24% at 38% 88%, rgba(62, 224, 122, 0.09), transparent 72%);
+  animation: nebula-drift 46s ease-in-out infinite alternate;
+}
+@keyframes nebula-drift {
+  to { transform: translate3d(-2.5%, 2%, 0) scale(1.06); }
+}
+.stars3 {
+  background-image:
+    radial-gradient(#fff 0 2px, transparent 2.5px),
+    radial-gradient(#c9a2ff 0 1px, transparent 1.5px),
+    radial-gradient(#8ff0d0 0 1px, transparent 1.5px);
+  background-size: 631px 631px, 487px 487px, 743px 743px;
+  background-position: 30px 40px, 210px 90px, 500px 260px;
+  opacity: 0.9;
+  animation: stars-drift 90s linear infinite;
+}
+@keyframes stars-drift { to { background-position: 661px 671px, -277px 577px, 1243px 1003px; } }
 .stars {
   background-image:
     radial-gradient(#fff 0 1px, transparent 1.5px), radial-gradient(#ffd98a 0 1px, transparent 1.5px), radial-gradient(#a9e8ff 0 1px, transparent 1.5px);
@@ -266,7 +290,7 @@ input[type="checkbox"] { accent-color: var(--accent); }
 /* La Tierra grande en la esquina */
 .globe-dock {
   position: relative;
-  width: min(92vw, 440px);
+  width: min(92vw, 470px);
   margin: -0.5rem auto 0;
   padding-bottom: 1rem;
   transform: translate3d(calc(var(--px, 0) * 16px), calc(var(--py, 0) * 12px), 0);
@@ -284,21 +308,34 @@ input[type="checkbox"] { accent-color: var(--accent); }
     position: absolute;
     left: -9%;
     bottom: -17%;
-    width: min(46vw, 620px);
+    width: min(48vw, 660px);
     margin: 0;
     padding: 0;
   }
-  .globe-tag { top: 13%; left: 2%; }
+  .globe-tag { display: none; }
 }
 @media (min-width: 1280px) {
-  .globe-dock { width: min(53vw, 840px); left: -12%; bottom: -22%; }
+  .globe-dock { width: min(56vw, 900px); left: -13%; bottom: -24%; }
 }
 @media (min-width: 1600px) {
-  .globe-dock { width: min(50vw, 900px); left: -10%; bottom: -24%; }
+  .globe-dock { width: min(54vw, 1000px); left: -12%; bottom: -26%; }
 }
 
 /* Filas de destinos */
 .hero-title { font-size: clamp(21px, 3.5vw, 40px); line-height: 1.32; }
+
+.squad { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.squad-name {
+  font-family: var(--font-label);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  border: 2px solid #000;
+  background: var(--surface-2);
+  padding: 1px 5px;
+}
+.squad-b { animation-delay: -0.6s; }
 
 .hero-brand { position: relative; z-index: 10; padding: 1.25rem 1rem 0; }
 @media (min-width: 1024px) {

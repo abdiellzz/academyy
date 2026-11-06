@@ -107,9 +107,97 @@ export function monkeyFaviconSvg(): string {
 
 /* ───────────── Iconos pixel ───────────── */
 
+/* ───────────── Allen y Hailey: los aventureros ───────────── */
+
+export const ADVENTURER_PALETTE: Palette = {
+  B: "#0f2a4a", // contorno del casco
+  W: "#e8f6ff", // cristal
+  w: "#7fc8f0", // borde del cristal
+  S: "#ffffff", // brillo
+  O: "#f07a1e", // pelaje
+  L: "#ff9a3c", // pelaje claro
+  D: "#c9520c", // sombra del pelaje
+  C: "#f8d9a8", // cara
+  P: "#f39a6b", // mejillas
+  E: "#2b1a12", // ojos y boca
+  G: "#2fb24a", // traje de Allen
+  g: "#208c3a",
+  V: "#8b4dff", // traje de Hailey
+  v: "#6840c8",
+  R: "#e8322b", // lazo
+  Y: "#ffcc33", // hebilla
+};
+
+const ALLEN_GRID = [
+    "....................",
+    "......BBBBBBBB......",
+    "....BBBWWWWWWBBB....",
+    "...BBWWSWWWWWWWBB...",
+    "..BBWWSWWOOWWWWWBB..",
+    "..BWWSDDDDDDDDDWWB..",
+    ".BBWWOOOOOOOOOOOWBB.",
+    ".BWWOLLLLLLLLLLOWWB.",
+    ".DDWOLLLLLLLLLLOWDD.",
+    "DDODLLLCCCCCCLLLDODD",
+    "DCCOLLDDDCCDDDLLOCCD",
+    "DCCOLLCWECCWECLLOCCD",
+    "DDODLLCEECCEECLLDODD",
+    ".DDWOLCCCCCCCCLOWDD.",
+    "..BWOPCECDDCECPOWB..",
+    "..BBWOCCEEEECCOWBB..",
+    "...BBWOCCCCCCOWBB...",
+    "....BBBWWCCWWBBB....",
+    "......BBBBBBBB......",
+    "....GggggggggggG....",
+    "..GGGGGGGGGGGGGGGG..",
+    "..GGGGGGGYYGGGGGGG..",
+    "..GGGGGGGYYGGGGGGG..",
+    "....GGGGGGGGGGGG....",
+  ];
+
+const HAILEY_GRID = [
+    "....................",
+    "......BBBBBBBB......",
+    "....BBBWWWWWWBBB....",
+    "...BBWWSWWWWWWWBB...",
+    "..BBWWSWWOOWWWWRRB..",
+    "..BWWSDDDDDDDDRYRR..",
+    ".BBWWOOOOOOOOOORRBB.",
+    ".BWWOLLLLLLLLLLOWWB.",
+    ".DDWOLLLLLLLLLLOWDD.",
+    "DDODLLLCCCCCCLLLDODD",
+    "DCCOLLDDDCCDDDLLOCCD",
+    "DCCOLLCWECCWECLLOCCD",
+    "DDODLLCEECCEECLLDODD",
+    ".DDWOLCCCCCCCCLOWDD.",
+    "..BWOPCECDDCECPOWB..",
+    "..BBWOCCEEEECCOWBB..",
+    "...BBWOCCCCCCOWBB...",
+    "....BBBWWCCWWBBB....",
+    "......BBBBBBBB......",
+    "....VvvvvvvvvvvV....",
+    "..VVVVVVVVVVVVVVVV..",
+    "..VVVVVVVYYVVVVVVV..",
+    "..VVVVVVVYYVVVVVVV..",
+    "....VVVVVVVVVVVV....",
+  ];
+
+export function Adventurer({ who, height = 64, className }: { who: "allen" | "hailey"; height?: number; className?: string }) {
+  const allen = who === "allen";
+  return (
+    <PixelArt
+      grid={allen ? ALLEN_GRID : HAILEY_GRID}
+      palette={ADVENTURER_PALETTE}
+      height={height}
+      className={className}
+      title={allen ? "Allen, el mono aventurero" : "Hailey, la mona aventurera"}
+    />
+  );
+}
+
 export type PixelIconName =
   | "grass" | "chest" | "storm" | "diablo" | "ship" | "heart" | "diamond" | "snake"
-  | "monitor" | "globe" | "pickaxe" | "key" | "xp" | "flag" | "torch" | "sword" | "home";
+  | "monitor" | "globe" | "pickaxe" | "key" | "xp" | "flag" | "torch" | "sword" | "home" | "shield";
 
 const ICONS: Record<PixelIconName, { grid: string[]; palette: Palette }> = {
   grass: {
@@ -171,6 +259,10 @@ const ICONS: Record<PixelIconName, { grid: string[]; palette: Palette }> = {
   torch: {
     grid: ["..YY..", ".YOOY.", "..OO..", "..WW..", "..WW..", "..WW..", "..WW.."],
     palette: { Y: "#ffe14a", O: "#ff8a1e", W: "#8b5a2b" },
+  },
+  shield: {
+    grid: [".BBBBBB.", "BWWWWWWB", "BWSSSSWB", "BWSSSSWB", ".BWWWWB.", ".BWWWWB.", "..BWWB..", "...BB..."],
+    palette: { B: "#0b2f55", W: "#5ad2ff", S: "#d6ffff" },
   },
   home: {
     grid: ["...RR...", "..RRRR..", ".RRRRRR.", "RRRRRRRR", ".WWWWWW.", ".WWDDWW.", ".WWDDWW.", ".WWWWWW."],

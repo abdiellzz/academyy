@@ -14,7 +14,7 @@ function parse(): Ruta {
   const parts = window.location.hash.replace(/^#\/?/, "").split("/").filter(Boolean);
   const [a, b, c] = parts;
   if (!a) return { v: "inicio" };
-  if (a === "mundo" && b && c) return { v: "nivel", mundo: b, nivel: c };
+  if (a === "mundo" && b && c) return { v: "nivel", mundo: b, nivel: c, lab: parts[3] === "lab" };
   if (a === "mundo" && b) return { v: "mundo", id: b };
   if (["retos", "phishing", "tutoriales", "glosario", "snippets", "progreso"].includes(a)) return { v: a } as Ruta;
   if (mundoById(a)) return { v: "mundo", id: a };
@@ -23,7 +23,7 @@ function parse(): Ruta {
 function toHash(r: Ruta): string {
   if (r.v === "inicio") return "#/";
   if (r.v === "mundo") return `#/mundo/${r.id}`;
-  if (r.v === "nivel") return `#/mundo/${r.mundo}/${r.nivel}`;
+  if (r.v === "nivel") return `#/mundo/${r.mundo}/${r.nivel}${r.lab ? "/lab" : ""}`;
   return `#/${r.v}`;
 }
 
@@ -67,12 +67,12 @@ export default function App() {
 
   return (
     <>
-      <div className="space" aria-hidden><div className="stars" /><div className="stars2" /></div>
+      <div className="space" aria-hidden><div className="nebula" /><div className="stars" /><div className="stars2" /><div className="stars3" /></div>
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-2 focus:top-2 focus:z-[300] focus:bg-[var(--accent)] focus:p-2 focus:text-black">Saltar al contenido</a>
       <Nav ruta={ruta} go={go} />
       {ruta.v === "inicio" && <Home go={go} />}
       {ruta.v === "mundo" && <WorldView id={ruta.id} go={go} />}
-      {ruta.v === "nivel" && <LevelView mundo={ruta.mundo} nivel={ruta.nivel} go={go} />}
+      {ruta.v === "nivel" && <LevelView mundo={ruta.mundo} nivel={ruta.nivel} lab={ruta.lab} go={go} />}
       {ruta.v === "retos" && <Retos />}
       {ruta.v === "phishing" && <Phishing />}
       {ruta.v === "tutoriales" && <Tutoriales go={go} />}

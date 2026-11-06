@@ -7,6 +7,7 @@ export type TeoriaBloque =
   | { t: "h"; text: string }
   | { t: "list"; items: string[] }
   | { t: "why"; text: string }
+  | { t: "porque"; text: string }
   | { t: "tip"; text: string }
   | { t: "warn"; text: string }
   | { t: "result"; text: string }
@@ -14,7 +15,7 @@ export type TeoriaBloque =
   | { t: "table"; head: string[]; rows: string[][] }
   | { t: "term"; text: string; title?: string };
 
-export type Practica =
+export type PracticaBase =
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   | { tipo: "widget"; w: string; props?: any }
   | { tipo: "codigo"; codigo: string; salida: string; explicacion?: string; reto?: { enunciado: string; pista?: string; debes_ver: string } }
@@ -22,6 +23,9 @@ export type Practica =
   | { tipo: "escribir"; pregunta: string; respuestas: string[]; pista?: string; explicacion?: string }
   | { tipo: "phishing"; cantidad?: number }
   | { tipo: "cesar" | "hash" | "password" | "aes" | "dh" };
+
+/** Cada práctica puede explicar por qué se hace así. */
+export type Practica = PracticaBase & { porque?: string };
 
 export interface Reto { pregunta: string; opciones: string[]; respuesta: number; explicacion: string }
 
@@ -76,7 +80,7 @@ export interface Contenido {
 export type Ruta =
   | { v: "inicio" }
   | { v: "mundo"; id: string }
-  | { v: "nivel"; mundo: string; nivel: string }
+  | { v: "nivel"; mundo: string; nivel: string; lab?: boolean }
   | { v: "retos" }
   | { v: "phishing" }
   | { v: "tutoriales" }

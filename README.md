@@ -9,12 +9,12 @@ Hecha por **@abdiellzz** · [github.com/abdiellzz](https://github.com/abdiellzz)
 
 | Sección | Contenido |
 |---|---|
-| 5 mundos | Redes (8 niveles), Sistemas Operativos (8), Python (8), Criptografía (6), Ingeniería Social (4) |
-| Prácticas | Terminal Linux con mini-CTF, firewall, calculadora de subredes, binario, encapsulamiento, procesos, planificador de CPU, memoria, chmod, código Python con salida verificada, César, SHA-256, medidor de contraseñas, AES-GCM real, Diffie-Hellman, ordenar pasos, escribir respuesta y detector de phishing |
-| Retos CTF | 20 retos con pista, solución y puntos |
+| 6 mundos | Seguridad (5 niveles), Redes (8), Sistemas Operativos (8), Python (8), Criptografía (6), Ingeniería Social (4) |
+| Laboratorio | Laboratorio abierto en el inicio: entras directo a la práctica, sin pasar por la teoría. Cada práctica cierra con un bloque «¿por qué funciona así?». Incluye Terminal Linux con mini-CTF, firewall, calculadora de subredes, binario, encapsulamiento, procesos, planificador de CPU, memoria, chmod, código Python con salida verificada, César, SHA-256, medidor de contraseñas, AES-GCM real, Diffie-Hellman, ordenar pasos, escribir respuesta y detector de phishing |
+| Retos CTF | 25 retos con pista, solución y puntos |
 | Detector de phishing | 12 mensajes (SMS, WhatsApp, correo, Discord), rondas de 10 |
 | Guías | 8 tutoriales paso a paso |
-| Glosario | 64 términos con buscador y filtros |
+| Glosario | 72 términos con buscador y filtros |
 | Snippets | 12 recetas de terminal y Python |
 | Progreso | XP, nivel, avance por mundo y 15 logros (se guarda en `localStorage`) |
 
@@ -36,7 +36,7 @@ const FV_CONTENT = {
     id, nombre, bioma, tagline, descripcion, color, fondo, icono, intro,
     niveles: [{
       id, nivel, titulo, subtitulo, minutos, icono, objetivos: [""],
-      teoria: [ /* bloques: {t:"p"|"h"|"why"|"tip"|"warn"|"result", text}
+      teoria: [ /* bloques: {t:"p"|"h"|"why"|"porque"|"tip"|"warn"|"result", text}
                    {t:"list", items:[]}  {t:"steps", items:[{t,d}]}
                    {t:"table", head:[], rows:[[]]}  {t:"term", title, text} */ ],
       ejemplos: [{ juego: "minecraft"|"fortnite"|"panama", titulo, texto }],
@@ -45,7 +45,9 @@ const FV_CONTENT = {
                      {tipo:"orden", titulo, pasos:[]}   (en el orden correcto; la app los desordena)
                      {tipo:"escribir", pregunta, respuestas:[], pista, explicacion}
                      {tipo:"phishing", cantidad}
-                     {tipo:"cesar"|"hash"|"password"|"aes"|"dh"} */ ],
+                     {tipo:"cesar"|"hash"|"password"|"aes"|"dh"} */
+                     /* cualquier práctica acepta "porque": "..." y la app lo muestra
+                        como bloque «¿por qué funciona así?» */ ],
       reto: { pregunta, opciones: [""], respuesta: 0, explicacion }
     }]
   }],
@@ -69,6 +71,7 @@ Notas:
 - Pestañas y opciones con roles ARIA; los avisos se anuncian con `aria-live`.
 - `prefers-reduced-motion` desactiva las animaciones, la Tierra girando y el warp-flash.
 - En el inicio la Tierra también gira arrastrándola con el mouse; las flechas mueven el destino y Enter despega.
+- La Tierra lleva un cohete en órbita y la atmósfera toma el color del mundo elegido; las rutas `#/mundo/:id/:nivel/lab` abren el nivel directo en el laboratorio.
 
 ## Aviso
 

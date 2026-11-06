@@ -12,7 +12,7 @@
    ═══════════════════════════════════════════════════════════════ */
 
 export const SIZE = 256;
-export const RADIUS = 92;
+export const RADIUS = 100;
 const CX = SIZE / 2;
 const CY = SIZE / 2;
 const MW = 256; // ancho del mapa (columnas de longitud)
@@ -355,6 +355,72 @@ function blend(out: Uint8ClampedArray, x: number, y: number, r: number, g: numbe
   if (a > ea) out[o + 3] = a;
 }
 
+/* Un cohete de verdad: se rasteriza rotado sobre su tangente para que
+   siempre apunte hacia donde vuela, y se esconde detrás del planeta. */
+function paintRocket(
+  out: Uint8ClampedArray,
+  cx: number,
+  cy: number,
+  ang: number,
+  time: number,
+  behind: boolean,
+) {
+  const cos = Math.cos(ang);
+  const sin = Math.sin(ang);
+  const flare = 1 + 0.22 * Math.sin(time * 0.03);
+  for (let dy = -10; dy <= 10; dy++) {
+    for (let dx = -10; dx <= 10; dx++) {
+      const u = dx * cos + dy * sin; // eje: +u = morro
+      const v = -dx * sin + dy * cos; // lateral
+      let r = 0;
+      let g = 0;
+      let b = 0;
+      let a = 255;
+      if (u >= -3 && u <= 3.2 && Math.abs(v) <= 1.15) {
+        r = 232; g = 240; b = 250; // fuselaje
+        if (u > 2.2) { r = 210; g = 222; b = 238; }
+        if (Math.abs(v) > 0.8) { r = 190; g = 202; b = 220; }
+      } else if (u > 3.2 && u <= 5.6 && Math.abs(v) <= (5.6 - u) * 1.15) {
+        r = 255; g = 90; b = 106; // morro
+      } else if (u >= -3.4 && u < -1.4 && Math.abs(v) <= 2.2) {
+        r = 255; g = 90; b = 106; // aletas
+      } else if (u >= 0.2 && u <= 1.7 && Math.abs(v) <= 0.75) {
+        r = 90; g = 210; b = 255; // ventana
+      } else if (u < -3.2 && u > -7.2 * flare && Math.abs(v) <= (1.3 + u * 0.16) * flare) {
+        if ((dx + dy) & 1) { r = 255; g = 176; b = 46; } else { r = 255; g = 225; b = 74; }
+        a = u < -5.5 ? 150 : 255;
+      } else {
+        continue;
+      }
+      const px = Math.round(cx + dx);
+      const py = Math.round(cy + dy);
+      if (behind) {
+        const ddx = px - CX;
+        const ddy = py - CY;
+        if (ddx * ddx + ddy * ddy < (RADIUS + 2) * (RADIUS + 2)) continue;
+      }
+      blend(out, px, py, r, g, b, a);
+    }
+  }
+}
+
+/* Estela de píxeles detrás del cohete. */
+function paintTrail(out: Uint8ClampedArray, cx: number, cy: number, ang: number, behind: boolean) {
+  const cos = Math.cos(ang);
+  const sin = Math.sin(ang);
+  for (let i = 4; i < 15; i++) {
+    const px = Math.round(cx - cos * i);
+    const py = Math.round(cy - sin * i);
+    if (behind) {
+      const ddx = px - CX;
+      const ddy = py - CY;
+      if (ddx * ddx + ddy * ddy < (RADIUS + 2) * (RADIUS + 2)) continue;
+    }
+    const fade = 1 - (i - 4) / 11;
+    blend(out, px, py, 255, 190 + 40 * fade, 120, Math.round(170 * fade));
+  }
+}
+
 /* ── 4 · Proyección de un punto geográfico ───────────────────────── */
 
 export function project(lat: number, lon: number, rot: number) {
@@ -515,6 +581,19 @@ export function renderGlobe(
       const v = 226 * lit * (crater ? 0.72 : 1);
       blend(out, px, py, v, v * 0.99, v * 0.96, 255);
     }
+  }
+
+  // cohete dando la vuelta al planeta
+  {
+    const a = time * 0.00028 + 1.1;
+    const rx = 116;
+    const ry = 42;
+    const rcx = CX + Math.cos(a) * rx;
+    const rcy = CY + Math.sin(a) * ry - 16;
+    const ang = Math.atan2(Math.cos(a) * ry, -Math.sin(a) * rx);
+    const behind = Math.sin(a) < 0;
+    paintTrail(out, rcx, rcy, ang, behind);
+    paintRocket(out, rcx, rcy, ang, time, behind);
   }
 
   // marcadores: haz, núcleo y anillo pulsante
