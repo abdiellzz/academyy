@@ -3,11 +3,31 @@
    - Anti-clickjacking: no se deja incrustar en otros sitios.
    - Copia masiva de contenido se recorta con atribución. */
 
-export function installProtection(): void {
+/* Hosts donde sí se permite el iframe: archivo local, desarrollo y vistas
+   previas (sandbox/e2b, Arena). Fuera de estos, la app no se deja incrustar. */
+const HOSTS_DE_CONFIANZA =
+  /^(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\]|.*\.(e2b\.app|e2b\.dev|e2b\.cloud|arena\.ai|arena\.dev|arena\.run))$/i;
+
+function enEntornoDeDesarrollo(): boolean {
   try {
-    if (window.top && window.top !== window.self) window.top.location.href = window.self.location.href;
+    if (window.location.protocol === "file:") return true;
+    // escape manual: ?embed=1 permite incrustarla a propósito (demos, aulas)
+    if (new URLSearchParams(window.location.search).get("embed") === "1") return true;
+    const host = window.location.hostname;
+    if (!host) return true; // algunos file:// no dan hostname
+    return HOSTS_DE_CONFIANZA.test(host);
   } catch {
-    document.body.textContent = "FactionVault no puede mostrarse dentro de otro sitio.";
+    return true;
+  }
+}
+
+export function installProtection(): void {
+  if (!enEntornoDeDesarrollo()) {
+    try {
+      if (window.top && window.top !== window.self) window.top.location.href = window.self.location.href;
+    } catch {
+      document.body.textContent = "FactionVault no puede mostrarse dentro de otro sitio.";
+    }
   }
 
   try {
