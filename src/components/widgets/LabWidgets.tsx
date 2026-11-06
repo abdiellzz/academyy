@@ -443,7 +443,13 @@ export function RedesLab() {
         ))}
       </div>
 
-      <div className="mt-3 max-h-[300px] overflow-y-auto border-2 border-black bg-[var(--bg-sunken)] p-2" style={{ fontFamily: "var(--font-mono)", fontSize: 14 }}>
+      <div
+        className="mt-3 max-h-[300px] overflow-y-auto border-2 border-black bg-[var(--bg-sunken)] p-2"
+        style={{ fontFamily: "var(--font-mono)", fontSize: 14 }}
+        role="log"
+        aria-live="polite"
+        aria-label="Salida de los comandos de red"
+      >
         {historial.length === 0 && <p className="text-[var(--text-3)]">Escribe un comando abajo o pulsa una pista de arriba.</p>}
         {historial.map((h, i) => (
           <div key={i} className="mb-3">
@@ -550,7 +556,13 @@ export function LogsLab() {
         </button>
       </div>
 
-      <div className="mt-3 max-h-[280px] overflow-y-auto border-2 border-black bg-[var(--bg-sunken)] p-2" style={{ fontFamily: "var(--font-mono)", fontSize: 13 }}>
+      <div
+        className="mt-3 max-h-[280px] overflow-y-auto border-2 border-black bg-[var(--bg-sunken)] p-2"
+        style={{ fontFamily: "var(--font-mono)", fontSize: 13 }}
+        role="log"
+        aria-live="polite"
+        aria-label="Líneas de auth.log"
+      >
         {visibles.map((l, i) => {
           const esAtacante = atacante && l.ip === atacante;
           return (
@@ -567,7 +579,7 @@ export function LogsLab() {
       </div>
 
       {analizado && (
-        <div className="mt-3 grid gap-2 sm:grid-cols-2">
+        <div className="mt-3 grid gap-2 sm:grid-cols-2" aria-live="polite">
           <div className="border-2 border-black bg-[#2a1016] p-3">
             <p className="label !text-[var(--red)]">Hallazgo</p>
             <p className="mt-1 text-[15px] text-[var(--text-2)]">
