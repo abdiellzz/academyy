@@ -31,8 +31,8 @@ src/lib/planet.ts     motor de la Tierra en 3D sin DOM: máscara de continentes 
 src/lib/store.ts      progreso en localStorage "factionvault-v4", XP (teoría 20 / práctica 40 / reto 60,
                       CTF = puntos, guía 50, phishing 10 por acierto récord), nivelDe (80·n²), 15 LOGROS, notify()
 src/lib/crypto.ts     caesar, normalizar, sha (WebCrypto), entropia, tiempoCrack, modPow, AES-GCM + PBKDF2
-src/lib/protect.ts    aviso self-XSS en consola, anti-iframe (exento en file://, localhost y hosts de
-                      vista previa .e2b.app / .arena.ai), copia masiva con atribución
+src/lib/protect.ts    aviso self-XSS en consola y copia masiva con atribución. El anti-iframe está
+                      desactivado (rompía las vistas previas embebidas)
 src/components/
   Globe.tsx           la Tierra del inicio: canvas 256×256, ~30 fps, arrastrable con el mouse y con
                       la atmósfera del color del mundo elegido (usa lib/planet.ts)
