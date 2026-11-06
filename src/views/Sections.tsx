@@ -8,6 +8,7 @@ import { normalizar } from "../lib/crypto";
 import { LOGROS, nivelDe, nivelesCompletos, notify, resetProgreso, useProgreso, xpDe } from "../lib/store";
 import type { RetoCTF, Ruta } from "../types";
 import { cn } from "../utils/cn";
+import { LABS } from "./Labs";
 
 function Hero({ icon, kicker, title, children }: { icon: PixelIconName; kicker: string; title: string; children: React.ReactNode }) {
   return (
@@ -253,11 +254,27 @@ export function Progreso({ go }: { go: (r: Ruta) => void }) {
       <Hero icon="diamond" kicker={`Nivel ${lvl} · ${xp} XP`} title="Tu progreso">Todo se guarda en este navegador (sin cuentas ni servidores). Si borras los datos del sitio, empiezas de nuevo.</Hero>
       <section className="mx-auto max-w-[1100px] px-4 py-8">
         <div className="grid gap-3 sm:grid-cols-4">
-          {[["Nivel", lvl, "var(--green)"], ["XP", xp, "var(--accent)"], ["Niveles", `${done}/${totalNiveles}`, "var(--cyan)"], ["Retos", `${p.retos.length}/${C.retos.length}`, "var(--violet)"]].map(([l, v, c]) => (
+          {[["Nivel", lvl, "var(--green)"], ["XP", xp, "var(--accent)"], ["Niveles", `${done}/${totalNiveles}`, "var(--cyan)"], ["Retos", `${p.retos.length}/${C.retos.length}`, "var(--violet)"], ["Laboratorios", `${p.labs.length}/${LABS.length}`, "var(--green)"], ["Examen", p.examenes ? `${p.examenMejor}/100` : "—", "var(--accent)"]].map(([l, v, c]) => (
             <div key={l as string} className="card p-4 text-center"><p className="label">{l}</p><p className="mt-2 text-[18px]" style={{ fontFamily: "var(--font-title)", color: c as string }}>{v}</p></div>
           ))}
         </div>
         <div className="card mt-4 p-4"><div className="mb-1 flex justify-between"><span className="label">Hacia el nivel {lvl + 1}</span><span className="label">faltan {falta} XP</span></div><Bar value={pct} color="var(--green)" /></div>
+
+        <div className="card mt-4 flex flex-wrap items-center gap-4 p-4">
+          <PixelIcon name="sword" size={30} />
+          <div className="min-w-0 flex-1">
+            <p className="label">Examen final y certificado</p>
+            <p className="mt-1 text-[15px] text-[var(--text-2)]">
+              {p.examenes === 0
+                ? "Aún no lo has intentado: 20 preguntas al azar y, si apruebas, tu certificado."
+                : `Mejor nota: ${p.examenMejor}/100 en ${p.examenes} ${p.examenes === 1 ? "intento" : "intentos"}.`}
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <button className="btn btn-sm btn-primary" onClick={() => go({ v: "examen" })}>{p.examenes ? "Repetir examen" : "Hacer el examen"}</button>
+            {p.examenMejor >= 70 && <button className="btn btn-sm" onClick={() => go({ v: "certificado" })}>Ver certificado</button>}
+          </div>
+        </div>
         <SectionHead kicker="Mundos" title="Avance por mundo" />
         <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           {C.mundos.map((m) => { const n = m.niveles.filter((l) => p.niveles[`${m.id}/${l.id}`]?.reto).length; return (

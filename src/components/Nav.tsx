@@ -51,7 +51,7 @@ export function Nav({ ruta, go, onBuscar }: { ruta: Ruta; go: (r: Ruta) => void;
 
   const claseBtn = (on: boolean) =>
     cn(
-      "flex items-center gap-1.5 border-2 px-2.5 py-1.5 text-[8px] uppercase tracking-wide",
+      "flex min-h-[42px] items-center gap-2 border-2 px-3 text-[8px] uppercase tracking-wide transition-colors",
       on
         ? "border-black bg-[var(--accent)] text-[#1a0f00] shadow-[3px_3px_0_#000]"
         : "border-transparent text-[var(--text-2)] hover:border-black hover:bg-[var(--surface-2)] hover:text-[var(--text)]",
@@ -101,8 +101,14 @@ export function Nav({ ruta, go, onBuscar }: { ruta: Ruta; go: (r: Ruta) => void;
           </div>
 
           {PRINCIPAL.map((it) => (
-            <button key={it.v} className={claseBtn(activo(it.v))} onClick={() => go({ v: it.v } as Ruta)} aria-current={ruta.v === it.v ? "page" : undefined}>
-              <PixelIcon name={it.icon} size={12} /> {it.label}
+            <button
+              key={it.v}
+              className={claseBtn(activo(it.v))}
+              onClick={() => go({ v: it.v } as Ruta)}
+              aria-current={ruta.v === it.v ? "page" : undefined}
+              title={it.label}
+            >
+              <PixelIcon name={it.icon} size={13} /> {it.label}
             </button>
           ))}
 
