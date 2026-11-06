@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "verify": "esbuild scripts/verificar.ts --bundle --format=esm --platform=node --external:react --external:react-dom --outfile=node_modules/.verificar.mjs --log-level=error && node node_modules/.verificar.mjs"
   },
   "dependencies": {
     "clsx": "2.1.1",

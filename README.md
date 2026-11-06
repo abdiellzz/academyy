@@ -29,6 +29,8 @@ Hecha por **@abdiellzz** · [github.com/abdiellzz](https://github.com/abdiellzz)
 
 - **Archivo final:** `dist/index.html`. Es un único HTML **autocontenido**: el CSS, el JS y los datos van dentro. Se puede abrir con doble clic o subir a cualquier hosting estático.
 - **Para regenerarlo** después de editar: `npm install` y luego `npm run build`.
+- **Comprobar el contenido:** `npm run verify` revisa ids duplicados, niveles incompletos, retos mal formados y que cada laboratorio apunte a un nivel que existe. Sale con código 1 si algo falla.
+- **Si eres un agente o vienes de fuera:** lee `AGENT_NOTES.md` (estado, trampas y backlog) y `FACTIONVAULT_CONTEXT.md` (arquitectura).
 - **PDF sin librerías:** el certificado se dibuja en un `<canvas>` a 2× y se mete en un PDF A4 horizontal armado a mano (`src/lib/certificado.ts`), comprimido con `CompressionStream` (`FlateDecode`). Si el navegador no lo soporta, cae a JPEG (`DCTDecode`).
 - **PWA:** en `npm run build` el service worker (`public/sw.js`) guarda la app. Instalada, abre offline; en desarrollo se desregistra a propósito para no cachear archivos a medio editar.
 - **Sin internet:** todo funciona salvo las fuentes pixel (*Press Start 2P*, *Pixelify Sans*, *VT323*, *Silkscreen*), que vienen de Google Fonts. Sin conexión caen a monoespaciadas del sistema (Courier New / Lucida Console) y la app sigue siendo usable. Si quieres las fuentes también offline, descarga los `.woff2` y decláralos con `@font-face` en `src/index.css`.

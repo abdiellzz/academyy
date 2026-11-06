@@ -1,5 +1,11 @@
 # FactionVault — contexto para futuros agentes (v4.0, reconstrucción)
 
+> **Empieza por `AGENT_NOTES.md`**: estado actual, cómo correr/verificar, trampas y backlog priorizado.
+> Este documento es la referencia de arquitectura y diseño.
+>
+> Estado (2026-11-06): **7 mundos · 50 niveles · 42 retos · 25 laboratorios · 20 logros**, examen final,
+> certificado en PDF/PNG, PWA y sonidos opcionales. Verifica siempre con `npm run verify`.
+
 Dueño y autor: **@abdiellzz** (github.com/abdiellzz). El crédito «HECHA POR @abdiellzz (github.com/abdiellzz)» vive en el Footer, los avisos de consola y LICENSE. **No eliminarlo.**
 
 ## Qué es
@@ -35,7 +41,7 @@ src/lib/planet.ts     motor de la Tierra en 3D sin DOM: máscara de continentes 
                       cada mundo)
 src/lib/store.ts      progreso en localStorage "factionvault-v4", XP (teoría 20 / práctica 40 / reto 60,
                       CTF = puntos, guía 50, phishing 10 por acierto récord, lab 30, examen 2×nota),
-                      nivelDe (80·n²), 19 LOGROS, labs[], examenMejor/examenes/ultimoExamen, estudiante, notify()
+                      nivelDe (80·n²), 20 LOGROS, labs[], examenMejor/examenes/ultimoExamen, estudiante, notify()
 src/lib/pwa.ts        registra public/sw.js solo en producción (en dev desregistra para no cachear)
 src/lib/sonido.ts     efectos 8-bit con WebAudio (oscilador cuadrado + envolvente), apagados por defecto,
                       preferencia en localStorage y suscripción para el interruptor del menú
