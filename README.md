@@ -9,25 +9,27 @@ Hecha por **@abdiellzz** · [github.com/abdiellzz](https://github.com/abdiellzz)
 
 | Sección | Contenido |
 |---|---|
-| 6 mundos | Seguridad (5 niveles), Redes (8), Sistemas Operativos (8), Python (8), Criptografía (8), Ingeniería Social (8) · 45 niveles en total |
+| 7 mundos | Seguridad (5 niveles), Redes (8), Sistemas (8), Python (8), Criptografía (8), Ingeniería Social (8), Web (5) · 50 niveles en total |
 | Laboratorio | Laboratorio abierto en el inicio: entras directo a la práctica, sin pasar por la teoría. Cada práctica cierra con un bloque «¿por qué funciona así?». Incluye Terminal Linux con mini-CTF, firewall, calculadora de subredes, binario, encapsulamiento, procesos, planificador de CPU, memoria, chmod, código Python con salida verificada, César, SHA-256, medidor de contraseñas, AES-GCM real, Diffie-Hellman, ordenar pasos, escribir respuesta y detector de phishing |
-| Retos CTF | 39 retos con pista, solución y puntos |
+| Retos CTF | 42 retos con pista, solución y puntos |
 | Detector de phishing | 12 mensajes (SMS, WhatsApp, correo, Discord), rondas de 10 |
 | Guías | 8 tutoriales paso a paso |
 | Glosario | 72 términos con buscador y filtros |
 | Snippets | 12 recetas de terminal y Python |
-| Progreso | XP, nivel, avance por mundo, laboratorios y 19 logros (se guarda en `localStorage`) |
+| Progreso | XP, nivel, avance por mundo, laboratorios y 20 logros (se guarda en `localStorage`) |
 | Examen final | 20 preguntas al azar del banco de los 45 niveles, 20 minutos, nota sobre 100 y repaso de los fallos |
-| Certificado | Se desbloquea con 70/100: tu nombre, la nota, el progreso, un ID de emisión y estilos de impresión (`Ctrl+P` → PDF). Deja claro que **no es una certificación oficial** |
+| Certificado | Se desbloquea con 70/100. Se descarga en **PDF** (A4 horizontal) o **PNG**: tu nombre, la nota, el progreso real y un ID de emisión. Deja claro que **no es una certificación oficial** y se puede ver en modo ejemplo antes de aprobar |
 | Laboratorio de red | `ping`, `nmap` y `traceroute` contra la red ficticia 10.0.0.0/24, con puertos, servicios y un equipo intruso que hay que encontrar |
 | Logs | Lectura de `/var/log/auth.log` con filtro, detección de fuerza bruta y plan de respuesta |
 | PWA | `manifest.webmanifest`, iconos y service worker: se instala y funciona sin internet |
 | Primer arranque | Onboarding de 3 pantallas que explica qué es, cómo se usa y qué es un nivel |
+| Sonidos | Efectos 8-bit generados con WebAudio (sin archivos), apagados por defecto y con interruptor en el menú |
 
 ## Cómo se usa
 
 - **Archivo final:** `dist/index.html`. Es un único HTML **autocontenido**: el CSS, el JS y los datos van dentro. Se puede abrir con doble clic o subir a cualquier hosting estático.
 - **Para regenerarlo** después de editar: `npm install` y luego `npm run build`.
+- **PDF sin librerías:** el certificado se dibuja en un `<canvas>` a 2× y se mete en un PDF A4 horizontal armado a mano (`src/lib/certificado.ts`), comprimido con `CompressionStream` (`FlateDecode`). Si el navegador no lo soporta, cae a JPEG (`DCTDecode`).
 - **PWA:** en `npm run build` el service worker (`public/sw.js`) guarda la app. Instalada, abre offline; en desarrollo se desregistra a propósito para no cachear archivos a medio editar.
 - **Sin internet:** todo funciona salvo las fuentes pixel (*Press Start 2P*, *Pixelify Sans*, *VT323*, *Silkscreen*), que vienen de Google Fonts. Sin conexión caen a monoespaciadas del sistema (Courier New / Lucida Console) y la app sigue siendo usable. Si quieres las fuentes también offline, descarga los `.woff2` y decláralos con `@font-face` en `src/index.css`.
 - **AES y SHA-256** usan WebCrypto. En `file://` funcionan en Chrome, Edge y Firefox. Si algún navegador lo bloquea, sirve la página por `https` o `localhost`.

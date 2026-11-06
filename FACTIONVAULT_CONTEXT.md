@@ -37,6 +37,13 @@ src/lib/store.ts      progreso en localStorage "factionvault-v4", XP (teoría 20
                       CTF = puntos, guía 50, phishing 10 por acierto récord, lab 30, examen 2×nota),
                       nivelDe (80·n²), 19 LOGROS, labs[], examenMejor/examenes/ultimoExamen, estudiante, notify()
 src/lib/pwa.ts        registra public/sw.js solo en producción (en dev desregistra para no cachear)
+src/lib/sonido.ts     efectos 8-bit con WebAudio (oscilador cuadrado + envolvente), apagados por defecto,
+                      preferencia en localStorage y suscripción para el interruptor del menú
+src/lib/certificado.ts  dibuja el diploma en canvas (misma composición que la versión HTML) y arma un PDF
+                      A4 horizontal a mano: 6 objetos, xref clásico y la imagen en /FlateDecode
+                      (CompressionStream) o /DCTDecode (JPEG) si no hay soporte
+src/mundo-web.ts      Mundo Web: 5 niveles (HTTP, formularios, XSS, SQLi, sesiones) y 3 retos CTF.
+                      content.ts lo inyecta con agregarMundoWeb(C) junto a extra-niveles
 src/extra-niveles.ts  6 niveles añadidos (social 4 + cripto 2). content.ts llama ampliar(C) ANTES de
                       calcular totalNiveles, para que todo el resto los vea como niveles normales
 src/views/Examen.tsx  20 preguntas al azar (banco = 45 retos de nivel), 20 min, nota /100, guarda la mejor
@@ -90,16 +97,25 @@ malware/parches/respaldos 3-2-1 y privacidad + plan de incidentes. Es el mundo m
 todo son simuladores y cada práctica cierra con `porque` («¿por qué funciona así?»).
 El bloque de teoría `porque` se pinta con el mismo componente `Caja` que `why`, en violeta.
 
+## Mundo Web
+Séptimo mundo (id `web`, bioma «Ruinas del foro», color `#b98bff`): HTTP y códigos de estado, formularios
+y mass assignment, XSS (reflejado/almacenado/DOM), SQLi y consultas parametrizadas, y sesiones
+(cookies HttpOnly/Secure/SameSite, JWT, IDOR, CSRF). Todo explicado con casos de Panamá y de Minecraft.
+Su paleta vive en `PALETAS` de `src/components/Biome.tsx` con la clave `web`.
+
 ## Examen y certificado
 - `#/examen`: 20 preguntas al azar de los 45 niveles, 20 minutos, nota entera sobre 100, aprobado en 70.
   Se guarda la mejor nota (no la última); el resultado lista los fallos con su explicación.
 - `#/certificado`: solo con 70+. Documento en HTML/CSS (marco punteado, esquinas, sello y cintas) con
   nombre editable, progreso real, nota, fecha e ID derivado (`FV-XXYY-ZZZZ`). `Ctrl+P` → PDF.
   Dice explícitamente que **es un certificado de finalización de la plataforma, no una certificación oficial**.
+- Descarga: «Descargar PDF» rasteriza a 2× (1.6× en móvil), extrae los bytes RGB y arma el PDF; «PNG» guarda
+  la misma imagen. «Imprimir» sigue ahí como plan B. Sin aprobar se puede ver con `verEjemplo` (marca «EJEMPLO»).
 
 ## Backlog
 - Fuentes offline embebidas (woff2 en base64) para que el archivo sea 100% autónomo.
 - Mundo «Web/OWASP» (XSS, SQLi simulados) y mundo «Forense».
-- Certificado descargable como PNG real (hoy se imprime a PDF desde el navegador).
+- Certificado por mundo (no solo el final) y verificación del ID en línea.
+- Sonidos: más variedad y un volumen ajustable.
 - Sonidos 8-bit opcionales con WebAudio, respetando reduced-motion y un toggle.
 - Tests unitarios (vitest) para crypto, store y las calculadoras.

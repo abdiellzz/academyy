@@ -313,7 +313,13 @@ function nombreArchivo(d: DatosCert): string {
   return `factionvault-certificado-${limpio || "alumno"}`;
 }
 
-export async function rasterizar(d: DatosCert, escala = 2): Promise<HTMLCanvasElement> {
+/** Escala de rasterizado: 2× en escritorio, 1.6× en móvil (memoria del canvas). */
+function escalaOptima(): number {
+  if (typeof window === "undefined") return 2;
+  return window.innerWidth < 720 ? 1.6 : 2;
+}
+
+export async function rasterizar(d: DatosCert, escala = escalaOptima()): Promise<HTMLCanvasElement> {
   const canvas = document.createElement("canvas");
   const logo = await cargarLogo();
   // Las fuentes pixel vienen de Google Fonts: esperamos a que estén listas.
@@ -327,7 +333,7 @@ export async function rasterizar(d: DatosCert, escala = 2): Promise<HTMLCanvasEl
 }
 
 export async function descargarPNG(d: DatosCert): Promise<void> {
-  const canvas = await rasterizar(d, 2);
+  const canvas = await rasterizar(d);
   const url = canvas.toDataURL("image/png");
   const a = document.createElement("a");
   a.href = url;
@@ -441,7 +447,7 @@ export function construirPDF(img: Imagen): Uint8Array {
 
 /** PNG → PDF: rasteriza, extrae los bytes RGB y arma el archivo. */
 export async function descargarPDF(d: DatosCert): Promise<void> {
-  const canvas = await rasterizar(d, 2);
+  const canvas = await rasterizar(d);
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("sin canvas");
 
