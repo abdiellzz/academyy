@@ -1,9 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
+import { CommandPalette } from "./components/CommandPalette";
+import { Examen } from "./views/Examen";
+import { Certificado } from "./views/Certificado";
+import { Laboratorio } from "./views/Labs";
 import { Nav } from "./components/Nav";
+import { Onboarding } from "./components/Onboarding";
 import { Footer } from "./components/Footer";
 import { Avisos, Hud } from "./components/ui";
 import { mundoById } from "./lib/content";
 import { nivelDe, notify, useProgreso, xpDe } from "./lib/store";
+import { sfx } from "./lib/sonido";
 import { Home } from "./views/Home";
 import { LevelView, NotFound, WorldView } from "./views/World";
 import { Glosario, Phishing, Progreso, Retos, Snippets, Tutoriales } from "./views/Sections";
@@ -14,7 +20,10 @@ function parse(): Ruta {
   const parts = window.location.hash.replace(/^#\/?/, "").split("/").filter(Boolean);
   const [a, b, c] = parts;
   if (!a) return { v: "inicio" };
-  if (a === "mundo" && b && c) return { v: "nivel", mundo: b, nivel: c };
+  if (a === "laboratorio") return { v: "laboratorio" };
+  if (a === "examen") return { v: "examen" };
+  if (a === "certificado") return { v: "certificado" };
+  if (a === "mundo" && b && c) return { v: "nivel", mundo: b, nivel: c, lab: parts[3] === "lab" };
   if (a === "mundo" && b) return { v: "mundo", id: b };
   if (["retos", "phishing", "tutoriales", "glosario", "snippets", "progreso"].includes(a)) return { v: a } as Ruta;
   if (mundoById(a)) return { v: "mundo", id: a };
@@ -23,21 +32,34 @@ function parse(): Ruta {
 function toHash(r: Ruta): string {
   if (r.v === "inicio") return "#/";
   if (r.v === "mundo") return `#/mundo/${r.id}`;
-  if (r.v === "nivel") return `#/mundo/${r.mundo}/${r.nivel}`;
+  if (r.v === "nivel") return `#/mundo/${r.mundo}/${r.nivel}${r.lab ? "/lab" : ""}`;
   return `#/${r.v}`;
 }
 
 export default function App() {
   const [ruta, setRuta] = useState<Ruta>(parse);
   const [warp, setWarp] = useState<{ color: string; k: number } | null>(null);
+  const [buscar, setBuscar] = useState(false);
   const [p] = useProgreso();
   const { lvl } = nivelDe(xpDe(p));
   const [lastLvl, setLastLvl] = useState(lvl);
 
   useEffect(() => {
-    if (lvl > lastLvl) notify({ titulo: "¡Subiste de nivel!", texto: `Ahora eres nivel ${lvl}`, icono: "xp" });
+    if (lvl > lastLvl) {
+      notify({ titulo: "¡Subiste de nivel!", texto: `Ahora eres nivel ${lvl}`, icono: "xp" });
+      sfx("subir");
+    }
     setLastLvl(lvl);
   }, [lvl, lastLvl]);
+
+  // Un clic suave en cada botón cuando los sonidos están encendidos.
+  useEffect(() => {
+    const clic = (e: MouseEvent) => {
+      if ((e.target as HTMLElement | null)?.closest?.("button")) sfx("click");
+    };
+    document.addEventListener("click", clic);
+    return () => document.removeEventListener("click", clic);
+  }, []);
 
   const go = useCallback((r: Ruta) => {
     // Warp-flash con el color del mundo al entrar a uno
@@ -57,8 +79,21 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    const titles: Record<string, string> = { retos: "Retos CTF", phishing: "Detector de phishing", tutoriales: "Guías", glosario: "Glosario", snippets: "Snippets", progreso: "Tu progreso" };
-    let t = "academia pixel de ciberseguridad";
+    const atajo = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setBuscar((v) => !v);
+      } else if (e.key === "Escape") {
+        setBuscar(false);
+      }
+    };
+    window.addEventListener("keydown", atajo);
+    return () => window.removeEventListener("keydown", atajo);
+  }, []);
+
+  useEffect(() => {
+    const titles: Record<string, string> = { examen: "Examen final", certificado: "Certificado", laboratorio: "Laboratorio", retos: "Retos CTF", phishing: "Detector de phishing", tutoriales: "Guías", glosario: "Glosario", snippets: "Snippets", progreso: "Tu progreso" };
+    let t = "ciberseguridad de verdad";
     if (ruta.v === "mundo") t = mundoById(ruta.id)?.nombre ?? t;
     else if (ruta.v === "nivel") t = mundoById(ruta.mundo)?.niveles.find((n) => n.id === ruta.nivel)?.titulo ?? t;
     else if (titles[ruta.v]) t = titles[ruta.v];
@@ -67,12 +102,18 @@ export default function App() {
 
   return (
     <>
-      <div className="space" aria-hidden><div className="stars" /><div className="stars2" /></div>
+      <div className="space" aria-hidden><div className="nebula" /><div className="stars" /><div className="stars2" /><div className="stars3" /><div className="space-dither" />
+        <div className="space-dither" /></div>
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-2 focus:top-2 focus:z-[300] focus:bg-[var(--accent)] focus:p-2 focus:text-black">Saltar al contenido</a>
-      <Nav ruta={ruta} go={go} />
+      <Nav ruta={ruta} go={go} onBuscar={() => setBuscar(true)} />
+      <CommandPalette abierto={buscar} onCerrar={() => setBuscar(false)} go={go} />
+      <Onboarding />
       {ruta.v === "inicio" && <Home go={go} />}
       {ruta.v === "mundo" && <WorldView id={ruta.id} go={go} />}
-      {ruta.v === "nivel" && <LevelView mundo={ruta.mundo} nivel={ruta.nivel} go={go} />}
+      {ruta.v === "nivel" && <LevelView mundo={ruta.mundo} nivel={ruta.nivel} lab={ruta.lab} go={go} />}
+      {ruta.v === "laboratorio" && <Laboratorio go={go} />}
+      {ruta.v === "examen" && <Examen go={go} />}
+      {ruta.v === "certificado" && <Certificado go={go} />}
       {ruta.v === "retos" && <Retos />}
       {ruta.v === "phishing" && <Phishing />}
       {ruta.v === "tutoriales" && <Tutoriales go={go} />}

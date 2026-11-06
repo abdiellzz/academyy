@@ -1,5 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
 import { C, totalNiveles } from "./content";
+import { sfx } from "./sonido";
+
+export interface ExamenResultado {
+  nota: number;      // 0-100
+  aciertos: number;
+  total: number;
+  fecha: string;     // ISO
+  segundos: number;
+}
 
 export interface Progreso {
   niveles: Record<string, { teoria?: boolean; practica?: boolean; reto?: boolean }>;
@@ -8,10 +17,15 @@ export interface Progreso {
   phishingBest: number;
   phishingPlayed: number;
   logros: string[];
+  labs: string[];
+  examenMejor: number;
+  examenes: number;
+  ultimoExamen: ExamenResultado | null;
+  estudiante: string;
 }
 
 const KEY = "factionvault-v4";
-const EMPTY: Progreso = { niveles: {}, retos: [], tutoriales: [], phishingBest: 0, phishingPlayed: 0, logros: [] };
+const EMPTY: Progreso = { niveles: {}, retos: [], tutoriales: [], phishingBest: 0, phishingPlayed: 0, logros: [], labs: [], examenMejor: 0, examenes: 0, ultimoExamen: null, estudiante: "" };
 
 function load(): Progreso {
   try {
@@ -28,6 +42,7 @@ export function xpDe(p: Progreso): number {
   for (const n of Object.values(p.niveles)) xp += (n.teoria ? 20 : 0) + (n.practica ? 40 : 0) + (n.reto ? 60 : 0);
   xp += C.retos.filter((r) => p.retos.includes(r.id)).reduce((a, r) => a + r.puntos, 0);
   xp += p.tutoriales.length * 50 + p.phishingBest * 10;
+  xp += p.labs.length * 30 + Math.round(p.examenMejor * 2);
   return xp;
 }
 
@@ -54,6 +69,10 @@ export const LOGROS: Logro[] = [
   { id: "ctf-all", titulo: "Maestro de la bóveda", desc: "Resuelve todos los retos.", icono: "chest", check: (p) => C.retos.every((r) => p.retos.includes(r.id)) },
   { id: "anzuelo", titulo: "No muerdo el anzuelo", desc: "Saca 10/10 en el detector de phishing.", icono: "heart", check: (p) => p.phishingBest >= 10 },
   { id: "tutor", titulo: "Aprendiz aplicado", desc: "Termina 3 tutoriales.", icono: "key", check: (p) => p.tutoriales.length >= 3 },
+  { id: "lab-1", titulo: "Manos a la obra", desc: "Termina tu primer laboratorio.", icono: "pickaxe", check: (p) => p.labs.length >= 1 },
+  { id: "lab-10", titulo: "Técnico de laboratorio", desc: "Termina 10 laboratorios.", icono: "monitor", check: (p) => p.labs.length >= 10 },
+  { id: "examen", titulo: "Examen superado", desc: "Aprueba el examen final con 70 o más.", icono: "diamond", check: (p) => p.examenMejor >= 70 },
+  { id: "examen-90", titulo: "Matrícula de honor", desc: "Saca 90 o más en el examen final.", icono: "chest", check: (p) => p.examenMejor >= 90 },
 ];
 
 let state: Progreso = load();
@@ -67,6 +86,7 @@ function commit(next: Progreso) {
   try { localStorage.setItem(KEY, JSON.stringify(state)); } catch { /* sin almacenamiento */ }
   subs.forEach((s) => s(state));
   nuevos.forEach((l) => notify({ titulo: "¡Logro desbloqueado!", texto: l.titulo, icono: l.icono }));
+  if (nuevos.length) sfx("logro");
 }
 
 export function useProgreso() {
@@ -79,6 +99,28 @@ export function useProgreso() {
 export function marcarFase(key: string, fase: "teoria" | "practica" | "reto") {
   if (state.niveles[key]?.[fase]) return;
   commit({ ...state, niveles: { ...state.niveles, [key]: { ...state.niveles[key], [fase]: true } } });
+  sfx("ok");
+}
+
+/** Marca un laboratorio como terminado (una sola vez). */
+export function marcarLab(id: string) {
+  if (state.labs.includes(id)) return;
+  commit({ ...state, labs: [...state.labs, id] });
+  notify({ titulo: "Laboratorio completado", texto: "+30 XP", icono: "pickaxe" });
+  sfx("ok");
+}
+
+export function guardarExamen(r: ExamenResultado) {
+  commit({
+    ...state,
+    ultimoExamen: r,
+    examenes: state.examenes + 1,
+    examenMejor: Math.max(state.examenMejor, r.nota),
+  });
+}
+
+export function setEstudiante(nombre: string) {
+  commit({ ...state, estudiante: nombre });
 }
 
 export function resetProgreso() {

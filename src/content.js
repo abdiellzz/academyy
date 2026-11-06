@@ -9,12 +9,592 @@
 const FV_CONTENT = {
  "meta": {
   "nombre": "FactionVault",
-  "subtitulo": "academia pixel de ciberseguridad",
+  "subtitulo": "ciberseguridad de verdad",
   "autor": "@abdiellzz",
   "github": "https://github.com/abdiellzz",
   "version": "4.0"
  },
  "mundos": [
+  {
+   "id": "seguridad",
+   "nombre": "Mundo Seguridad",
+   "bioma": "Bioma Fortaleza",
+   "tagline": "Lo que te protege todos los días, con laboratorio y sin jerga.",
+   "descripcion": "Contraseñas, 2FA, enlaces falsos, malware, parches y respaldos. Casi todo es práctica: qué hacer, cómo se hace y por qué funciona.",
+   "color": "#3ee07a",
+   "fondo": "#0b2419",
+   "icono": "shield",
+   "intro": "La seguridad no es un programa que instalas: son decisiones pequeñas que tomas todos los días. Aquí aprendes las que de verdad importan, probándolas con las manos.",
+   "niveles": [
+    {
+     "id": "que-es-seguridad",
+     "nivel": 0,
+     "titulo": "¿Qué es la seguridad informática?",
+     "subtitulo": "Nivel 0: qué proteges, de quién y por qué. Cero jerga.",
+     "minutos": 8,
+     "icono": "shield",
+     "objetivos": [
+      "Explicar qué es la seguridad informática con tus palabras.",
+      "Reconocer las tres propiedades: confidencialidad, integridad y disponibilidad.",
+      "Distinguir amenaza, vulnerabilidad y riesgo."
+     ],
+     "teoria": [
+      {
+       "t": "why",
+       "text": "Cada cuenta, cada foto y cada chat viven en computadoras que no son tuyas. Entender cómo te protegen (y cómo fallan) es la diferencia entre perderlo todo por un clic o reaccionar a tiempo."
+      },
+      {
+       "t": "p",
+       "text": "Seguridad informática es el conjunto de decisiones que mantienen tus datos completos, disponibles y solo para quien debe verlos. No es un antivirus: es una forma de trabajar."
+      },
+      {
+       "t": "table",
+       "head": [
+        "Propiedad",
+        "Qué significa",
+        "Si falla"
+       ],
+       "rows": [
+        [
+         "Confidencialidad",
+         "Solo quien debe puede verlo",
+         "Se filtra tu contraseña o tus fotos"
+        ],
+        [
+         "Integridad",
+         "Nadie lo cambia por el camino",
+         "Te alteran una transferencia o un archivo"
+        ],
+        [
+         "Disponibilidad",
+         "Está ahí cuando lo necesitas",
+         "Te cifran el disco y no puedes entrar"
+        ]
+       ]
+      },
+      {
+       "t": "porque",
+       "text": "Las tres van juntas y a veces se pelean. Cifrar un archivo protege la confidencialidad, pero si pierdes la llave también perdiste la disponibilidad. Un respaldo te devuelve la disponibilidad, pero si no está cifrado puede romper la confidencialidad. Seguridad es elegir el equilibrio, no maximizar una sola."
+      },
+      {
+       "t": "h",
+       "text": "Amenaza, vulnerabilidad y riesgo"
+      },
+      {
+       "t": "p",
+       "text": "Amenaza es quien quiere hacerte daño: un estafador, un virus, un exnovio enojado. Vulnerabilidad es la puerta abierta: la contraseña «123456», un sistema sin actualizar, un enlace en el que confías. Riesgo es la mezcla de las dos: la probabilidad real de que pase algo."
+      },
+      {
+       "t": "tip",
+       "text": "No existe la seguridad perfecta. Pero cuatro cosas evitan la gran mayoría de ataques que te van a pasar: contraseñas largas y únicas, verificación en dos pasos, actualizar y tener respaldos."
+      }
+     ],
+     "ejemplos": [
+      {
+       "juego": "panama",
+       "titulo": "El Yappy del «primo»",
+       "texto": "Un número nuevo escribe: «primo, soy yo, se me dañó el celular, hazme un Yappy de $50 y luego te explico». Es la tríada al revés: quiere confidencialidad (que no verifiques), integridad (que la transferencia sea real) y disponibilidad (tu plata, ya, en su cuenta)."
+      },
+      {
+       "juego": "minecraft",
+       "titulo": "El servidor sin whitelist",
+       "texto": "Cualquiera entra y puede romper el spawn. Con whitelist solo entran los invitados: eso es control de acceso, la parte práctica de la confidencialidad."
+      },
+      {
+       "juego": "fortnite",
+       "titulo": "La cuenta con la skin de $100",
+       "texto": "La contraseña era la misma del correo. Cuando filtraron un foro viejo, entraron al correo, resetearon Epic y se llevaron la cuenta. Una vulnerabilidad vieja, una amenaza real, un riesgo que nadie calculó."
+      }
+     ],
+     "practica": [
+      {
+       "tipo": "escribir",
+       "pregunta": "¿Cómo se llama la propiedad que garantiza que la información no fue modificada (ni un peso, ni una coma)?",
+       "respuestas": [
+        "integridad"
+       ],
+       "pista": "Es una de las tres de la tríada y empieza con I.",
+       "explicacion": "Integridad. Si alguien cambia el número de cuenta de una factura, la confidencialidad puede seguir intacta pero la integridad está rota: el archivo dice algo que no dijiste.",
+       "porque": "La integridad se comprueba con hashes: una huella matemática del archivo. Si cambia un solo byte, la huella cambia por completo. Por eso las descargas serias publican el SHA-256: tú lo calculas y comparas."
+      },
+      {
+       "tipo": "orden",
+       "titulo": "Piensa como analista: evalúa un sitio nuevo antes de meter tus datos",
+       "pasos": [
+        "Mira el dominio exacto: letra por letra, de derecha a izquierda",
+        "Busca quién lo hizo: ¿es una empresa o un nombre inventado de ayer?",
+        "Comprueba que use HTTPS con candado y que el dominio coincida con el del candado",
+        "Usa una contraseña nueva y única, nunca la del correo",
+        "Activa la verificación en dos pasos en cuanto puedas"
+       ],
+       "porque": "Se hace en ese orden a propósito: si el dominio es falso, nada de lo demás importa. El candado solo dice que la conexión está cifrada, no que el sitio sea bueno; y una contraseña única limita el daño si igual te equivocas."
+      }
+     ],
+     "reto": {
+      "pregunta": "¿Cuál de estas es una VULNERABILIDAD y no una amenaza?",
+      "opciones": [
+       "Un estafador que manda SMS falsos",
+       "Tener la misma contraseña «123456» en todas tus cuentas",
+       "Un virus de ransomware que circula por correo",
+       "Un grupo de hackers que ataca bancos"
+      ],
+      "respuesta": 1,
+      "explicacion": "La vulnerabilidad es la puerta abierta (tu contraseña repetida). El estafador, el virus y el grupo de hackers son amenazas. El riesgo aparece cuando la amenaza encuentra la puerta abierta."
+     }
+    },
+    {
+     "id": "contrasenas",
+     "nivel": 1,
+     "titulo": "Contraseñas que aguantan y 2FA",
+     "subtitulo": "Nivel 1: la llave de tu vida digital y el candado extra.",
+     "minutos": 10,
+     "icono": "key",
+     "objetivos": [
+      "Medir la fuerza real de una contraseña (entropía).",
+      "Explicar por qué una frase larga gana a un garabato corto.",
+      "Elegir el segundo factor que de verdad te protege."
+     ],
+     "teoria": [
+      {
+       "t": "why",
+       "text": "La mayoría de las filtraciones que afectan a gente normal empiezan con una contraseña reutilizada o débil. Una sola filtración de una página tonta puede abrir tu correo, y con el correo, todo lo demás."
+      },
+      {
+       "t": "p",
+       "text": "Una contraseña no se mide en símbolos raros: se mide en entropía, o sea, cuántas combinaciones hay que probar. Cada carácter extra multiplica el trabajo del atacante; un símbolo solo suma un poquito."
+      },
+      {
+       "t": "table",
+       "head": [
+        "Contraseña",
+        "Tiempo estimado en caer",
+        "Por qué"
+       ],
+       "rows": [
+        [
+         "123456",
+         "Menos de 1 segundo",
+         "Está en todas las listas de contraseñas filtradas"
+        ],
+        [
+         "P@n4m4!",
+         "Minutos",
+         "Corta y con sustituciones predecibles: los programas ya las prueban"
+        ],
+        [
+         "correcaminos",
+         "Horas",
+         "Es una palabra de diccionario; los ataques usan diccionarios enormes"
+        ],
+        [
+         "cafe-caliente-arena-2026",
+         "Siglos",
+         "Cuatro palabras al azar: un espacio de búsqueda gigantesco"
+        ]
+       ]
+      },
+      {
+       "t": "porque",
+       "text": "La memoria humana es mala con «x7$Kq!» pero buenísima con imágenes. Por eso una frase de cuatro palabras al azar es a la vez fácil de recordar y difícil de adivinar. Y como no puedes memorizar 60 frases distintas, la solución real es un gestor de contraseñas: recuerdas una sola y él recuerda el resto."
+      },
+      {
+       "t": "h",
+       "text": "Segundo factor: qué es y cuál elegir"
+      },
+      {
+       "t": "list",
+       "items": [
+        "Algo que sabes: la contraseña.",
+        "Algo que tienes: tu celular, una llave física, un código temporal.",
+        "Algo que eres: tu huella o tu cara.",
+        "El SMS es el segundo factor más débil: se puede robar tu número con un duplicado de SIM (SIM swapping).",
+        "Una app autenticadora (TOTP) o una passkey resisten muchísimo mejor."
+       ]
+      },
+      {
+       "t": "tip",
+       "text": "Nunca reutilices la contraseña del correo. Si cae esa, con «olvidé mi contraseña» cae todo lo demás que tengas."
+      }
+     ],
+     "ejemplos": [
+      {
+       "juego": "fortnite",
+       "titulo": "El combo que te saca la cuenta",
+       "texto": "Correo con contraseña repetida + sin 2FA = cualquiera que compre una lista filtrada entra a Epic, cambia el correo y vende la cuenta con todas sus skins. Con 2FA ni con la contraseña pueden."
+      },
+      {
+       "juego": "minecraft",
+       "titulo": "La frase del servidor",
+       "texto": "«bloque-tierra-luna-verde» es más fuerte que «M1n3cr4ft!». Cuatro palabras al azar tienen muchísimas más combinaciones que ocho letras con números cambiados."
+      },
+      {
+       "juego": "panama",
+       "titulo": "El código que te piden por WhatsApp",
+       "texto": "«Te mandé un código por error, pásamelo». Ese código es tu segundo factor. Si lo das, la contraseña ya no importa. Nadie legítimo te pide un código."
+      }
+     ],
+     "practica": [
+      {
+       "tipo": "password",
+       "porque": "El medidor calcula la entropía real y estima cuánto tardaría un ataque de fuerza bruta. Fíjate en algo: pasar de 8 a 16 caracteres multiplica por 128 el trabajo del atacante, mientras que cambiar una «a» por un «@» casi no mueve la aguja."
+      },
+      {
+       "tipo": "orden",
+       "titulo": "Monta un gestor de contraseñas sin regalarle tu vida",
+       "pasos": [
+        "Instálalo desde la tienda oficial o la web del fabricante",
+        "Crea una contraseña maestra larga (una frase) que no uses en ningún otro sitio",
+        "Activa la verificación en dos pasos en la cuenta del gestor",
+        "Migra primero las cuentas críticas: correo, banco, redes principales",
+        "Cambia las contraseñas repetidas por únicas y largas",
+        "Descarga el kit de recuperación y guárdalo apagado, fuera de la nube"
+       ],
+       "porque": "El gestor concentra todas tus llaves, así que también concentra el riesgo. Contraseña maestra única + 2FA + kit de recuperación es justo lo que evita que un error te deje fuera de tus propias cuentas."
+      },
+      {
+       "tipo": "escribir",
+       "pregunta": "El SMS se puede interceptar duplicando tu SIM. ¿Qué segundo factor lo resiste mejor?",
+       "respuestas": [
+        "aplicacion autenticadora",
+        "app autenticadora",
+        "totp",
+        "passkey",
+        "llave de seguridad"
+       ],
+       "pista": "Genera un código nuevo cada 30 segundos en tu propio teléfono, sin usar la red de tu operador.",
+       "explicacion": "Una app autenticadora (TOTP) o una passkey. El código se genera en tu dispositivo con un secreto compartido, así que clonar tu SIM no sirve de nada.",
+       "porque": "El SMS depende de tu operador: si alguien convence a la tienda de que eres tú y saca un duplicado de tu SIM, recibe tus mensajes. Un secreto que vive en tu teléfono nunca pasa por la red del operador."
+      }
+     ],
+     "reto": {
+      "pregunta": "¿Cuál de estas contraseñas es la más fuerte?",
+      "opciones": [
+       "P@n4m4!2026",
+       "Mi perro se llama Toby",
+       "verde-camion-luna-taza",
+       "qwertyuiop123"
+      ],
+      "respuesta": 2,
+      "explicacion": "Cuatro palabras al azar (verde-camion-luna-taza) tienen muchísima más entropía que una palabra con números o sustituciones. Las frases largas ganan."
+     }
+    },
+    {
+     "id": "enlaces-falsos",
+     "nivel": 2,
+     "titulo": "Enlaces falsos y estafas",
+     "subtitulo": "Nivel 2: el arte de leer un dominio antes de hacer clic.",
+     "minutos": 9,
+     "icono": "flag",
+     "objetivos": [
+      "Leer un dominio de derecha a izquierda y detectar el impostor.",
+      "Reconocer los disfraces clásicos: subdominios, guiones, letras cambiadas.",
+      "Verificar siempre por un canal distinto al del mensaje."
+     ],
+     "teoria": [
+      {
+       "t": "why",
+       "text": "Casi todas las estafas que llegan por WhatsApp, correo o Instagram terminan en un enlace. Saber leer el dominio es la habilidad que más veces te va a salvar la plata."
+      },
+      {
+       "t": "p",
+       "text": "Un dominio se lee de derecha a izquierda, y lo que manda es lo que está justo antes del primer punto por la derecha. En banco.com.pa el dominio es com.pa; en banco-general-seguro.webredirect.org el dominio es webredirect.org, no «banco»."
+      },
+      {
+       "t": "table",
+       "head": [
+        "Lo que ves",
+        "Dominio real",
+        "Qué es"
+       ],
+       "rows": [
+        [
+         "banco.com.pa/login",
+         "com.pa",
+         "Legítimo (ojo con la ortografía exacta)"
+        ],
+        [
+         "banco.com.pa.seguro.xyz",
+         "seguro.xyz",
+         "Falso: «banco.com.pa» es solo un subdominio"
+        ],
+        [
+         "bancop4n4ma.com",
+         "bancop4n4ma.com",
+         "Falso: número por letra (typosquatting)"
+        ],
+        [
+         "banco-com.pa",
+         "banco-com.pa",
+         "Falso: guion en medio del nombre"
+        ]
+       ]
+      },
+      {
+       "t": "porque",
+       "text": "Los estafadores no hackean el banco: compran un dominio parecido por unos dólares y copian la página. Juegan con que nuestro cerebro lee la primera palabra y ya. Por eso hay que mirar el final del dominio, letra por letra, y desconfiar de los guiones y los números."
+      },
+      {
+       "t": "warn",
+       "text": "El candado HTTPS no significa «confiable»: hoy cualquier sitio, incluso uno falso, puede tener candado. Solo significa que la conexión va cifrada."
+      }
+     ],
+     "ejemplos": [
+      {
+       "juego": "panama",
+       "titulo": "«Su paquete está retenido»",
+       "texto": "SMS de una paquetería con un enlace que pide $2 para liberar el paquete. El dominio no es el de la empresa. Pagas $2 y entregas los datos de tu tarjeta."
+      },
+      {
+       "juego": "fortnite",
+       "titulo": "V-Bucks gratis",
+       "texto": "Sitio con el logotipo de Epic, dominio «epic-gifts.net», pide usuario y contraseña. Si los das, te quedas sin cuenta y sin V-Bucks."
+      },
+      {
+       "juego": "minecraft",
+       "titulo": "El plugin del servidor",
+       "texto": "«Descarga este mod para tener /fly». El enlace lleva a un .jar con un roba-contraseñas. El nombre del archivo se parece al oficial, pero el dominio no."
+      }
+     ],
+     "practica": [
+      {
+       "tipo": "phishing",
+       "cantidad": 10,
+       "porque": "Practicar con mensajes reales entrena el reflejo: prisas, enlaces raros y datos que no deberían pedirte. La señal casi siempre está en el remitente o en el dominio, no en el texto bonito."
+      },
+      {
+       "tipo": "escribir",
+       "pregunta": "En el enlace https://netflix-cuentas.seguro-login.xyz, ¿cuál es el dominio real?",
+       "respuestas": [
+        "seguro-login.xyz",
+        "seguro login xyz",
+        "xyz"
+       ],
+       "pista": "Lee de derecha a izquierda hasta el primer punto.",
+       "explicacion": "El dominio es seguro-login.xyz. Todo lo de la izquierda («netflix-cuentas») es un subdominio inventado para que te confíes.",
+       "porque": "Quien controla el dominio controla todos los subdominios. Por eso un estafador puede poner «netflix» o «banco» a la izquierda sin pedir permiso a nadie: no está usando su dominio, está usando el suyo con nombre bonito."
+      }
+     ],
+     "reto": {
+      "pregunta": "Recibes un SMS del «banco» pidiendo verificar tu cuenta con un enlace. ¿Qué haces?",
+      "opciones": [
+       "Entro rápido antes de que bloqueen la cuenta",
+       "Entro solo si el candado HTTPS aparece",
+       "No toco el enlace: abro la app o llamo al número del reverso de mi tarjeta",
+       "Reenvío el mensaje a un amigo para preguntarle"
+      ],
+      "respuesta": 2,
+      "explicacion": "Verificar por otro canal es la única defensa que no depende de que tú detectes el disfraz. El banco nunca te pide datos por un enlace en un SMS."
+     }
+    },
+    {
+     "id": "malware-respaldos",
+     "nivel": 3,
+     "titulo": "Malware, parches y respaldos",
+     "subtitulo": "Nivel 3: lo que se rompe, cómo se arregla y cómo no perderlo.",
+     "minutos": 11,
+     "icono": "monitor",
+     "objetivos": [
+      "Distinguir virus, troyano, spyware y ransomware.",
+      "Explicar por qué actualizar es la defensa número uno.",
+      "Aplicar la regla 3-2-1 de respaldos y comprobarla con un hash."
+     ],
+     "teoria": [
+      {
+       "t": "why",
+       "text": "La mayoría de los ataques exitosos no usan un truco nuevo: usan un fallo que el fabricante ya arregló y tú no instalaste. Actualizar es aburrido y salva más datos que cualquier antivirus."
+      },
+      {
+       "t": "p",
+       "text": "Malware es cualquier programa hecho para dañarte. Virus: se pega a otros archivos. Troyano: se disfraza de algo útil. Spyware: espía lo que haces. Ransomware: cifra tus archivos y pide plata para devolverlos."
+      },
+      {
+       "t": "porque",
+       "text": "Actualizar sirve porque los parches cierran puertas concretas que ya se conocen y ya se están explotando. Un Windows sin parches es una casa con las llaves puestas: el atacante no necesita adivinar nada, sigue el mapa."
+      },
+      {
+       "t": "h",
+       "text": "La regla 3-2-1 de respaldos"
+      },
+      {
+       "t": "list",
+       "items": [
+        "3 copias de tus datos importantes.",
+        "2 medios distintos (por ejemplo, disco externo y nube).",
+        "1 copia fuera de tu casa o fuera de tu red, para que un incendio o un ransomware no se lleve todo.",
+        "Y una regla extra: un respaldo que nunca restauraste no es un respaldo, es una esperanza."
+       ]
+      },
+      {
+       "t": "warn",
+       "text": "El ransomware cifra también los discos externos conectados. Desconecta el respaldo después de copiar y guarda una versión que no esté montada."
+      }
+     ],
+     "ejemplos": [
+      {
+       "juego": "panama",
+       "titulo": "La factura que era un .exe",
+       "texto": "«Factura_0231.pdf.exe». El sistema oculta la segunda extensión: parece un PDF y es un programa. Si lo abres, se instala solo y cifra todo."
+      },
+      {
+       "juego": "minecraft",
+       "titulo": "El mod que pedía permisos de más",
+       "texto": "Un mod de 200 MB que pide acceso a tu carpeta de .minecraft, a tus contraseñas guardadas y a la red. Nada de eso hace falta para poner /fly."
+      },
+      {
+       "juego": "fortnite",
+       "titulo": "El «optimizador» de FPS",
+       "texto": "Programas que prometen subir FPS y en realidad minan criptomonedas con tu tarjeta gráfica (cryptojacking). Se nota porque la PC va lenta y el ventilador grita."
+      }
+     ],
+     "practica": [
+      {
+       "tipo": "codigo",
+       "codigo": "import hashlib\n\nmensaje = b\"hola mundo\"\nhuella = hashlib.sha256(mensaje).hexdigest()\n\nprint(\"huella:\", huella[:16])\nprint(\"integra:\", huella == hashlib.sha256(b\"hola mundo\").hexdigest())\nprint(\"cambio:\", huella == hashlib.sha256(b\"hola mund0\").hexdigest())",
+       "salida": "huella: 0b894166d3336435\nintegra: True\ncambio: False",
+       "explicacion": "El hash es la huella del archivo: si cambia un solo carácter, la huella cambia por completo. Así compruebas que una descarga o un respaldo llegó intacto.",
+       "reto": {
+        "enunciado": "Vuelve a correrlo cambiando mensaje por b\"hola mundo!\"",
+        "pista": "Un carácter más, una huella totalmente distinta",
+        "debes_ver": "integra: False (porque ya no coincide con el texto original)"
+       },
+       "porque": "Este es el mismo truco que usan las páginas de descarga y los respaldos profesionales: publican el SHA-256 y tú calculas el tuyo. Si coinciden, el archivo es exactamente el que se publicó, ni un byte cambiado."
+      },
+      {
+       "tipo": "orden",
+       "titulo": "Monta un respaldo 3-2-1 de verdad",
+       "pasos": [
+        "Elige qué es irremplazable: fotos, documentos, llaves, proyectos",
+        "Copia 1: en un disco externo que desconectas al terminar",
+        "Copia 2: en un servicio en la nube con 2FA activado",
+        "Copia 3: en otro medio, por ejemplo un segundo disco en casa de un familiar",
+        "Cifra las copias que salgan de tu casa",
+        "Prueba restaurar un archivo al azar cada cierto tiempo"
+       ],
+       "porque": "Cada copia cubre un desastre distinto: el disco cubre la nube caída, la nube cubre el robo del disco, la copia fuera cubre un incendio o un ransomware, y el cifrado cubre que esa copia se pierda. La prueba de restauración es la que convierte el plan en realidad."
+      },
+      {
+       "tipo": "escribir",
+       "pregunta": "¿Cómo se llama el malware que cifra tus archivos y pide dinero para devolverlos?",
+       "respuestas": [
+        "ransomware"
+       ],
+       "pista": "Viene de «ransom», rescate en inglés.",
+       "explicacion": "Ransomware. Y no, pagar no garantiza que te devuelvan los archivos: financias al siguiente ataque.",
+       "porque": "El ransomware sigue siendo rentable porque mucha gente no tiene respaldos y paga. Un respaldo probado y desconectado es la única respuesta que no depende de la buena fe del delincuente."
+      }
+     ],
+     "reto": {
+      "pregunta": "Tu Windows te pide reiniciar por actualizaciones y llevas un mes posponiéndolo. ¿Qué riesgo real corres?",
+      "opciones": [
+       "Ninguno, el antivirus ya cubre todo",
+       "Quedarte con fallos que ya son públicos y que los ataques ya saben explotar",
+       "Solo que la PC vaya más lenta",
+       "Que se borren tus archivos automáticamente"
+      ],
+      "respuesta": 1,
+      "explicacion": "El parche cierra una puerta que ya está documentada. Mientras no lo instalas, cualquier ataque que use ese fallo te entra sin que tengas que hacer nada malo."
+     }
+    },
+    {
+     "id": "privacidad-incidentes",
+     "nivel": 4,
+     "titulo": "Privacidad y qué hacer si te hackean",
+     "subtitulo": "Nivel 4: tu huella digital y el plan de los primeros 30 minutos.",
+     "minutos": 10,
+     "icono": "shield",
+     "objetivos": [
+      "Reducir tu huella digital sin volverte invisible.",
+      "Revisar permisos, sesiones activas y reenvíos.",
+      "Ejecutar un plan de respuesta si te hackean."
+     ],
+     "teoria": [
+      {
+       "t": "why",
+       "text": "Cuando te hackean, la diferencia entre un susto y un desastre son los primeros 30 minutos. Y esa reacción se puede ensayar, como un simulacro de incendio."
+      },
+      {
+       "t": "p",
+       "text": "Tu huella digital es todo lo que dejaste regado: cuentas viejas, apps con permisos de más, tu número en un foro de 2012. Lo que no existe no se puede filtrar, y lo que ya no usas es la puerta más fácil de todas."
+      },
+      {
+       "t": "list",
+       "items": [
+        "Revisa las sesiones activas de tu correo y redes: si no reconoces un dispositivo, ciérralo.",
+        "Busca reglas de reenvío en tu correo: los atacantes las usan para leerte sin entrar.",
+        "Quita permisos a apps que piden contactos, micrófono o ubicación sin necesitarlos.",
+        "Cierra las cuentas viejas que ya no usas.",
+        "Cubre la cámara solo si te hace sentir mejor: el riesgo real está en los permisos, no en la webcam."
+       ]
+      },
+      {
+       "t": "porque",
+       "text": "Cerrar sesiones y revisar reenvíos va primero porque es lo único que corta el acceso en el momento. Cambiar contraseñas sin cerrar sesiones es como cambiar la cerradura con el ladrón adentro: sigue adentro."
+      },
+      {
+       "t": "tip",
+       "text": "Escribe tu plan de incidente en una nota y guárdala fuera del teléfono: a quién llamar, qué cuentas cambiar primero, dónde están tus códigos de respaldo. El día que lo necesites, no vas a estar pensando con claridad."
+      }
+     ],
+     "ejemplos": [
+      {
+       "juego": "panama",
+       "titulo": "El robo de WhatsApp",
+       "texto": "Te roban el código por SMS y entran a tu WhatsApp. Desde ahí piden plata a tus contactos. La respuesta: recuperar la cuenta, avisar a todos y activar la verificación en dos pasos en la app."
+      },
+      {
+       "juego": "fortnite",
+       "titulo": "La sesión que nunca cerraste",
+       "texto": "Cambiaste la contraseña pero la sesión del atacante seguía viva. Meses después alguien «entró de la nada». Cerrar todas las sesiones es parte del cambio, no un extra."
+      },
+      {
+       "juego": "minecraft",
+       "titulo": "La pregunta de seguridad",
+       "texto": "«¿Nombre de tu primera mascota?» está en tus fotos de 2014. Eso no es una contraseña, es trivia pública. Mejor usa respuestas inventadas y guárdalas en el gestor."
+      }
+     ],
+     "practica": [
+      {
+       "tipo": "orden",
+       "titulo": "Plan de los primeros 30 minutos: te hackearon",
+       "pasos": [
+        "Deja de usar la cuenta desde el equipo sospechoso y desconéctalo de la red",
+        "Entra desde otro dispositivo y cambia la contraseña del correo principal",
+        "Cierra todas las sesiones abiertas y activa la verificación en dos pasos",
+        "Revisa reglas de reenvío, dispositivos conectados y métodos de pago",
+        "Avisa a tus contactos que un mensaje raro puede venir de tu cuenta",
+        "Limpia el equipo, reporta al servicio y, si hubo dinero, llama al banco"
+       ],
+       "porque": "El orden evita que repitas el error: si cambias la clave desde el equipo infectado, el malware la captura otra vez. Primero cortas el acceso (sesiones y contraseña desde fuera), después limpias."
+      },
+      {
+       "tipo": "escribir",
+       "pregunta": "¿Qué ajuste del correo revisas para saber si alguien sigue leyendo tus mensajes sin entrar?",
+       "respuestas": [
+        "reenvio",
+        "reglas de reenvio",
+        "las reglas de reenvio",
+        "reenvios"
+       ],
+       "pista": "Es una función que manda copia de tus correos a otra dirección.",
+       "explicacion": "Las reglas de reenvío. Un atacante puede crear una regla que copie todo a su correo sin que notes nada raro al entrar.",
+       "porque": "El reenvío sobrevive al cambio de contraseña, porque no es una sesión: es una regla guardada en la cuenta. Por eso se revisa siempre, incluso cuando «ya no hay nadie conectado»."
+      }
+     ],
+     "reto": {
+      "pregunta": "Te enteras de que tu cuenta de correo fue filtrada hace meses. ¿Cuál es la primera acción más útil?",
+      "opciones": [
+       "Borrar el correo y crear otro igual",
+       "Cambiar la contraseña, cerrar sesiones y activar 2FA",
+       "Esperar a ver si pasa algo",
+       "Desinstalar el navegador"
+      ],
+      "respuesta": 1,
+      "explicacion": "Cortar el acceso es lo urgente: contraseña nueva, sesiones cerradas y 2FA. Revisar reenvíos y cuentas conectadas viene justo después."
+     }
+    }
+   ],
+   "biomaDesc": "Una fortaleza de piedra en una isla: murallas, foso y antorchas que hay que encender una por una. Cada defensa cuesta, y cada puerta que falta es una entrada."
+  },
   {
    "id": "redes",
    "nombre": "Mundo Redes",
@@ -936,7 +1516,8 @@ const FV_CONTENT = {
       "explicacion": "Es la política más segura: si no hay una regla que lo permita, se bloquea. Así lo desconocido no entra."
      }
     }
-   ]
+   ],
+   "biomaDesc": "Un océano de islas unidas por cables: los paquetes viajan como barcos, hay tormentas de latencia y faros que dicen por dónde ir. Nada llega por arte de magia."
   },
   {
    "id": "sistemas",
@@ -1643,7 +2224,8 @@ const FV_CONTENT = {
       "explicacion": "Con copias de seguridad fuera del alcance del malware, puedes restaurar tus archivos sin pagar."
      }
     }
-   ]
+   ],
+   "biomaDesc": "Una cueva con salas y pasillos: el kernel vive en el fondo, los procesos son criaturas que van y vienen, y los permisos son puertas que solo abren algunos."
   },
   {
    "id": "python",
@@ -2314,7 +2896,8 @@ const FV_CONTENT = {
       "explicacion": "connect_ex devuelve 0 si la conexión tuvo éxito. Cualquier otro número indica error (cerrado, filtrado, timeout…)."
      }
     }
-   ]
+   ],
+   "biomaDesc": "Una jungla que crece sola: todo se ramifica y se automatiza. Con las herramientas correctas te abres camino; sin ellas, te come la maleza."
   },
   {
    "id": "cripto",
@@ -2332,7 +2915,7 @@ const FV_CONTENT = {
      "nivel": 0,
      "titulo": "¿Qué es la criptografía?",
      "subtitulo": "Nivel 0: no es esconder, es que aunque lo vean no lo entiendan.",
-     "minutos": 7,
+     "minutos": 13,
      "icono": "chest",
      "objetivos": [
       "Distinguir cifrar, codificar y hashear.",
@@ -2384,6 +2967,10 @@ const FV_CONTENT = {
       {
        "t": "tip",
        "text": "Principio de Kerckhoffs: un sistema debe ser seguro aunque el enemigo conozca el algoritmo. El secreto es la clave, nunca el método. Si alguien te dice «es seguro porque nadie sabe cómo funciona», desconfía."
+      },
+      {
+       "t": "porque",
+       "text": "La criptografía es matemática aplicada a un problema concreto: que dos desconocidos puedan hablar sin que un tercero entienda ni pueda cambiar nada. Confidencialidad, integridad y autenticidad son tres problemas distintos y cada uno necesita su herramienta."
       }
      ],
      "ejemplos": [
@@ -2426,7 +3013,13 @@ const FV_CONTENT = {
           "Cifrar (clave 0-25)"
          ]
         ]
-       }
+       },
+       "porque": "Distinguir confidencialidad de integridad y de autenticidad evita el error clásico de creer que «está cifrado» significa «está protegido»."
+      },
+      {
+       "tipo": "widget",
+       "w": "xor",
+       "porque": "XOR es la operación que hace posible casi todo: si cifras con una clave y vuelves a aplicar la misma, recuperas el mensaje. Entenderla a nivel de bit explica por qué los cifrados modernos son tan sensibles a repetir la clave y por qué un cifrado sin comprobación de integridad se puede manipular sin romperlo."
       }
      ],
      "reto": {
@@ -2446,7 +3039,7 @@ const FV_CONTENT = {
      "nivel": 1,
      "titulo": "El cifrado César",
      "subtitulo": "Rota el alfabeto… y rómpelo en segundos.",
-     "minutos": 9,
+     "minutos": 15,
      "icono": "key",
      "objetivos": [
       "Cifrar y descifrar con un desplazamiento.",
@@ -2491,6 +3084,10 @@ const FV_CONTENT = {
       {
        "t": "result",
        "text": "«HOLA» con clave 3 da «KROD». Con la rueda puedes ver la tabla completa de equivalencias."
+      },
+      {
+       "t": "porque",
+       "text": "César falla porque el espacio de claves es minúsculo (25) y porque conserva la estructura del idioma. Con esos dos defectos no hace falta ser un genio: basta con probar o contar letras. Es el ejemplo perfecto de que un algoritmo «secreto» no es un algoritmo seguro."
       }
      ],
      "ejemplos": [
@@ -2507,7 +3104,8 @@ const FV_CONTENT = {
      ],
      "practica": [
       {
-       "tipo": "cesar"
+       "tipo": "cesar",
+       "porque": "Probar los 26 desplazamientos a mano es la lección: el cifrado no esconde el mensaje, solo lo disfraza. Cualquiera con paciencia lo abre en un minuto."
       },
       {
        "tipo": "escribir",
@@ -2517,6 +3115,16 @@ const FV_CONTENT = {
        ],
        "pista": "Retrocede 3 letras: F→C, D→A…",
        "explicacion": "F-3=C, D-3=A, Q-3=N, D-3=A, O-3=L → CANAL."
+      },
+      {
+       "tipo": "widget",
+       "w": "vigenere",
+       "porque": "Vigenère usa una clave que se repite, y ahí está su perdición: cada posición de la clave genera una columna que vuelve a ser un César normal. Con suficiente texto, cada columna se rompe por frecuencia. Cualquier cifrado cuyo patrón se repita con periodo fijo cae igual."
+      },
+      {
+       "tipo": "widget",
+       "w": "frecuencia",
+       "porque": "El criptoanálisis no adivina: mide. La estadística del idioma (E ≈ 13,7%) es una grieta que el cifrado César no tapa porque conserva la forma del texto. Los cifrados modernos difunden cada bit por todo el bloque justo para que esa grieta desaparezca."
       }
      ],
      "reto": {
@@ -2536,7 +3144,7 @@ const FV_CONTENT = {
      "nivel": 2,
      "titulo": "Hashes: la huella digital",
      "subtitulo": "Mismo texto, misma huella. Una letra distinta, huella irreconocible.",
-     "minutos": 9,
+     "minutos": 15,
      "icono": "diamond",
      "objetivos": [
       "Explicar qué es una función hash.",
@@ -2568,6 +3176,10 @@ const FV_CONTENT = {
       {
        "t": "result",
        "text": "En el simulador, «factionvault» y «Factionvault» dan huellas totalmente distintas. Fíjate en el porcentaje de diferencia: anda por el 90% de caracteres."
+      },
+      {
+       "t": "porque",
+       "text": "Un hash es una huella: misma entrada, misma huella; entrada distinta, huella completamente distinta. No se puede revertir porque se pierde información a propósito. Esa irreversibilidad permite verificar descargas, guardar contraseñas y detectar cambios de un solo bit."
       }
      ],
      "ejemplos": [
@@ -2584,7 +3196,13 @@ const FV_CONTENT = {
      ],
      "practica": [
       {
-       "tipo": "hash"
+       "tipo": "hash",
+       "porque": "Cambiar una mayúscula y ver la huella entera cambiar es entender el efecto avalancha. Esa sensibilidad es la que hace inútiles las tablas precalculadas cuando hay una sal de por medio."
+      },
+      {
+       "tipo": "widget",
+       "w": "firma",
+       "porque": "Un hash solo comprueba integridad, no autenticidad: si el atacante puede recalcularlo, no sirve de nada. La firma mezcla el mensaje con una clave secreta (HMAC) o con tu clave privada (RSA/Ed25519), así que cambiar un carácter invalida la firma entera. Eso es lo que usan las actualizaciones de tu móvil para no instalar malware."
       }
      ],
      "reto": {
@@ -2604,7 +3222,7 @@ const FV_CONTENT = {
      "nivel": 3,
      "titulo": "Contraseñas que aguantan",
      "subtitulo": "Por qué «P@ssw0rd!» es mala y una frase larga es buena.",
-     "minutos": 8,
+     "minutos": 14,
      "icono": "key",
      "objetivos": [
       "Medir la entropía de una contraseña.",
@@ -2665,6 +3283,10 @@ const FV_CONTENT = {
       {
        "t": "tip",
        "text": "Nadie legítimo te va a pedir tu contraseña ni tu código de verificación por WhatsApp. Ni tu banco, ni Epic, ni Mojang, ni «el primo que trabaja en la compañía»."
+      },
+      {
+       "t": "porque",
+       "text": "La contraseña es el eslabón que más se rompe, y casi nunca por criptografía: se rompe por reutilización, por filtraciones y por fuerza bruta sobre espacios pequeños. Defensas que funcionan: frase larga única, gestor de contraseñas y 2FA."
       }
      ],
      "ejemplos": [
@@ -2681,7 +3303,18 @@ const FV_CONTENT = {
      ],
      "practica": [
       {
-       "tipo": "password"
+       "tipo": "password",
+       "porque": "La entropía no mide «cuántos símbolos usaste» sino cuántas combinaciones tendría que probar un atacante. Longitud primero, rareza después."
+      },
+      {
+       "tipo": "widget",
+       "w": "kdf",
+       "porque": "Una contraseña nunca se guarda: se guarda su derivación con una sal única y muchas iteraciones. La sal hace que la misma contraseña dé claves distintas en cada cuenta (adiós a las rainbow tables) y las iteraciones convierten un milisegundo tuyo en siglos del atacante."
+      },
+      {
+       "tipo": "widget",
+       "w": "brute",
+       "porque": "La fuerza bruta es el ataque más tonto y el más efectivo: no rompe el algoritmo, prueba todo lo que cabe en el espacio de claves. Un PIN de 4 cifras son 10 000 intentos; cada carácter extra multiplica esa cuenta. Por eso importa la longitud y por eso existen los límites de intentos."
       }
      ],
      "reto": {
@@ -2733,6 +3366,10 @@ const FV_CONTENT = {
       {
        "t": "result",
        "text": "En el simulador, cifra un mensaje dos veces: saldrán dos textos distintos (por la sal y el IV aleatorios). Altera una letra del cifrado y descifra: verás el error de autenticación."
+      },
+      {
+       "t": "porque",
+       "text": "AES es un cifrado por bloques: mezcla cada bloque de 128 bits con la clave en varias rondas hasta que no queda relación con el original. Con GCM añades integridad, así que si alguien cambia un byte el descifrado falla en vez de devolver basura. Ese detalle es el 90% de la seguridad real."
       }
      ],
      "ejemplos": [
@@ -2749,7 +3386,8 @@ const FV_CONTENT = {
      ],
      "practica": [
       {
-       "tipo": "aes"
+       "tipo": "aes",
+       "porque": "Cifrar de verdad con WebCrypto, en vez de simular, te muestra el flujo real: contraseña → sal → clave → IV → bloques cifrados → etiqueta de integridad."
       }
      ],
      "reto": {
@@ -2769,7 +3407,7 @@ const FV_CONTENT = {
      "nivel": 5,
      "titulo": "Clave pública y el candado HTTPS",
      "subtitulo": "Cómo dos desconocidos crean un secreto a la vista de todos.",
-     "minutos": 11,
+     "minutos": 17,
      "icono": "globe",
      "objetivos": [
       "Diferenciar clave pública y privada.",
@@ -2817,6 +3455,10 @@ const FV_CONTENT = {
       {
        "t": "warn",
        "text": "El candado NO significa que la página sea honesta: solo que la conexión está cifrada. Una web de phishing también puede tener candado. Revisa siempre el dominio exacto."
+      },
+      {
+       "t": "porque",
+       "text": "La clave pública resuelve el problema del huevo y la gallina: ¿cómo acordamos un secreto por un canal donde todos escuchan? Con matemáticas donde una dirección es fácil y la contraria imposible. El candado del navegador es eso más un certificado que dice a quién pertenece la clave."
       }
      ],
      "ejemplos": [
@@ -2833,7 +3475,13 @@ const FV_CONTENT = {
      ],
      "practica": [
       {
-       "tipo": "dh"
+       "tipo": "dh",
+       "porque": "Diffie-Hellman es la razón por la que puedes escribir una contraseña en una wifi pública y que no la lea el de al lado: se acuerda un secreto que nunca viaja."
+      },
+      {
+       "tipo": "widget",
+       "w": "rsa",
+       "porque": "RSA funciona porque multiplicar dos primos es fácil y separar el resultado es dificilísimo. Aquí ves las cuentas completas: la clave pública cifra, la privada descifra, y firmar es hacerlo al revés. Con n de 4 cifras lo rompes a mano; por eso en la realidad n tiene 617 cifras."
       }
      ],
      "reto": {
@@ -2848,7 +3496,8 @@ const FV_CONTENT = {
       "explicacion": "El candado indica cifrado, no honestidad. Los estafadores consiguen certificados gratis. La defensa es revisar el dominio letra por letra."
      }
     }
-   ]
+   ],
+   "biomaDesc": "El Nether de las matemáticas: calor, lava y cerraduras. Se entra con la clave correcta o no se sale, y los atajos que parecen fáciles son trampas."
   },
   {
    "id": "social",
@@ -3258,10 +3907,110 @@ const FV_CONTENT = {
       "explicacion": "Quien controla tu correo puede pedir «olvidé mi contraseña» en todos tus servicios. Es la llave maestra."
      }
     }
-   ]
+   ],
+   "biomaDesc": "Una aldea donde todos hablan: el vector de ataque más viejo del mundo es una conversación. La muralla más alta no sirve si abres la puerta tú mismo."
   }
  ],
  "retos": [
+  {
+   "id": "seg-dominio",
+   "titulo": "El dominio impostor",
+   "categoria": "Seguridad",
+   "dificultad": "Fácil",
+   "puntos": 100,
+   "enunciado": "Te llega este enlace: https://banco.com.pa-verificacion.seguro.xyz/login. ¿Cuál es el dominio real de esa dirección?",
+   "pista": "El dominio es lo que está justo antes del primer punto leyendo desde la derecha.",
+   "aceptadas": [
+    "seguro.xyz",
+    "seguro"
+   ],
+   "solucion": "seguro.xyz",
+   "explicacion": "Se lee de derecha a izquierda: xyz es la terminación, seguro es el nombre y todo lo anterior es un subdominio inventado para que te confíes.",
+   "tipo": "texto",
+   "mundo": "seguridad"
+  },
+  {
+   "id": "seg-2fa",
+   "titulo": "El código que no pediste",
+   "categoria": "Seguridad",
+   "dificultad": "Fácil",
+   "puntos": 100,
+   "enunciado": "Alguien te escribe: «me llegó un código de verificación a tu número por error, ¿me lo pasas?». ¿Qué está pasando?",
+   "pista": "Nadie legítimo necesita tu código.",
+   "aceptadas": [
+    "c"
+   ],
+   "solucion": "c",
+   "explicacion": "Está intentando entrar a tu cuenta y necesita el segundo factor. Si pasas el código, le abres la puerta: cambia la contraseña y activa 2FA con una app autenticadora.",
+   "tipo": "opciones",
+   "opciones": [
+    "Es un amigo que se equivocó de número",
+    "Es spam sin importancia",
+    "Es un intento de entrar a mi cuenta y necesita mi segundo factor",
+    "Es el banco verificando mi identidad"
+   ],
+   "mundo": "seguridad"
+  },
+  {
+   "id": "seg-321",
+   "titulo": "La regla 3-2-1",
+   "categoria": "Seguridad",
+   "dificultad": "Media",
+   "puntos": 150,
+   "enunciado": "En la regla de respaldos 3-2-1, ¿qué significa exactamente?",
+   "pista": "Copias, medios y dónde vive la última.",
+   "aceptadas": [
+    "b"
+   ],
+   "solucion": "b",
+   "explicacion": "3 copias, en 2 medios distintos, con 1 fuera de tu casa o de tu red. Y siempre probar que se pueden restaurar.",
+   "tipo": "opciones",
+   "opciones": [
+    "3 contraseñas, 2 correos y 1 teléfono",
+    "3 copias, 2 medios y 1 copia fuera de tu casa",
+    "3 antivirus, 2 firewalls y 1 VPN",
+    "3 días, 2 semanas y 1 mes de historial"
+   ],
+   "mundo": "seguridad"
+  },
+  {
+   "id": "seg-ransom",
+   "titulo": "El secuestro de archivos",
+   "categoria": "Seguridad",
+   "dificultad": "Fácil",
+   "puntos": 100,
+   "enunciado": "Un programa cifra todas tus fotos y muestra una nota pidiendo dinero por la llave. ¿Cómo se llama ese malware?",
+   "pista": "Viene de «ransom»: rescate.",
+   "aceptadas": [
+    "ransomware"
+   ],
+   "solucion": "RANSOMWARE",
+   "explicacion": "Ransomware. La defensa real son respaldos probados y desconectados; pagar solo financia el siguiente ataque.",
+   "tipo": "texto",
+   "mundo": "seguridad"
+  },
+  {
+   "id": "seg-parche",
+   "titulo": "La actualización pendiente",
+   "categoria": "Seguridad",
+   "dificultad": "Media",
+   "puntos": 150,
+   "enunciado": "Tu sistema lleva meses pidiendo reiniciar por actualizaciones. ¿Por qué actualizar es la defensa número uno?",
+   "pista": "Los fallos que se arreglan ya son públicos.",
+   "aceptadas": [
+    "a"
+   ],
+   "solucion": "a",
+   "explicacion": "El parche cierra fallos que ya se conocen y que los ataques ya saben usar. Sin el parche, entran sin que hagas nada malo.",
+   "tipo": "opciones",
+   "opciones": [
+    "Porque cierra fallos que ya son públicos y ya se están explotando",
+    "Porque hace que la computadora sea más rápida",
+    "Porque cambia el fondo de pantalla",
+    "Porque el antivirus deja de funcionar si no actualizas"
+   ],
+   "mundo": "seguridad"
+  },
   {
    "id": "cesar",
    "titulo": "El mensaje del emperador",
@@ -3630,9 +4379,271 @@ const FV_CONTENT = {
     "Se lo envío pero borro el chat",
     "Lo publico en mi estado"
    ]
+  },
+  {
+   "id": "red-cidr-26",
+   "titulo": "La subred justa",
+   "categoria": "Redes",
+   "dificultad": "Media",
+   "puntos": 120,
+   "enunciado": "Tienes 10.0.0.0/26 y necesitas saber cuántas IP utilizables hay para equipos. ¿Cuántas son?",
+   "pista": "Una /26 tiene 2^(32-26) direcciones; resta la de red y la de broadcast.",
+   "aceptadas": ["62", "sesenta y dos"],
+   "solucion": "62",
+   "explicacion": "2^6 = 64 direcciones. Se quitan la de red (10.0.0.0) y la de broadcast (10.0.0.63): quedan 62 hosts utilizables.",
+   "tipo": "texto",
+   "mundo": "redes"
+  },
+  {
+   "id": "red-banner-ssh",
+   "titulo": "El banner del puerto 2222",
+   "categoria": "Redes",
+   "dificultad": "Fácil",
+   "puntos": 80,
+   "enunciado": "Al conectar al puerto 2222 de un servidor recibes: SSH-2.0-OpenSSH_7.4. ¿Qué servicio corre ahí? (una palabra)",
+   "pista": "Lo dice el propio banner, no el número del puerto.",
+   "aceptadas": ["ssh", "openssh", "servidor ssh"],
+   "solucion": "ssh",
+   "explicacion": "El servicio es SSH aunque esté en el 2222: los puertos son convenciones, no obligaciones. Cambiarlos no es seguridad real, solo quita ruido de los escáneres automáticos.",
+   "tipo": "texto",
+   "mundo": "redes"
+  },
+  {
+   "id": "red-arp-spoof",
+   "titulo": "Dos IP, una MAC",
+   "categoria": "Redes",
+   "dificultad": "Difícil",
+   "puntos": 160,
+   "enunciado": "En arp -a, la IP del router y la de un compañero muestran exactamente la misma dirección MAC. ¿Qué está pasando?",
+   "pista": "Una MAC no debería estar en dos IPs de la misma red.",
+   "aceptadas": ["arp spoofing", "spoofing", "arp poisoning", "envenenamiento arp", "suplantacion arp", "suplantación arp"],
+   "solucion": "arp spoofing",
+   "explicacion": "Alguien está envenenando la tabla ARP para hacerse pasar por el router: así tu tráfico pasa por su equipo (man-in-the-middle). Se detecta con ARP estático o inspección dinámica en el switch.",
+   "tipo": "texto",
+   "mundo": "redes"
+  },
+  {
+   "id": "sis-suid",
+   "titulo": "La ese traicionera",
+   "categoria": "Sistemas",
+   "dificultad": "Media",
+   "puntos": 120,
+   "enunciado": "Un archivo tiene los permisos -rwsr-xr-x. ¿Qué significa esa s en el lugar del dueño? (una palabra: el nombre del bit)",
+   "pista": "Se ejecuta con los permisos del dueño, no con los tuyos.",
+   "aceptadas": ["suid", "setuid", "bit suid", "setuid bit"],
+   "solucion": "suid",
+   "explicacion": "El bit SUID hace que el programa corra con los privilegios del dueño del archivo. Si el dueño es root, cualquiera ejecuta como root: por eso se auditan los binarios SUID en cada revisión.",
+   "tipo": "texto",
+   "mundo": "sistemas"
+  },
+  {
+   "id": "sis-lastb",
+   "titulo": "Los que no entraron",
+   "categoria": "Sistemas",
+   "dificultad": "Media",
+   "puntos": 110,
+   "enunciado": "Necesitas ver los intentos de login FALLIDOS de todo el sistema en Linux. ¿Qué comando usas? (solo el nombre)",
+   "pista": "last es para los que entraron; este es su hermano con b de bad.",
+   "aceptadas": ["lastb", "lastb -f"],
+   "solucion": "lastb",
+   "explicacion": "lastb lee /var/log/btmp y lista los intentos fallidos con IP y hora. Junto a last (wtmp) y lastlog te da el mapa completo de accesos del equipo.",
+   "tipo": "texto",
+   "mundo": "sistemas"
+  },
+  {
+   "id": "sis-pid1",
+   "titulo": "El primero de todos",
+   "categoria": "Sistemas",
+   "dificultad": "Fácil",
+   "puntos": 80,
+   "enunciado": "En cualquier Linux, el PID 1 es el padre de todos los procesos. ¿Cómo se llama ese proceso hoy en día (el sistema de inicio más común)?",
+   "pista": "Reemplazó a SysV init hace más de una década.",
+   "aceptadas": ["systemd", "init"],
+   "solucion": "systemd",
+   "explicacion": "systemd arranca el sistema y adopta a los procesos huérfanos. Si el PID 1 muere, el kernel entra en pánico: por eso nada de matar procesos 1 «para ver qué pasa».",
+   "tipo": "texto",
+   "mundo": "sistemas"
+  },
+  {
+   "id": "py-slice",
+   "titulo": "Cortar la cadena",
+   "categoria": "Python",
+   "dificultad": "Fácil",
+   "puntos": 90,
+   "enunciado": "¿Qué imprime print(len(\"FactionVault\"[6:]))?",
+   "pista": "Cuenta los caracteres con el índice empezando en 0.",
+   "aceptadas": ["6"],
+   "solucion": "6",
+   "explicacion": "\"FactionVault\" tiene 12 caracteres; desde el índice 6 hasta el final quedan 6 (\"nVault\"). Los slices no copian de más: se detienen al final de la cadena.",
+   "tipo": "texto",
+   "mundo": "python"
+  },
+  {
+   "id": "py-hashlib",
+   "titulo": "La huella en Python",
+   "categoria": "Python",
+   "dificultad": "Fácil",
+   "puntos": 90,
+   "enunciado": "¿Qué módulo de la librería estándar de Python calcula SHA-256 sin instalar nada?",
+   "pista": "Empieza por hash.",
+   "aceptadas": ["hashlib", "import hashlib"],
+   "solucion": "hashlib",
+   "explicacion": "hashlib.sha256(b\"texto\").hexdigest() devuelve la huella. Recuerda: los datos van en bytes (b\"...\"), no en str, o te dará TypeError.",
+   "tipo": "texto",
+   "mundo": "python"
+  },
+  {
+   "id": "cripto-rot13",
+   "titulo": "El mensaje de César moderno",
+   "categoria": "Criptografía",
+   "dificultad": "Fácil",
+   "puntos": 100,
+   "enunciado": "Descifra este texto cifrado con ROT13 (el alfabeto rotado 13 posiciones): Uryyb, SnpgvbaInhyg. Escribe el resultado sin comas raras.",
+   "pista": "R está a 13 letras de E. Aplícalo letra por letra.",
+   "aceptadas": ["hello factionvault", "hello faction vault", "hola factionvault"],
+   "solucion": "Hello, FactionVault",
+   "explicacion": "ROT13 es César con clave 13, y por eso es su propia inversa: aplicarlo dos veces devuelve el original. Cambiar letras por otras letras no es cifrar de verdad: el patrón sigue ahí para quien lo mire.",
+   "tipo": "texto",
+   "mundo": "cripto"
+  },
+  {
+   "id": "cripto-avalancha",
+   "titulo": "Un carácter, otro mundo",
+   "categoria": "Criptografía",
+   "dificultad": "Media",
+   "puntos": 130,
+   "enunciado": "sha256(\"Hola\") y sha256(\"hola\") no comparten ni el primer carácter del resultado. ¿Cómo se llama esa propiedad?",
+   "pista": "Un pequeño cambio provoca un derrumbe total del resultado.",
+   "aceptadas": ["efecto avalancha", "avalancha", "efecto avalanche", "avalanche"],
+   "solucion": "efecto avalancha",
+   "explicacion": "El efecto avalancha garantiza que un bit distinto cambie cerca de la mitad de los bits de salida. Por eso los hashes sirven para detectar cambios y por eso no puedes «acercarte» a un hash adivinando.",
+   "tipo": "texto",
+   "mundo": "cripto"
+  },
+  {
+   "id": "seg-candado",
+   "titulo": "Qué promete el candado",
+   "categoria": "Seguridad",
+   "dificultad": "Fácil",
+   "puntos": 100,
+   "enunciado": "Ves el candado de HTTPS en una web. ¿Qué garantiza exactamente?",
+   "pista": "Cifra la conexión… y nada más.",
+   "aceptadas": ["a", "1"],
+   "solucion": "A",
+   "explicacion": "El candado dice que la conexión va cifrada y que el certificado corresponde a ese dominio. No dice que el sitio sea honesto: las webs de phishing también tienen HTTPS.",
+   "tipo": "opciones",
+   "opciones": [
+    "Que la conexión va cifrada y el certificado es de ese dominio, no que el sitio sea de fiar",
+    "Que la web ha sido revisada por una autoridad y es segura",
+    "Que nadie puede ver cuánto tiempo estás en la página",
+    "Que la web no tiene malware"
+   ],
+   "mundo": "seguridad"
+  },
+  {
+   "id": "seg-321-offsite",
+   "titulo": "La regla del respaldo",
+   "categoria": "Seguridad",
+   "dificultad": "Fácil",
+   "puntos": 90,
+   "enunciado": "La regla 3-2-1 de respaldos dice: 3 copias, 2 medios distintos y 1 copia… ¿dónde?",
+   "pista": "Fuera de tu casa y de tu misma red.",
+   "aceptadas": ["fuera", "fuera del sitio", "fuera de la casa", "en otro lugar", "offsite", "fuera del lugar", "en otro sitio"],
+   "solucion": "fuera del sitio (offsite)",
+   "explicacion": "Si el incendio, el robo o el ransomware alcanzan tu equipo, la copia de fuera es la que te salva. Y un respaldo que nunca has restaurado no es un respaldo: es una esperanza.",
+   "tipo": "texto",
+   "mundo": "seguridad"
+  },
+  {
+   "id": "soc-vishing",
+   "titulo": "La llamada del banco",
+   "categoria": "Ingeniería social",
+   "dificultad": "Media",
+   "puntos": 130,
+   "enunciado": "Te llama alguien que dice ser del banco: hay un «cargo sospechoso» y para cancelarlo necesitan el código que acaba de llegar a tu celular. ¿Qué haces?",
+   "pista": "Ningún banco serio te pide el código por teléfono.",
+   "aceptadas": ["b", "2"],
+   "solucion": "B",
+   "explicacion": "Es vishing: usan la urgencia y la confianza en la institución para que entregues el segundo factor. Se cuelga y se llama al número que aparece en el reverso de la tarjeta.",
+   "tipo": "opciones",
+   "opciones": [
+    "Le doy el código: si es del banco, es lo normal",
+    "Cuelgo y llamo yo al número oficial del banco para comprobarlo",
+    "Le pido que me lo confirme por correo y luego se lo doy",
+    "Le doy el código pero cambio la contraseña después"
+   ],
+   "mundo": "social"
+  },
+  {
+   "id": "soc-osint",
+   "titulo": "Lo que publicas te delata",
+   "categoria": "Ingeniería social",
+   "dificultad": "Media",
+   "puntos": 120,
+   "enunciado": "Un atacante quiere adivinar tu contraseña de correo. ¿Cuál de estos datos públicos le ayuda MENOS?",
+   "pista": "Piensa qué se usa en preguntas de seguridad y en contraseñas típicas.",
+   "aceptadas": ["d", "4"],
+   "solucion": "D",
+   "explicacion": "El nombre de tu primera mascota no aparece en un certificado público, pero el nombre completo, el cumpleaños y el colegio sí: son la materia prima de las preguntas de seguridad y de un ataque de diccionario dirigido.",
+   "tipo": "opciones",
+   "opciones": [
+    "Tu nombre completo y fecha de nacimiento",
+    "El colegio donde estudiaste",
+    "El nombre de tu equipo y tu ciudad en una foto",
+    "El nombre de tu primera mascota, que nunca publicaste"
+   ],
+   "mundo": "social"
   }
  ],
  "glosario": [
+  {
+   "termino": "Malware",
+   "categoria": "Ataques",
+   "definicion": "Cualquier programa hecho para dañarte, espiarte o sacarte plata.",
+   "detalle": "Virus, troyanos, spyware y ransomware son familias de malware. La defensa real: descargar de sitios oficiales, actualizar y no abrir adjuntos raros."
+  },
+  {
+   "termino": "Ransomware",
+   "categoria": "Ataques",
+   "definicion": "Malware que cifra tus archivos y pide un rescate por la llave.",
+   "detalle": "Pagar no garantiza nada. La única respuesta sólida es un respaldo probado y desconectado (regla 3-2-1)."
+  },
+  {
+   "termino": "Parche de seguridad",
+   "categoria": "Fundamentos",
+   "definicion": "Actualización que cierra un fallo que ya se conoce.",
+   "detalle": "Es la defensa número uno: la mayoría de ataques usan fallos que el fabricante ya arregló y el usuario no instaló."
+  },
+  {
+   "termino": "TOTP",
+   "categoria": "Fundamentos",
+   "definicion": "Código de 6 dígitos que cambia cada 30 segundos, generado en tu app.",
+   "detalle": "Se calcula con un secreto compartido y la hora. A diferencia del SMS, no depende de tu operador, así que resiste el SIM swapping."
+  },
+  {
+   "termino": "Passkey",
+   "categoria": "Fundamentos",
+   "definicion": "Llave que vive en tu dispositivo y sustituye a la contraseña.",
+   "detalle": "Usa criptografía de clave pública: el sitio nunca guarda un secreto que puedan robar. Es lo más resistente al phishing porque va atada al dominio."
+  },
+  {
+   "termino": "SIM swapping",
+   "categoria": "Ataques",
+   "definicion": "Robar tu número de teléfono pidiendo un duplicado de SIM a tu operador.",
+   "detalle": "Con tu número, el atacante recibe tus SMS, incluidos los códigos de 2FA. Por eso conviene usar app autenticadora o passkey."
+  },
+  {
+   "termino": "Regla 3-2-1",
+   "categoria": "Fundamentos",
+   "definicion": "3 copias de tus datos, en 2 medios distintos, con 1 fuera de tu casa.",
+   "detalle": "Cubre desastres distintos: disco dañado, nube caída, robo, incendio o ransomware. Y hay que probar que se restaure."
+  },
+  {
+   "termino": "Huella digital",
+   "categoria": "Fundamentos",
+   "definicion": "Todo el rastro que dejas: cuentas viejas, apps con permisos, datos regados.",
+   "detalle": "Lo que no existe no se filtra. Cerrar cuentas que ya no usas y quitar permisos innecesarios reduce tu superficie de ataque."
+  },
   {
    "termino": "2FA",
    "categoria": "Fundamentos",
@@ -3745,7 +4756,7 @@ const FV_CONTENT = {
    "termino": "Diceware",
    "categoria": "Fundamentos",
    "definicion": "Método de contraseñas con palabras aleatorias lanzando dados.",
-   "detalle": "4-6 palabras de una lista de 7776 dan 50-77 bits de entropía real y son memorizables. La receta recomendada en esta academia."
+   "detalle": "4-6 palabras de una lista de 7776 dan 50-77 bits de entropía real y son memorizables. La receta que recomiendo."
   },
   {
    "termino": "Diffie-Hellman",

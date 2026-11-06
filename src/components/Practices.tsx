@@ -5,6 +5,8 @@ import { FlowStepper, LayerStack, MatchGame } from "./widgets/CommonWidgets";
 import { BinaryWidget, EncapWidget, FirewallWidget, SubnetWidget } from "./widgets/NetWidgets";
 import { ChmodWidget, MemoryWidget, ProcessWidget, SchedulerWidget, TerminalWidget } from "./widgets/OsWidgets";
 import { aesCifrar, aesDescifrar, caesar, entropia, modPow, normalizar, sha, tiempoCrack } from "../lib/crypto";
+import { BruteLab, FirmaLab, FrecuenciaLab, KdfLab, RsaLab, VigenereLab, XorLab } from "./widgets/CryptoWidgets";
+import { LogsLab, PaquetesLab, PythonLab, RedesLab } from "./widgets/LabWidgets";
 import { C } from "../lib/content";
 import type { MensajePhishing, Practica } from "../types";
 import { cn } from "../utils/cn";
@@ -304,11 +306,84 @@ function Widget({ w, props, onDone }: { w: string; props?: any; onDone: Done }) 
     binary: <BinaryWidget />, subnet: <SubnetWidget />, encap: <EncapWidget />, firewall: <FirewallWidget />,
     procs: <ProcessWidget />, scheduler: <SchedulerWidget />, memory: <MemoryWidget />, chmod: <ChmodWidget />,
     terminal: <TerminalWidget mission={props?.mission} />,
+    xor: <XorLab />, rsa: <RsaLab />, firma: <FirmaLab />, frecuencia: <FrecuenciaLab />,
+    kdf: <KdfLab />, brute: <BruteLab />, vigenere: <VigenereLab />,
+    python: <PythonLab />, paquetes: <PaquetesLab />, redes: <RedesLab />, logs: <LogsLab />,
   };
   return <div>{map[w] ?? <p>Simulador «{w}» no disponible.</p>}<Hecho onDone={onDone} /></div>;
 }
 
+/* Explicación por defecto cuando la práctica no trae su propio «porque».
+   Así TODO el laboratorio explica por qué se hace lo que se hace. */
+const PORQUE_GENERICO: Record<string, string> = {
+  codigo:
+    "Predecir la salida antes de ejecutar y después comparar es la forma más rápida de aprender: la diferencia entre lo que esperabas y lo que salió es exactamente lo que te faltaba entender.",
+  orden:
+    "El orden es la lección. En seguridad y en redes, hacer lo correcto en el orden equivocado deja el mismo hueco: primero se corta el acceso, después se limpia.",
+  escribir:
+    "Escribirlo con tus palabras obliga al cerebro a recuperarlo, no solo a reconocerlo. Lo que recuperas se queda; lo que solo lees se olvida al día siguiente.",
+  phishing:
+    "Los reflejos se entrenan con ejemplos reales. La próxima vez no vas a tener tiempo de razonar: vas a tener dos segundos para notar el remitente o el dominio.",
+  cesar:
+    "Un César se rompe probando 25 posibilidades. La lección no es el cifrado, es que la fuerza bruta siempre gana cuando el espacio de claves es pequeño.",
+  hash:
+    "Un hash no se puede revertir y cambia por completo con un solo carácter: por eso sirve para comprobar integridad y para guardar contraseñas sin guardar la contraseña.",
+  password:
+    "La entropía manda. La longitud multiplica las combinaciones mucho más rápido que cualquier símbolo raro, y eso es justo lo que mide el medidor.",
+  aes:
+    "Cifrar de verdad (con WebCrypto, no una simulación) muestra por qué hacen falta contraseña, sal y un algoritmo serio: ahí no hay adornos.",
+  dh:
+    "Dos desconocidos acuerdan un secreto sin enviarlo nunca. Eso es la base de cada conexión HTTPS que abres todos los días.",
+  "w:terminal":
+    "En la terminal se ve lo que de verdad pasa en el sistema, sin ventanas de por medio. Por eso casi todos los manuales de seguridad te mandan ahí.",
+  "w:subnet":
+    "Dividir una red en subredes es decidir quién puede hablar con quién sin comprar un router nuevo: es segmentación, la misma idea que un firewall pero a nivel de direcciones.",
+  "w:firewall":
+    "Un firewall es una lista de decisiones: por defecto se niega todo y se abre solo lo que hace falta. Ese «por defecto cerrado» es lo que evita la mayoría de sorpresas.",
+  "w:chmod":
+    "Los permisos son el control de acceso más antiguo de Unix y siguen salvando servidores: si un archivo no necesita ser escribible por todos, no debe serlo.",
+  "w:binary":
+    "Todo lo que hace la computadora es binario con nombre bonito. Verlo te quita el miedo y te explica por qué una IP tiene cuatro números de 0 a 255.",
+  "w:encap":
+    "Cada capa envuelve a la anterior como una cebolla: entender el encapsulamiento es entender por qué un paquete llega aunque cambie de red por el camino.",
+  "w:procs":
+    "Un proceso es un programa con vida propia y dueño. Saber leerlos es cómo descubres qué está consumiendo tu PC o qué se coló sin permiso.",
+  "w:scheduler":
+    "El planificador decide quién usa el CPU y por cuánto tiempo. De ahí salen la sensación de lentitud y los cuelgues que parecen misteriosos.",
+  "w:memory":
+    "La memoria se administra por bloques y páginas: cuando se acaba, el sistema empieza a matar procesos. Eso explica los cierres repentinos.",
+  "w:flow":
+    "Seguir el flujo de un paquete paso a paso convierte «internet no sirve» en un diagnóstico con culpable.",
+  "w:layers":
+    "El modelo de capas existe para que puedas cambiar el wifi sin reescribir tu navegador. Cada capa solo habla con la de al lado.",
+  "w:match":
+    "Emparejar conceptos obliga a distinguirlos. En seguridad, confundir «autenticación» con «autorización» es el error que abre puertas.",
+};
+
+function porQueDe(p: Practica): string | undefined {
+  if (p.porque) return p.porque;
+  return PORQUE_GENERICO[p.tipo === "widget" ? `w:${p.w}` : p.tipo];
+}
+
+function PorQue({ texto }: { texto: string }) {
+  return (
+    <div className="card mt-3 p-3" style={{ background: "#1b1233", borderLeft: "4px solid var(--violet)" }}>
+      <p className="label" style={{ color: "var(--violet)" }}>¿Por qué funciona así?</p>
+      <p className="mt-1 text-[16px] leading-relaxed text-[var(--text-2)]">{texto}</p>
+    </div>
+  );
+}
+
 export function PracticaView({ p, onDone }: { p: Practica; onDone: Done }) {
+  return (
+    <>
+      {<Contenido p={p} onDone={onDone} />}
+      {porQueDe(p) && <PorQue texto={porQueDe(p)!} />}
+    </>
+  );
+}
+
+function Contenido({ p, onDone }: { p: Practica; onDone: Done }) {
   switch (p.tipo) {
     case "widget": return <Widget w={p.w} props={p.props} onDone={onDone} />;
     case "codigo": return <Codigo p={p} onDone={onDone} />;

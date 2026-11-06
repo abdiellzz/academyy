@@ -16,4 +16,6 @@ export default defineConfig({
       "@": path.resolve(__dirname, "src"),
     },
   },
+  // El servidor de desarrollo también sirve desde otros hosts (sandbox, LAN).
+  server: { host: true, port: 5173, allowedHosts: true },
 });

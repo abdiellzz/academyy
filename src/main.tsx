@@ -4,16 +4,10 @@ import "./index.css";
 import "./content.js"; // define window.FV_CONTENT
 import App from "./App";
 import { installProtection } from "./lib/protect";
-import { monkeyFaviconSvg } from "./components/PixelArt";
+import { registrarSW } from "./lib/pwa";
 
 installProtection();
-
-try {
-  const link = document.createElement("link");
-  link.rel = "icon";
-  link.href = "data:image/svg+xml," + encodeURIComponent(monkeyFaviconSvg());
-  document.head.appendChild(link);
-} catch { /* sin favicon */ }
+registrarSW();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

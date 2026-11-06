@@ -110,7 +110,7 @@ p { margin: 0; }
 
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  min-height: 42px; padding: 0 16px;
+  min-height: 46px; padding: 0 20px;
   border: 2px solid #000;
   background: var(--surface-3);
   color: var(--text);
@@ -128,8 +128,16 @@ p { margin: 0; }
 .btn-green:hover { background: #63ec95; }
 .btn-ghost { background: transparent; box-shadow: none; border-color: transparent; color: var(--text-2); }
 .btn-ghost:hover { border-color: #000; background: var(--surface-2); color: var(--text); }
-.btn-sm { min-height: 34px; padding: 0 11px; font-size: 9px; }
-.btn-xs { min-height: 28px; padding: 0 8px; font-size: 8px; }
+.btn-sm { min-height: 38px; padding: 0 13px; font-size: 9px; }
+.btn-xs { min-height: 30px; padding: 0 9px; font-size: 8px; }
+/* Botón grande: la acción principal de una pantalla, sin dudas. */
+.btn-xl {
+  min-height: 58px; padding: 0 26px; font-size: 12px; gap: 12px;
+  box-shadow: inset 2px 2px 0 #ffe0a0, inset -4px -4px 0 var(--accent-deep), 6px 6px 0 #000;
+}
+.btn-xl:hover { transform: translate(-2px, -2px); box-shadow: inset 2px 2px 0 #ffe0a0, inset -4px -4px 0 var(--accent-deep), 8px 8px 0 #000; }
+.btn-cta { background: var(--accent); color: #1a0f00; }
+.btn-cta:hover { background: var(--accent-soft); }
 /* compat motores */
 .btn-secondary { }
 .btn-emerald { background: var(--green); color: #04220f; }
@@ -181,11 +189,49 @@ input[type="checkbox"] { accent-color: var(--accent); }
 
 /* ── Cielo espacial ── */
 .space { position: fixed; inset: 0; z-index: -1; background: radial-gradient(ellipse at 70% 0%, #241a44 0%, #120e22 40%, var(--bg) 75%); }
-.stars, .stars2 {
+.stars, .stars2, .stars3 {
   position: absolute; inset: 0;
   background-repeat: repeat;
   image-rendering: pixelated;
 }
+/* nebulosas: manchas de color que se mueven muy lento */
+.nebula {
+  position: absolute; inset: -12%;
+  background:
+    repeating-conic-gradient(rgba(122, 60, 200, 0.20) 0% 25%, transparent 0% 50%),
+    repeating-conic-gradient(rgba(30, 110, 200, 0.15) 0% 25%, transparent 0% 50%),
+    repeating-conic-gradient(rgba(255, 120, 60, 0.09) 0% 25%, transparent 0% 50%);
+  background-size: 48px 48px, 72px 72px, 96px 96px;
+  background-position: 0 0, 24px 12px, 60px 36px;
+  -webkit-mask-image:
+    radial-gradient(ellipse 55% 45% at 16% 20%, #000 0%, transparent 72%),
+    radial-gradient(ellipse 58% 48% at 84% 68%, #000 0%, transparent 74%);
+  mask-image:
+    radial-gradient(ellipse 55% 45% at 16% 20%, #000 0%, transparent 72%),
+    radial-gradient(ellipse 58% 48% at 84% 68%, #000 0%, transparent 74%);
+  animation: nebula-drift 46s ease-in-out infinite alternate;
+}
+/* tramado global sobre el cielo: nada de degradados limpios */
+.space-dither {
+  position: absolute; inset: 0;
+  background-image: repeating-conic-gradient(rgba(255, 255, 255, 0.028) 0% 25%, transparent 0% 50%);
+  background-size: 6px 6px;
+  opacity: 0.8;
+}
+@keyframes nebula-drift {
+  to { transform: translate3d(-2.5%, 2%, 0) scale(1.06); }
+}
+.stars3 {
+  background-image:
+    radial-gradient(#fff 0 2px, transparent 2.5px),
+    radial-gradient(#c9a2ff 0 1px, transparent 1.5px),
+    radial-gradient(#8ff0d0 0 1px, transparent 1.5px);
+  background-size: 631px 631px, 487px 487px, 743px 743px;
+  background-position: 30px 40px, 210px 90px, 500px 260px;
+  opacity: 0.9;
+  animation: stars-drift 90s linear infinite;
+}
+@keyframes stars-drift { to { background-position: 661px 671px, -277px 577px, 1243px 1003px; } }
 .stars {
   background-image:
     radial-gradient(#fff 0 1px, transparent 1.5px), radial-gradient(#ffd98a 0 1px, transparent 1.5px), radial-gradient(#a9e8ff 0 1px, transparent 1.5px);
@@ -236,6 +282,349 @@ input[type="checkbox"] { accent-color: var(--accent); }
 }
 @media (max-width: 640px) {
   body { font-size: 16px; }
-  .btn { padding: 0 12px; }
+  .btn { padding: 0 14px; min-height: 48px; }
+  .btn-sm { min-height: 40px; }
   .term, .code-pixel { font-size: 18px; }
+  /* Móvil: la Tierra pixelada se queda detrás del texto, más pequeña y atenuada,
+     para que el hero se lea completo sin scroll. */
+  .cmd-hero { padding-bottom: 1rem; }
+  .globe-dock { width: min(112vw, 520px); margin: -1.5rem auto -4rem; opacity: 0.62; }
+  .globe-dock::after {
+    content: "";
+    position: absolute; inset: 0;
+    background: linear-gradient(0deg, #0b0913 18%, transparent 62%);
+    pointer-events: none;
+  }
+  .hero-title { font-size: clamp(19px, 6.4vw, 30px); }
+  .cert-marco { min-height: 0; padding: 16px 12px; }
+  .cert-pie { grid-template-columns: 1fr; gap: 14px; justify-items: center; text-align: center; }
+  .cert-datos { text-align: center; }
+  .cert-firmas { justify-content: center; }
+  .cert-final { justify-content: center; text-align: center; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   HOME · centro de mando
+   ═══════════════════════════════════════════════════════════ */
+
+.logo-img { display: block; image-rendering: pixelated; filter: drop-shadow(3px 3px 0 rgba(0,0,0,.55)); }
+
+.cmd-hero { position: relative; isolation: isolate; overflow: hidden; padding-bottom: 2rem; background: #0b0913; }
+
+/* ── Fondo pixel del hero: tramado de bloques, sin una sola línea ── */
+.cmd-hero-bg { position: absolute; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+/* tramado fino (bayas) que se apaga hacia arriba */
+.cmd-hero-bg .px-a {
+  position: absolute; inset: 0;
+  background-image: repeating-conic-gradient(rgba(185, 139, 255, 0.07) 0% 25%, transparent 0% 50%);
+  background-size: 12px 12px;
+  -webkit-mask-image: linear-gradient(to top, #000 0%, rgba(0,0,0,.55) 45%, transparent 88%);
+  mask-image: linear-gradient(to top, #000 0%, rgba(0,0,0,.55) 45%, transparent 88%);
+}
+/* bloques grandes del color del mundo, solo abajo */
+.cmd-hero-bg .px-b {
+  position: absolute; inset: auto 0 0 0; height: 46%;
+  background-image: repeating-conic-gradient(color-mix(in srgb, var(--world) 16%, transparent) 0% 25%, transparent 0% 50%);
+  background-size: 36px 36px;
+  -webkit-mask-image: linear-gradient(to top, #000 0%, rgba(0,0,0,.4) 55%, transparent 100%);
+  mask-image: linear-gradient(to top, #000 0%, rgba(0,0,0,.4) 55%, transparent 100%);
+  opacity: 0.5;
+}
+/* estrellas cuadradas grandes, dibujadas con sombras duras */
+.cmd-hero-bg .px-c {
+  position: absolute; inset: 0;
+  background-image:
+    radial-gradient(#fff 0 2px, transparent 2px),
+    radial-gradient(#c9a2ff 0 1.5px, transparent 1.5px),
+    radial-gradient(#8ff0d0 0 1.5px, transparent 1.5px);
+  background-size: 197px 197px, 283px 283px, 349px 349px;
+  background-position: 20px 40px, 130px 70px, 60px 180px;
+  image-rendering: pixelated;
+  opacity: 0.8;
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 70%);
+  mask-image: linear-gradient(to bottom, #000 0%, transparent 70%);
+  animation: twinkle 3.4s steps(2) infinite;
+}
+/* borde inferior de bloques (horizonte pixelado) */
+.cmd-hero-bg .px-d {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 10px;
+  background-image: repeating-linear-gradient(90deg, rgba(90, 210, 255, 0.5) 0 10px, rgba(90, 210, 255, 0.12) 10px 20px);
+}
+
+/* La Tierra grande en la esquina */
+.globe-dock {
+  position: relative;
+  width: min(92vw, 470px);
+  margin: -0.5rem auto 0;
+  padding-bottom: 1rem;
+  transform: translate3d(calc(var(--px, 0) * 16px), calc(var(--py, 0) * 12px), 0);
+  transition: transform 0.55s cubic-bezier(0.2, 0.7, 0.3, 1);
+  pointer-events: none;
+}
+.globe-dock canvas { pointer-events: auto; }
+.globe-float { animation: globe-float 8s ease-in-out infinite; }
+@keyframes globe-float { 50% { transform: translateY(-12px); } }
+.globe-tag { position: absolute; top: 1%; left: 1%; z-index: 2; }
+.globe-tag .live-dot { background: var(--cyan); }
+
+@media (min-width: 1024px) {
+  .globe-dock {
+    position: absolute;
+    left: -19%;
+    bottom: -21%;
+    width: min(66vw, 900px);
+    margin: 0;
+    padding: 0;
+  }
+  .globe-tag { display: none; }
+}
+@media (min-width: 1280px) {
+  .globe-dock { width: min(72vw, 1120px); left: -21%; bottom: -26%; }
+}
+@media (min-width: 1600px) {
+  .globe-dock { width: min(78vw, 1520px); left: -22%; bottom: -28%; }
+}
+
+/* Filas de destinos */
+.hero-title { font-size: clamp(21px, 3.5vw, 40px); line-height: 1.32; }
+
+.squad { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.squad-name {
+  font-family: var(--font-label);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  border: 2px solid #000;
+  background: var(--surface-2);
+  padding: 1px 5px;
+}
+.squad-b { animation-delay: -0.6s; }
+
+.hero-brand { position: relative; z-index: 10; padding: 1rem 1rem 0; }
+@media (min-width: 1024px) {
+  .hero-brand {
+    position: absolute; left: 1.5rem; top: 2rem; padding: 8px 12px;
+    background: rgba(11, 9, 19, 0.82);
+    border: 2px solid #000;
+    box-shadow: var(--hard-sm);
+  }
+}
+
+.dest {
+  --world: var(--accent);
+  position: relative;
+  display: grid;
+  grid-template-columns: 18px 44px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  text-align: left;
+  background: var(--surface);
+  border: 2px solid var(--border-neutral);
+  box-shadow: var(--hard-sm);
+  transition: transform 0.1s steps(2), border-color 0.12s linear, background 0.12s linear;
+}
+.dest:hover, .dest-on { background: var(--surface-2); border-color: var(--world); transform: translateX(-2px); }
+.dest-on { box-shadow: var(--hard-sm), inset 4px 0 0 var(--world); }
+.dest:active { transform: translateX(1px) translateY(1px); box-shadow: none; }
+
+.dest-hash { font-family: var(--font-title); font-size: 8px; color: var(--text-3); }
+.dest-tile { display: grid; place-items: center; width: 44px; height: 44px; border: 2px solid #000; }
+.dest-main { display: flex; min-width: 0; flex-direction: column; gap: 2px; }
+.dest-bioma { font-family: var(--font-label); font-size: 8.5px; letter-spacing: 0.14em; text-transform: uppercase; }
+.dest-nombre { font-weight: 700; font-size: 17px; line-height: 1.15; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dest-barra { display: block; height: 5px; margin-top: 3px; background: #120e1c; border: 1px solid #000; overflow: hidden; }
+.dest-barra > span { display: block; height: 100%; transition: width 0.4s steps(8); }
+.dest-meta { display: flex; align-items: center; gap: 6px; }
+.dest-pct { font-family: var(--font-label); font-size: 9px; color: var(--text-3); }
+.dest-flecha { font-family: var(--font-title); font-size: 10px; color: var(--text-3); transition: transform 0.12s steps(2), color 0.12s linear; }
+.dest:hover .dest-flecha, .dest-on .dest-flecha { color: var(--world); transform: translateX(2px); }
+
+/* Panel del destino elegido */
+.dest-detalle {
+  --world: var(--accent);
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: #120e1c;
+  border: 2px solid #000;
+  border-left: 4px solid var(--world);
+  box-shadow: var(--bevel), var(--hard);
+}
+
+/* Tablero */
+.stat-strip {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2px;
+  background: #000;
+  background-image: repeating-conic-gradient(rgba(255, 255, 255, 0.022) 0% 25%, transparent 0% 50%);
+  background-size: 8px 8px;
+  border: 2px solid #000;
+  box-shadow: var(--hard);
+}
+@media (min-width: 768px) { .stat-strip { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.stat { background: var(--surface); padding: 12px 14px; }
+.stat-num {
+  margin-top: 6px;
+  font-family: var(--font-title);
+  font-size: 20px;
+  line-height: 1.2;
+  color: var(--accent);
+  text-shadow: 2px 2px 0 #000;
+  overflow-wrap: anywhere;
+}
+
+/* Chips que se pueden pulsar y flecha de las tarjetas */
+.chip-btn { cursor: pointer; transition: transform 0.08s steps(2), color 0.12s linear, border-color 0.12s linear; }
+.chip-btn:hover { color: var(--accent); border-color: var(--accent); transform: translateY(-1px); }
+.chip-live { border-color: #000; background: #0f2418; color: var(--green); }
+.vault-arrow {
+  font-family: var(--font-title);
+  font-size: 14px;
+  color: var(--text-3);
+  transition: transform 0.12s steps(2), color 0.12s linear;
+}
+.card:hover .vault-arrow { color: var(--world); transform: translateX(3px); }
+
+
+/* ═══════════════════════════════════════════════════════════
+   BIOMAS · paisajes de siluetas escalonadas (pixel art puro)
+   ═══════════════════════════════════════════════════════════ */
+.biome { position: relative; overflow: hidden; border-bottom: 2px solid #000; }
+.biome-astro { position: absolute; left: 12%; top: 16%; border: 2px solid #000; }
+.biome-dither {
+  position: absolute; inset: 0;
+  background-image: repeating-conic-gradient(rgba(255, 255, 255, 0.055) 0% 25%, transparent 0% 50%);
+  background-size: 8px 8px;
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 85%);
+  mask-image: linear-gradient(to bottom, #000 0%, transparent 85%);
+}
+.biome-capa { position: absolute; inset: 0; }
+.biome-horizonte { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; opacity: 0.55; }
+
+/* ═══════════════════════════════════════════════════════════
+   CERTIFICADO DE FINALIZACIÓN
+   ═══════════════════════════════════════════════════════════ */
+.cert {
+  position: relative;
+  background: #0d0b10;
+  border: 6px solid #000;
+  padding: 7px;
+  box-shadow: 6px 6px 0 #000;
+}
+.cert-marco {
+  position: relative;
+  padding: clamp(18px, 3vw, 40px) clamp(18px, 3.4vw, 52px);
+  min-height: 560px;
+  background-color: #0d0b10;
+  background-image:
+    repeating-conic-gradient(rgba(255, 255, 255, 0.028) 0% 25%, transparent 0% 50%),
+    repeating-linear-gradient(0deg, rgba(255, 176, 46, 0.55) 0 8px, transparent 8px 20px),
+    repeating-linear-gradient(90deg, rgba(255, 176, 46, 0.55) 0 8px, transparent 8px 20px);
+  background-size: 8px 8px, 100% 100%, 100% 100%;
+  background-position: 0 0, 0 0, 0 0;
+  background-repeat: repeat, no-repeat, no-repeat;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+/* el borde punteado va por dentro: dibujamos un marco de bloques con outline */
+.cert-marco::before {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border: 4px solid transparent;
+  background:
+    repeating-linear-gradient(90deg, var(--accent) 0 10px, transparent 10px 22px) top/100% 10px no-repeat,
+    repeating-linear-gradient(90deg, var(--accent) 0 10px, transparent 10px 22px) bottom/100% 10px no-repeat,
+    repeating-linear-gradient(0deg, var(--accent) 0 10px, transparent 10px 22px) left/10px 100% no-repeat,
+    repeating-linear-gradient(0deg, var(--accent) 0 10px, transparent 10px 22px) right/10px 100% no-repeat;
+  pointer-events: none;
+}
+.cert-esq { position: absolute; width: 34px; height: 34px; background: #ffd67a; border: 3px solid #000; z-index: 1; }
+.cert-esq-a { left: 6px; top: 6px; }
+.cert-esq-b { right: 6px; top: 6px; }
+.cert-esq-c { left: 6px; bottom: 6px; }
+.cert-esq-d { right: 6px; bottom: 6px; }
+
+.cert-cab { display: flex; align-items: center; gap: 14px; align-self: flex-start; }
+.cert-logo { height: clamp(34px, 4vw, 54px); width: auto; image-rendering: pixelated; }
+.cert-marca { font-family: var(--font-title); font-size: clamp(14px, 1.9vw, 22px); color: var(--text); letter-spacing: 0.02em; }
+.cert-sub { margin-top: 6px; font-family: var(--font-label); font-size: clamp(8px, 0.95vw, 11px); letter-spacing: 0.16em; color: var(--text-3); }
+
+.cert-titulo {
+  margin-top: clamp(14px, 2.4vw, 30px);
+  font-family: var(--font-title);
+  font-size: clamp(24px, 5.2vw, 62px);
+  color: var(--accent);
+  text-shadow: 4px 4px 0 #000;
+  letter-spacing: 0.02em;
+}
+.cert-subtitulo {
+  margin-top: 10px;
+  font-family: var(--font-title);
+  font-size: clamp(11px, 1.7vw, 20px);
+  color: var(--text);
+  text-shadow: 3px 3px 0 #000;
+}
+.cert-etiqueta { font-family: var(--font-label); font-size: clamp(8px, 0.95vw, 11px); letter-spacing: 0.18em; color: var(--text-3); }
+.cert-nombre {
+  margin-top: 6px;
+  font-family: var(--font-title);
+  font-size: clamp(16px, 2.4vw, 28px);
+  color: var(--text);
+  text-shadow: 3px 3px 0 #000;
+}
+.cert-linea { display: block; width: min(520px, 70%); height: 6px; margin-top: 10px; background: var(--accent); box-shadow: 0 6px 0 #000; }
+.cert-cuerpo {
+  margin-top: clamp(14px, 2vw, 24px);
+  max-width: 720px;
+  font-size: clamp(13px, 1.15vw, 16px);
+  line-height: 1.75;
+  color: var(--text-2);
+}
+
+.cert-pie { margin-top: auto; padding-top: clamp(16px, 2.4vw, 30px); width: 100%; display: grid; grid-template-columns: 1fr auto 1fr; align-items: end; gap: 16px; }
+.cert-datos { text-align: left; }
+.cert-dato { margin-top: 4px; font-family: var(--font-mono); font-size: clamp(11px, 1.1vw, 15px); color: var(--text-2); }
+.cert-nota { margin-top: 2px; font-family: var(--font-title); font-size: clamp(18px, 2.4vw, 30px); color: var(--green); text-shadow: 3px 3px 0 #000; }
+
+.cert-sello { position: relative; width: clamp(78px, 9vw, 116px); height: clamp(96px, 11vw, 140px); margin: 0 auto; }
+.cert-sello-cara {
+  position: absolute; left: 0; top: 0; width: 100%; height: clamp(58px, 7vw, 88px);
+  display: grid; place-items: center;
+  background: #3a2400; border: 4px solid #ffd67a; box-shadow: 0 6px 0 #000;
+  font-family: var(--font-title); font-size: clamp(16px, 2vw, 24px); color: #ffd67a;
+}
+.cert-sello-pct {
+  position: absolute; left: 0; top: clamp(44px, 5.4vw, 70px); width: 100%;
+  font-family: var(--font-label); font-size: clamp(9px, 1vw, 12px); color: var(--green); text-align: center;
+}
+.cert-sello-cinta { position: absolute; bottom: 0; width: 26%; height: clamp(32px, 4vw, 52px); background: #96283c; border: 3px solid #000; }
+.cert-cinta-a { left: 22%; }
+.cert-cinta-b { right: 22%; background: #6e1a2a; }
+
+.cert-firmas { display: flex; justify-content: flex-end; gap: clamp(18px, 3vw, 44px); }
+.cert-firma-linea { display: block; width: clamp(120px, 14vw, 190px); height: 4px; background: var(--text-3); }
+.cert-firma { margin-top: 6px; font-family: var(--font-label); font-size: clamp(8px, 0.95vw, 11px); letter-spacing: 0.14em; color: var(--text-2); }
+
+.cert-final {
+  margin-top: clamp(14px, 2vw, 22px);
+  width: 100%;
+  display: flex; flex-wrap: wrap; gap: 6px 18px; justify-content: space-between;
+  font-family: var(--font-label); font-size: clamp(7px, 0.85vw, 10px); letter-spacing: 0.1em; color: var(--text-3);
+  text-align: left;
+}
+.cert-aviso { color: #6d6382; }
+
+@media print {
+  header, footer, .space, .no-print, .skip-link { display: none !important; }
+  body { background: #0d0b10 !important; }
+  main { padding: 0 !important; max-width: none !important; }
+  .cert { box-shadow: none; border-width: 4px; }
+  .cert-marco { min-height: 0; }
+  @page { size: A4 landscape; margin: 8mm; }
 }

@@ -1,14 +1,12 @@
 /* Endurecimiento del lado del cliente (disuasorio; la protección real es la licencia).
    - Aviso de self-XSS en consola.
-   - Anti-clickjacking: no se deja incrustar en otros sitios.
-   - Copia masiva de contenido se recorta con atribución. */
+   - Copia masiva de contenido se recorta con atribución.
+   (El anti-clickjacking quedó desactivado: rompía las vistas previas embebidas.) */
 
 export function installProtection(): void {
-  try {
-    if (window.top && window.top !== window.self) window.top.location.href = window.self.location.href;
-  } catch {
-    document.body.textContent = "FactionVault no puede mostrarse dentro de otro sitio.";
-  }
+  // Nota: el anti-iframe (anti-clickjacking) está desactivado a propósito para
+  // poder mostrar la app dentro de vistas previas y demos embebidas.
+  // Si algún día se quiere reactivar, va aquí, antes del aviso de consola.
 
   try {
     console.log("%c¡ALTO! ✋", "font: 28px 'Press Start 2P', monospace; color:#ff5a6a; text-shadow:3px 3px 0 #000");
