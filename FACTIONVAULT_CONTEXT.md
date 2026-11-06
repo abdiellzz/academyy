@@ -26,6 +26,8 @@ src/index.css         sistema visual: paleta oficial, .card .chip .btn .btn-prim
                       cielo con estrellas, .grass, .warp, reduced-motion
 src/lib/content.ts    C = window.FV_CONTENT; helpers
 src/assets/logo.ts    logo oficial (mono + cofre) en data URI: el build sigue siendo un archivo
+src/lib/py.ts         mini Python → JS para el laboratorio (variables, f-strings, listas,
+                      if/elif/else, for-in, range) con print real
 src/lib/busqueda.ts   puente de una línea para que el buscador rellene el glosario
 src/lib/planet.ts     motor de la Tierra en 3D sin DOM: máscara de continentes (equirect 256×128),
                       albedo, geometría precalculada y render de un frame RGBA (atmósfera, nubes
@@ -51,7 +53,8 @@ src/components/
                       y snippets; navega con ↑↓/Enter
   widgets/CryptoWidgets.tsx  xor, vigenere, frecuencia, rsa, firma, kdf y brute
   Nav.tsx / Footer.tsx
-src/views/            Home («centro de mando»: Allen y Hailey, Tierra 3D con cohete en la esquina,
+src/views/            Labs (Laboratorio: 23 simuladores en 5 áreas, tarjeta explicativa y widget
+                      en línea), Home («centro de mando»: Allen y Hailey, Tierra 3D con cohete en la esquina,
                       lista de destinos con preview, tablero, laboratorio abierto y accesos a todas
                       las secciones), World (WorldView + LevelView + reto),
                       Sections (Retos, Phishing, Tutoriales, Glosario, Snippets, Progreso)

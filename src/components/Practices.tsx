@@ -6,6 +6,7 @@ import { BinaryWidget, EncapWidget, FirewallWidget, SubnetWidget } from "./widge
 import { ChmodWidget, MemoryWidget, ProcessWidget, SchedulerWidget, TerminalWidget } from "./widgets/OsWidgets";
 import { aesCifrar, aesDescifrar, caesar, entropia, modPow, normalizar, sha, tiempoCrack } from "../lib/crypto";
 import { BruteLab, FirmaLab, FrecuenciaLab, KdfLab, RsaLab, VigenereLab, XorLab } from "./widgets/CryptoWidgets";
+import { PaquetesLab, PythonLab } from "./widgets/LabWidgets";
 import { C } from "../lib/content";
 import type { MensajePhishing, Practica } from "../types";
 import { cn } from "../utils/cn";
@@ -307,6 +308,7 @@ function Widget({ w, props, onDone }: { w: string; props?: any; onDone: Done }) 
     terminal: <TerminalWidget mission={props?.mission} />,
     xor: <XorLab />, rsa: <RsaLab />, firma: <FirmaLab />, frecuencia: <FrecuenciaLab />,
     kdf: <KdfLab />, brute: <BruteLab />, vigenere: <VigenereLab />,
+    python: <PythonLab />, paquetes: <PaquetesLab />,
   };
   return <div>{map[w] ?? <p>Simulador «{w}» no disponible.</p>}<Hecho onDone={onDone} /></div>;
 }

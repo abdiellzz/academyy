@@ -632,3 +632,122 @@ export function renderGlobe(
     }
   });
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   PIXELADO · Del render suave al sprite de bloques.
+   Se agrupa cada bloque de `pix`×`pix`, se aplica luz esférica + rim light,
+   se cuantiza a una paleta fija de 15 colores y se dibuja contorno + halo.
+   El resultado es la Tierra como sprite de pixel art, no una esfera 3D.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+const PALETA_TIERRA: [number, number, number][] = [
+  [8, 18, 34], // 0 contorno
+  [16, 46, 78], // 1 océano profundo
+  [28, 86, 136], // 2 océano
+  [48, 126, 178], // 3 océano claro
+  [88, 170, 210], // 4 costa
+  [30, 92, 52], // 5 selva oscura
+  [56, 134, 68], // 6 verde
+  [106, 178, 86], // 7 verde claro
+  [152, 120, 64], // 8 desierto
+  [208, 172, 102], // 9 arena
+  [232, 246, 255], // 10 hielo
+  [162, 210, 234], // 11 hielo sombra
+  [244, 250, 255], // 12 nube
+  [186, 208, 228], // 13 nube sombra
+  [30, 62, 96], // 14 halo
+];
+
+function colorMasCercano(r: number, g: number, b: number): number {
+  let mejor = 0;
+  let dist = Infinity;
+  for (let i = 0; i < PALETA_TIERRA.length; i++) {
+    const [R, G, B] = PALETA_TIERRA[i];
+    const d = (r - R) ** 2 * 0.3 + (g - G) ** 2 * 0.5 + (b - B) ** 2 * 0.2;
+    if (d < dist) {
+      dist = d;
+      mejor = i;
+    }
+  }
+  return mejor;
+}
+
+/**
+ * Convierte el buffer RGBA de `renderGlobe` (SIZE×SIZE) en un sprite de
+ * bloques de `pix` píxeles dentro de `dst` (low×low RGBA).
+ */
+export function pixelarTierra(src: Uint8ClampedArray, pix: number, dst: Uint8ClampedArray, low = SIZE / pix): void {
+  const idx = new Int16Array(low * low).fill(-1);
+  const centro = (low - 1) / 2;
+  const radio = low / 2;
+
+  for (let y = 0; y < low; y++) {
+    for (let x = 0; x < low; x++) {
+      let r = 0;
+      let g = 0;
+      let b = 0;
+      let a = 0;
+      for (let dy = 0; dy < pix; dy++) {
+        const fila = (y * pix + dy) * SIZE;
+        for (let dx = 0; dx < pix; dx++) {
+          const si = (fila + x * pix + dx) * 4;
+          const al = src[si + 3];
+          r += src[si] * al;
+          g += src[si + 1] * al;
+          b += src[si + 2] * al;
+          a += al;
+        }
+      }
+      if (a / (pix * pix) < 0.5 * 255) continue;
+
+      // luz esférica: el sol viene de arriba a la izquierda
+      const nx = (x - centro) / radio;
+      const ny = (y - centro) / radio;
+      const nz = Math.sqrt(Math.max(0.001, 1 - Math.min(1, nx * nx + ny * ny)));
+      const dot = Math.max(0, nx * -0.45 + ny * -0.5 + nz * 0.74);
+      const luz = 0.62 + 0.55 * dot;
+      const rim = nz < 0.3 ? 0.35 * (1 - nz / 0.3) : 0;
+      const mezcla = (v: number, objetivo: number) => v * (1 - rim) + objetivo * rim;
+
+      idx[y * low + x] = colorMasCercano(
+        Math.min(255, mezcla((r / a) * luz, 150)),
+        Math.min(255, mezcla((g / a) * luz, 205)),
+        Math.min(255, mezcla((b / a) * luz, 240)),
+      );
+    }
+  }
+
+  const opaco = (xx: number, yy: number) => xx >= 0 && yy >= 0 && xx < low && yy < low && idx[yy * low + xx] >= 0;
+  const salida = idx.slice();
+
+  for (let y = 0; y < low; y++) {
+    for (let x = 0; x < low; x++) {
+      const i = y * low + x;
+      if (idx[i] < 0) continue;
+      if (!(opaco(x - 1, y) && opaco(x + 1, y) && opaco(x, y - 1) && opaco(x, y + 1))) salida[i] = 0;
+    }
+  }
+  for (let y = 0; y < low; y++) {
+    for (let x = 0; x < low; x++) {
+      const i = y * low + x;
+      if (idx[i] >= 0) continue;
+      if (opaco(x - 1, y) || opaco(x + 1, y) || opaco(x, y - 1) || opaco(x, y + 1)) salida[i] = 14;
+    }
+  }
+
+  for (let i = 0; i < low * low; i++) {
+    const c = salida[i] < 0 ? null : PALETA_TIERRA[salida[i]];
+    const di = i * 4;
+    if (!c) {
+      dst[di] = 0;
+      dst[di + 1] = 0;
+      dst[di + 2] = 0;
+      dst[di + 3] = 0;
+    } else {
+      dst[di] = c[0];
+      dst[di + 1] = c[1];
+      dst[di + 2] = c[2];
+      dst[di + 3] = 255;
+    }
+  }
+}

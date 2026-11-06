@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { PixelIcon, type PixelIconName } from "./PixelArt";
 import { C } from "../lib/content";
+import { LABS } from "../views/Labs";
 import { pedirBusqueda } from "../lib/busqueda";
 import type { Ruta } from "../types";
 import { cn } from "../utils/cn";
@@ -44,6 +45,16 @@ function construir(): Hit[] {
         ruta: { v: "nivel", mundo: m.id, nivel: n.id, lab: true },
       });
     }
+  }
+  for (const l of LABS) {
+    out.push({
+      key: `l-${l.id}`,
+      tipo: "Laboratorio",
+      titulo: l.nombre,
+      sub: `${l.area} · ${l.nivel} · ${l.minutos} min`,
+      icon: l.icono,
+      ruta: { v: "laboratorio" },
+    });
   }
   for (const r of C.retos) {
     out.push({

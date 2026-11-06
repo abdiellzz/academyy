@@ -119,6 +119,7 @@ export function Home({ go }: { go: (r: Ruta) => void }) {
   }
 
   const accesos: { v: Ruta["v"]; label: string }[] = [
+    { v: "laboratorio", label: "Laboratorio" },
     { v: "retos", label: "Retos" },
     { v: "phishing", label: "Phishing" },
     { v: "tutoriales", label: "Guías" },
@@ -214,7 +215,7 @@ export function Home({ go }: { go: (r: Ruta) => void }) {
             </div>
             <div className="pb-1">
               <p className="label" style={{ color: "var(--accent)" }}>
-                ▶ Tu escuadrón
+                Tu escuadrón
               </p>
               <p className="mt-1 flex flex-wrap items-center gap-1.5">
                 <span className="chip">Nivel {lvl}</span>
@@ -222,9 +223,6 @@ export function Home({ go }: { go: (r: Ruta) => void }) {
                 <span className="chip">
                   {p.logros.length}/{LOGROS.length} logros
                 </span>
-              </p>
-              <p className="mt-1.5 max-w-[220px] text-[13px] leading-snug text-[var(--text-3)]">
-                Diel y Hailey despegan contigo: cada mundo es una misión y cada nivel, una expedición.
               </p>
             </div>
           </div>
@@ -234,13 +232,25 @@ export function Home({ go }: { go: (r: Ruta) => void }) {
           <div className="flex justify-end pb-8 pt-2 lg:pb-12 lg:pt-10">
             <div className="w-full max-w-[560px]">
               <h1 id="destino-title" className="hero-title">
-                Elige tu <span className="text-[var(--accent)]">destino</span>
+                Aprende <span className="text-[var(--accent)]">ciberseguridad</span> de verdad
               </h1>
               <p className="mt-3 text-[17px] leading-relaxed text-[var(--text-2)]">
-                {C.mundos.length} planetas, {C.mundos.length} misiones. Pasa el mouse para explorarlos y haz
-                clic para apuntar la nave. <b className="text-[var(--text)]">{done}</b> de {totalNiveles}{" "}
-                niveles ya están en tu mochila.
+                {C.mundos.length} mundos, {totalNiveles} niveles y laboratorios que funcionan en el navegador.
+                Teoría corta, práctica larga y un reto al final de cada nivel: de cero a criterio técnico.
               </p>
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                <span className="chip">Desde cero</span>
+                <span className="chip">Sin instalar nada</span>
+                <span className="chip">En español</span>
+                <span className="chip chip-live">
+                  {done}/{totalNiveles} niveles hechos
+                </span>
+              </div>
+
+              <div className="mt-6 mb-2 flex items-baseline justify-between gap-3">
+                <p className="label !text-[var(--text)]">Elige un mundo</p>
+                <p className="text-[12px] text-[var(--text-3)]">clic o ↑ ↓ · arrastra la Tierra</p>
+              </div>
 
               <div
                 role="listbox"
@@ -294,11 +304,6 @@ export function Home({ go }: { go: (r: Ruta) => void }) {
                 })}
               </div>
 
-              <p className="mt-2 text-[13px] text-[var(--text-3)]">
-                Clic para elegir · <b className="text-[var(--text-2)]">Enter</b> para despegar · flechas para
-                cambiar de mundo
-              </p>
-
               <div
                 key={mundo.id}
                 aria-live="polite"
@@ -337,16 +342,12 @@ export function Home({ go }: { go: (r: Ruta) => void }) {
                   )}
                 </div>
                 <p className="mt-2 text-[13px] text-[var(--text-3)]">
-                  {pctMundo}% completado · {mundo.niveles.length - doneMundo} niveles te faltan aquí
+                  {pctMundo}% completado · te faltan {mundo.niveles.length - doneMundo} niveles
                 </p>
               </div>
 
-              <p className="mt-2 text-[13px] text-[var(--text-3)]">
-                💡 Arrastra la Tierra para girarla: Diel y Hailey te marcan el destino.
-              </p>
-
               <div className="mt-3 flex flex-wrap items-center gap-1.5">
-                <span className="label">O salta directo a</span>
+                <span className="label">Ir directo a</span>
                 {accesos.map((a) => (
                   <button key={a.v} className="chip chip-btn" onClick={() => go({ v: a.v } as Ruta)}>
                     {a.label}
@@ -365,6 +366,60 @@ export function Home({ go }: { go: (r: Ruta) => void }) {
           <span className="globe-tag chip">
             <span className="live-dot" /> Tierra en vivo · arrástrame
           </span>
+        </div>
+      </section>
+
+      {/* ── Qué es esto y para quién ── */}
+      <section className="mx-auto max-w-[1240px] px-4 pt-8" aria-labelledby="proposito-title">
+        <div className="grid gap-4 lg:grid-cols-[1.05fr_1fr]">
+          <div className="card p-5">
+            <p className="label !text-[var(--accent)]">Qué es FactionVault</p>
+            <h2 id="proposito-title" className="mt-2">
+              Ciberseguridad explicada como se aprende de verdad
+            </h2>
+            <p className="mt-3 text-[16px] leading-relaxed text-[var(--text-2)]">
+              Una plataforma en español para entender cómo funcionan las cosas por dentro: redes,
+              sistemas operativos, Python, criptografía, ingeniería social y seguridad informática.
+              Cada nivel es teoría corta, un ejemplo cotidiano, un laboratorio que puedes tocar y un
+              reto que demuestra que lo entendiste.
+            </p>
+            <p className="mt-2 text-[16px] leading-relaxed text-[var(--text-2)]">
+              Sin vídeos de tres horas ni promesas raras: ejercicios, fallos que puedes cometer sin
+              romper nada y siempre la explicación del <b className="text-[var(--text)]">por qué</b>.
+            </p>
+            <button className="btn btn-primary btn-sm mt-4" onClick={() => go({ v: "laboratorio" })}>
+              <PixelIcon name="pickaxe" size={13} /> Entrar al laboratorio
+            </button>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+            {[
+              {
+                icon: "grass" as PixelIconName,
+                t: "Si empiezas de cero",
+                d: "No hace falta programar ni un equipo potente: todo corre en el navegador.",
+              },
+              {
+                icon: "torch" as PixelIconName,
+                t: "Si aprendes por tu cuenta",
+                d: "Ruta ordenada, progreso guardado y un reto por nivel para no engañarte a ti mismo.",
+              },
+              {
+                icon: "shield" as PixelIconName,
+                t: "Si ya trabajas en esto",
+                d: "Laboratorios técnicos: subredes, permisos, hashes, HMAC, PBKDF2, RSA y fuerza bruta real.",
+              },
+            ].map((x) => (
+              <div key={x.t} className="card flex items-start gap-3 p-3.5">
+                <span className="grid h-10 w-10 shrink-0 place-items-center border-2 border-black bg-[var(--surface-3)]">
+                  <PixelIcon name={x.icon} size={22} />
+                </span>
+                <div>
+                  <p className="text-[16px] font-bold leading-tight">{x.t}</p>
+                  <p className="mt-1 text-[14px] leading-snug text-[var(--text-2)]">{x.d}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 

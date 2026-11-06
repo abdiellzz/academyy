@@ -82,6 +82,7 @@ export type Ruta =
   | { v: "mundo"; id: string }
   | { v: "nivel"; mundo: string; nivel: string; lab?: boolean }
   | { v: "retos" }
+  | { v: "laboratorio" }
   | { v: "phishing" }
   | { v: "tutoriales" }
   | { v: "glosario" }
