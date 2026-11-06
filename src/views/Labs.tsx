@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { PixelIcon, type PixelIconName } from "../components/PixelArt";
 import { PracticaView } from "../components/Practices";
+import { marcarLab, useProgreso } from "../lib/store";
 import { Term } from "../components/ui";
 import type { Practica, Ruta } from "../types";
 import { cn } from "../utils/cn";
@@ -314,13 +315,66 @@ export const LABS: Lab[] = [
     minutos: 6,
     practica: { tipo: "phishing", cantidad: 10 },
   },
+  {
+    id: "redes-activas",
+    area: "redes",
+    nombre: "Red activa",
+    icono: "globe",
+    que: "Cómo se descubre qué equipos hay en una red y qué puertos tienen abiertos.",
+    haces: "Lanza ping, nmap y traceroute contra una oficina ficticia 10.0.0.0/24 y encuentra el equipo intruso.",
+    nivel: "Media",
+    minutos: 10,
+    practica: { tipo: "widget", w: "redes" },
+  },
+  {
+    id: "logs",
+    area: "seguridad",
+    nombre: "Leer un auth.log",
+    icono: "monitor",
+    que: "El registro donde Linux apunta cada inicio de sesión, y donde se delata un ataque.",
+    haces: "Filtra las líneas, detecta la fuerza bruta, identifica la IP y decide qué bloquear.",
+    nivel: "Media",
+    minutos: 9,
+    practica: { tipo: "widget", w: "logs" },
+  },
 ];
 
 const COLOR_NIVEL: Record<Lab["nivel"], string> = { Fácil: "var(--green)", Media: "var(--accent)", Difícil: "var(--red)" };
 
+/** A qué nivel exacto de qué mundo lleva cada laboratorio. */
+const LAB_LUGAR: Record<string, { mundo: string; nivel: string }> = {
+  xor: { mundo: "cripto", nivel: "que-es-cripto" },
+  vigenere: { mundo: "cripto", nivel: "cesar" },
+  frecuencia: { mundo: "cripto", nivel: "cesar" },
+  rsa: { mundo: "cripto", nivel: "clave-publica" },
+  firma: { mundo: "cripto", nivel: "hash" },
+  kdf: { mundo: "cripto", nivel: "passwords" },
+  brute: { mundo: "cripto", nivel: "passwords" },
+  aes: { mundo: "cripto", nivel: "aes" },
+  hash: { mundo: "cripto", nivel: "hash" },
+  paquetes: { mundo: "redes", nivel: "tcp-udp" },
+  subredes: { mundo: "redes", nivel: "ip-subredes" },
+  firewall: { mundo: "redes", nivel: "firewall" },
+  binario: { mundo: "redes", nivel: "binario" },
+  encap: { mundo: "redes", nivel: "osi" },
+  capas: { mundo: "redes", nivel: "osi" },
+  "redes-activas": { mundo: "redes", nivel: "ping" },
+  terminal: { mundo: "sistemas", nivel: "terminal-ctf" },
+  chmod: { mundo: "sistemas", nivel: "permisos" },
+  procesos: { mundo: "sistemas", nivel: "procesos" },
+  planificador: { mundo: "sistemas", nivel: "cpu" },
+  memoria: { mundo: "sistemas", nivel: "memoria" },
+  python: { mundo: "python", nivel: "listas-bucles" },
+  password: { mundo: "cripto", nivel: "passwords" },
+  phishing: { mundo: "social", nivel: "phishing" },
+  logs: { mundo: "python", nivel: "logs" },
+};
+
 export function Laboratorio({ go }: { go: (r: Ruta) => void }) {
   const [area, setArea] = useState("cripto");
   const [abierto, setAbierto] = useState<Lab | null>(null);
+  const [prog] = useProgreso();
+  const hechos = prog.labs.length;
 
   const lista = useMemo(() => LABS.filter((l) => l.area === area), [area]);
   const info = AREAS.find((a) => a.id === area)!;
@@ -337,6 +391,9 @@ export function Laboratorio({ go }: { go: (r: Ruta) => void }) {
           </p>
           <div className="mt-4 flex flex-wrap gap-1.5">
             <span className="chip">{LABS.length} laboratorios</span>
+            <span className="chip" style={{ color: hechos ? "var(--green)" : undefined }}>
+              {hechos ? `✔ ${hechos} completados` : "0 completados"}
+            </span>
             <span className="chip">sin instalar nada</span>
             <span className="chip">con pistas y explicación</span>
           </div>
@@ -385,7 +442,10 @@ export function Laboratorio({ go }: { go: (r: Ruta) => void }) {
                     <PixelIcon name={l.icono} size={22} />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="text-[18px] font-bold leading-tight">{l.nombre}</p>
+                    <p className="text-[18px] font-bold leading-tight">
+                      {prog.labs.includes(l.id) && <span className="mr-1 text-[var(--green)]" title="Completado">✔</span>}
+                      {l.nombre}
+                    </p>
                     <p className="label mt-1" style={{ color: COLOR_NIVEL[l.nivel] }}>
                       {l.nivel} · {l.minutos} min
                     </p>
@@ -413,14 +473,25 @@ export function Laboratorio({ go }: { go: (r: Ruta) => void }) {
                 cerrar ✕
               </button>
             </div>
-            <PracticaView p={abierto.practica} onDone={() => undefined} />
+            <PracticaView p={abierto.practica} onDone={() => marcarLab(abierto.id)} />
             <div className="card mt-3 flex flex-wrap items-center justify-between gap-3 p-3">
               <p className="text-[14px] text-[var(--text-2)]">
                 ¿Quieres el nivel completo con teoría, ejemplo y reto?
               </p>
-              <button className="btn btn-sm" onClick={() => go({ v: "mundo", id: AREA_MUNDO[abierto.area] ?? "cripto" })}>
-                Ver el mundo ▶
-              </button>
+              <div className="flex flex-wrap gap-2">
+                <button className="btn btn-sm" onClick={() => marcarLab(abierto.id)} disabled={prog.labs.includes(abierto.id)}>
+                  {prog.labs.includes(abierto.id) ? "✔ Completado" : "Marcar como hecho"}
+                </button>
+                <button
+                  className="btn btn-sm btn-primary"
+                  onClick={() => {
+                    const lugar = LAB_LUGAR[abierto.id] ?? { mundo: AREA_MUNDO[abierto.area] ?? "cripto", nivel: "" };
+                    go(lugar.nivel ? { v: "nivel", mundo: lugar.mundo, nivel: lugar.nivel, lab: true } : { v: "mundo", id: lugar.mundo });
+                  }}
+                >
+                  Ver el nivel completo ▶
+                </button>
+              </div>
             </div>
           </div>
         )}

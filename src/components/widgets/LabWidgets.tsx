@@ -297,3 +297,307 @@ export function PaquetesLab() {
     </WidgetShell>
   );
 }
+
+/* ───────────────────────── Redes activas (ping / nmap) ─────────────────── */
+
+interface Host {
+  ip: string;
+  nombre: string;
+  puertos: { p: number; servicio: string }[];
+  nota?: string;
+}
+
+const RED: Host[] = [
+  { ip: "10.0.0.1", nombre: "router", puertos: [{ p: 53, servicio: "domain" }, { p: 80, servicio: "http" }, { p: 443, servicio: "https" }] },
+  { ip: "10.0.0.10", nombre: "web-prod", puertos: [{ p: 22, servicio: "ssh" }, { p: 80, servicio: "http" }, { p: 443, servicio: "https" }, { p: 8080, servicio: "http-alt" }] },
+  { ip: "10.0.0.11", nombre: "db-postgres", puertos: [{ p: 22, servicio: "ssh" }, { p: 5432, servicio: "postgresql" }], nota: "La base de datos no debería oírse fuera de la red interna." },
+  { ip: "10.0.0.12", nombre: "backup", puertos: [{ p: 21, servicio: "ftp" }, { p: 22, servicio: "ssh" }, { p: 445, servicio: "microsoft-ds" }], nota: "FTP manda contraseña en claro: huele a servidor viejo." },
+  { ip: "10.0.0.20", nombre: "impresora", puertos: [{ p: 80, servicio: "http" }, { p: 9100, servicio: "jetdirect" }] },
+  { ip: "10.0.0.30", nombre: "camara-ip", puertos: [{ p: 23, servicio: "telnet" }, { p: 80, servicio: "http" }, { p: 554, servicio: "rtsp" }], nota: "Telnet en una cámara: contraseña por la red sin cifrar." },
+  { ip: "10.0.0.99", nombre: "desconocido", puertos: [{ p: 3389, servicio: "ms-wbt-server" }, { p: 445, servicio: "microsoft-ds" }], nota: "Este equipo no está en el inventario y tiene escritorio remoto abierto. Eso es lo que hay que investigar." },
+];
+
+const PISTAS_CMD = ["nmap 10.0.0.0/28", "ping 10.0.0.10", "nmap -p 22,3389 10.0.0.99", "traceroute 8.8.8.8", "arp -a"];
+
+function ejecutarComando(cmd: string): { salida: string[]; hallazgo?: string } {
+  const partes = cmd.trim().split(/\s+/);
+  const prog = (partes[0] ?? "").toLowerCase();
+
+  if (!cmd.trim() || prog === "help") {
+    return {
+      salida: [
+        "Comandos disponibles en este simulador:",
+        "  ping <ip>                → ¿está vivo el equipo?",
+        "  nmap <rango|ip>          → descubre equipos y puertos abiertos",
+        "  nmap -p 22,80 <ip>       → escanea solo esos puertos",
+        "  traceroute <ip>          → por dónde sale tu tráfico",
+        "  arp -a                   → qué equipos ve tu red local",
+      ],
+    };
+  }
+
+  if (prog === "ping") {
+    const ip = partes[1] ?? "10.0.0.1";
+    const host = RED.find((h) => h.ip === ip);
+    if (!host && !/^\d+\.\d+\.\d+\.\d+$/.test(ip)) return { salida: [`ping: ${ip}: nombre desconocido`] };
+    const base = ip.startsWith("10.0.0.") ? 1 : 24;
+    return {
+      salida: [
+        `PING ${ip} 56 bytes de datos:`,
+        `64 bytes desde ${ip}: icmp_seq=1 ttl=${64 - base} tiempo=${base}.${Math.floor(Math.random() * 9)} ms`,
+        `64 bytes desde ${ip}: icmp_seq=2 ttl=${64 - base} tiempo=${base}.${Math.floor(Math.random() * 9)} ms`,
+        "",
+        `--- ${ip} estadísticas ---`,
+        "2 paquetes transmitidos, 2 recibidos, 0% perdidos",
+        host ? `→ Responde y el TTL dice que está a ${base} saltos.` : "→ Responde, pero no está en la lista de equipos conocidos.",
+      ],
+    };
+  }
+
+  if (prog === "nmap") {
+    const conPuertos = partes[1] === "-p";
+    const lista = conPuertos ? (partes[2] ?? "").split(",").map(Number) : null;
+    const objetivo = (conPuertos ? partes[3] : partes[1]) ?? "10.0.0.0/28";
+    let hosts: Host[] = [];
+    if (objetivo.includes("/")) {
+      const [base, mascara] = objetivo.split("/");
+      const prefijo = base.split(".").slice(0, 3).join(".");
+      const n = Math.pow(2, 32 - Number(mascara));
+      const desde = Number(base.split(".")[3]);
+      const rango = [desde, Math.min(255, desde + n - 1)];
+      hosts = RED.filter((h) => h.ip.startsWith(prefijo + ".") && Number(h.ip.split(".")[3]) >= rango[0] && Number(h.ip.split(".")[3]) <= rango[1]);
+    } else {
+      const h = RED.find((x) => x.ip === objetivo);
+      if (h) hosts = [h];
+    }
+    if (!hosts.length) return { salida: [`Nmap: el host ${objetivo} parece caer (0 hosts up).`] };
+
+    const salida: string[] = [
+      `Starting Nmap 7.94 ( simulado ) — ${new Date().toLocaleTimeString("es")}`,
+      `Nmap scan report for ${objetivo}`,
+    ];
+    for (const h of hosts) {
+      const abiertos = lista ? h.puertos.filter((p) => lista.includes(p.p)) : h.puertos;
+      salida.push(`Nmap scan report for ${h.nombre} (${h.ip})`);
+      salida.push("PORT     STATE  SERVICE");
+      for (const p of abiertos) salida.push(`${String(p.p).padEnd(8)} open   ${p.servicio}`);
+      if (!abiertos.length) salida.push("(ninguno de esos puertos abierto)");
+      salida.push("");
+    }
+    salida.push(`Nmap done: ${hosts.length} host(s) up`);
+    const desconocido = hosts.find((h) => h.nota);
+    return { salida, hallazgo: desconocido ? `${desconocido.ip} (${desconocido.nombre}): ${desconocido.nota}` : undefined };
+  }
+
+  if (prog === "traceroute") {
+    const ip = partes[1] ?? "8.8.8.8";
+    return {
+      salida: [
+        `traceroute to ${ip}, 30 saltos máximo:`,
+        " 1  10.0.0.1        1.204 ms  1.118 ms  1.061 ms   (tu router)",
+        " 2  190.14.2.1     12.882 ms 12.554 ms 13.010 ms   (tu proveedor)",
+        " 3  200.57.14.9    28.441 ms 28.117 ms 28.990 ms   (salida internacional)",
+        " 4  108.170.245.1  48.220 ms 47.880 ms 48.901 ms   (red del proveedor de internet)",
+        ` 5  ${ip}          55.102 ms 54.887 ms 55.640 ms`,
+        "",
+        "→ Cada salto suma latencia. Si a partir del 3 todo tarda 200 ms, el problema no es tu wifi.",
+      ],
+    };
+  }
+
+  if (prog === "arp") {
+    return {
+      salida: RED.slice(0, 6).map(
+        (h, i) => `${h.ip.padEnd(12)} a4:2b:8c:01:11:${(9 + i).toString(16).padStart(2, "0")}  ${i ? "dinámico" : "estático"}  ${h.nombre}`,
+      ),
+    };
+  }
+
+  return { salida: [`${prog}: comando no reconocido. Escribe help.`] };
+}
+
+export function RedesLab() {
+  const [cmd, setCmd] = useState("nmap 10.0.0.0/28");
+  const [historial, setHistorial] = useState<{ cmd: string; salida: string[]; hallazgo?: string }[]>([]);
+
+  function correr(texto: string) {
+    const limpio = texto.trim();
+    if (!limpio) return;
+    const r = ejecutarComando(limpio);
+    setHistorial((h) => [...h, { cmd: limpio, ...r }].slice(-6));
+    setCmd("");
+  }
+
+  return (
+    <WidgetShell title="Red activa — ping, nmap y traceroute" badge={<span className="chip !text-[9px] !text-[var(--green)]">red 10.0.0.0/24</span>}>
+      <p className="text-[14px] leading-relaxed text-[var(--text-2)]">
+        Esta es la red de una oficina pequeña. Explórala como lo haría un técnico: descubre equipos,
+        mira qué servicios tienen abiertos y encuentra lo que no debería estar ahí.
+      </p>
+      <div className="mt-2 flex flex-wrap gap-1.5">
+        {PISTAS_CMD.map((c) => (
+          <button key={c} className="chip chip-btn" onClick={() => correr(c)}>
+            {c}
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-3 max-h-[300px] overflow-y-auto border-2 border-black bg-[var(--bg-sunken)] p-2" style={{ fontFamily: "var(--font-mono)", fontSize: 14 }}>
+        {historial.length === 0 && <p className="text-[var(--text-3)]">Escribe un comando abajo o pulsa una pista de arriba.</p>}
+        {historial.map((h, i) => (
+          <div key={i} className="mb-3">
+            <p className="text-[var(--accent)]">$ {h.cmd}</p>
+            <pre className="m-0 whitespace-pre-wrap text-[var(--text-2)]">{h.salida.join("\n")}</pre>
+            {h.hallazgo && <p className="mt-1 border-l-4 border-[var(--red)] pl-2 text-[var(--red)]">⚠ {h.hallazgo}</p>}
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-2 flex gap-2">
+        <input
+          className="field mono"
+          placeholder="escribe un comando… (help para ver la lista)"
+          value={cmd}
+          onChange={(e) => setCmd(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && correr(cmd)}
+          aria-label="Comando de red"
+        />
+        <button className="btn btn-primary btn-sm shrink-0" onClick={() => correr(cmd)}>
+          Ejecutar
+        </button>
+      </div>
+
+      <p className="mt-2 border-l-4 border-[var(--violet)] bg-[#1b1233] p-2.5 text-[14px] leading-relaxed text-[var(--text-2)]">
+        Escanear una red que no es tuya es delito en casi todos los países, aunque «solo mires». En este
+        laboratorio la red es ficticia; en la vida real necesitas permiso por escrito antes de tocar nada.
+      </p>
+    </WidgetShell>
+  );
+}
+
+/* ───────────────────────── Lectura de logs ─────────────────────────────── */
+
+interface Linea {
+  hora: string;
+  host: string;
+  servicio: string;
+  texto: string;
+  ip?: string;
+  tipo: "fallo" | "ok" | "sudo" | "normal";
+}
+
+function construirLog(): Linea[] {
+  const l: Linea[] = [];
+  const push = (h: string, servicio: string, texto: string, tipo: Linea["tipo"], ip?: string) =>
+    l.push({ hora: h, host: "srv-fv-01", servicio, texto, tipo, ip });
+
+  push("08:02:11", "sshd", "Accepted publickey for ana from 190.14.2.7 port 51222 ssh2", "ok", "190.14.2.7");
+  push("08:02:40", "sudo", "ana : TTY=pts/0 ; PWD=/var/www ; USER=root ; COMMAND=/bin/systemctl restart nginx", "sudo");
+  push("08:10:03", "cron", "(root) CMD (/usr/local/bin/backup.sh)", "normal");
+  push("08:31:19", "sshd", "Accepted password for luis from 190.14.2.9 port 49880 ssh2", "ok", "190.14.2.9");
+
+  // fuerza bruta
+  for (let i = 0; i < 14; i++) {
+    const hora = `09:${String(2 + Math.floor(i / 3)).padStart(2, "0")}:${String((i * 7) % 60).padStart(2, "0")}`;
+    push(hora, "sshd", `Failed password for root from 45.13.22.9 port ${51900 + i * 13} ssh2`, "fallo", "45.13.22.9");
+  }
+  push("09:07:52", "sshd", "Failed password for invalid user admin from 45.13.22.9 port 52340 ssh2", "fallo", "45.13.22.9");
+  push("09:08:30", "sshd", "Accepted password for root from 45.13.22.9 port 52411 ssh2", "ok", "45.13.22.9");
+  push("09:09:02", "sshd", "session opened for user root by (uid=0)", "normal");
+  push("09:12:44", "sudo", "root : TTY=pts/1 ; PWD=/root ; USER=root ; COMMAND=/usr/sbin/useradd soporte", "sudo");
+  push("09:13:20", "sshd", "session closed for user root", "normal");
+
+  // ruido normal
+  const ruido = [
+    "Accepted publickey for ana from 190.14.2.7 port 51290 ssh2",
+    "Disconnected from 190.14.2.7 port 51290 [preauth]",
+    "Received disconnect from 190.14.2.11 port 40022: 11: Bye Bye",
+    "Invalid user prueba from 181.50.9.14 port 60221",
+  ];
+  ruido.forEach((t, i) => push(`10:${String(10 + i * 4).padStart(2, "0")}:05`, "sshd", t, t.startsWith("Accepted") ? "ok" : "fallo", "190.14.2.7"));
+  push("10:31:00", "cron", "(root) CMD (/usr/local/bin/backup.sh)", "normal");
+  return l.sort((a, b) => a.hora.localeCompare(b.hora));
+}
+
+const LOG = construirLog();
+
+export function LogsLab() {
+  const [filtro, setFiltro] = useState("");
+  const [analizado, setAnalizado] = useState(false);
+
+  const fallos = LOG.filter((l) => l.tipo === "fallo");
+  const topIp = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const l of fallos) if (l.ip) m.set(l.ip, (m.get(l.ip) ?? 0) + 1);
+    return [...m.entries()].sort((a, b) => b[1] - a[1]);
+  }, [fallos]);
+  const atacante = analizado && topIp[0] && topIp[0][1] >= 5 ? topIp[0][0] : null;
+
+  const visibles = LOG.filter((l) => !filtro || `${l.hora} ${l.servicio} ${l.texto} ${l.ip ?? ""}`.toLowerCase().includes(filtro.toLowerCase()));
+
+  return (
+    <WidgetShell title="Lectura de logs — /var/log/auth.log" badge={<span className="chip !text-[9px]">{LOG.length} líneas</span>}>
+      <p className="text-[14px] leading-relaxed text-[var(--text-2)]">
+        Esto es lo único que ve un administrador cuando algo pasa: líneas. Tu trabajo es leer, filtrar y
+        encontrar el patrón. Fíjate en las horas, en las IPs y en qué viene <b>después</b> de los fallos.
+      </p>
+
+      <div className="mt-2 flex flex-wrap items-center gap-2">
+        <input className="field mono flex-1" placeholder="filtrar: failed, 45.13, sudo…" value={filtro} onChange={(e) => setFiltro(e.target.value)} aria-label="Filtro de logs" />
+        <button className="btn btn-primary btn-sm" onClick={() => setAnalizado(true)}>
+          Analizar
+        </button>
+      </div>
+
+      <div className="mt-3 max-h-[280px] overflow-y-auto border-2 border-black bg-[var(--bg-sunken)] p-2" style={{ fontFamily: "var(--font-mono)", fontSize: 13 }}>
+        {visibles.map((l, i) => {
+          const esAtacante = atacante && l.ip === atacante;
+          return (
+            <div
+              key={i}
+              className={cn("whitespace-pre-wrap", esAtacante && "bg-[#3a1418]")}
+              style={{ color: l.tipo === "fallo" ? "#ff9aa6" : l.tipo === "ok" ? "#9ff2bd" : l.tipo === "sudo" ? "#ffd98a" : "var(--text-3)" }}
+            >
+              {l.hora} {l.host} {l.servicio}: {l.texto}
+            </div>
+          );
+        })}
+        {!visibles.length && <p className="text-[var(--text-3)]">Ninguna línea coincide.</p>}
+      </div>
+
+      {analizado && (
+        <div className="mt-3 grid gap-2 sm:grid-cols-2">
+          <div className="border-2 border-black bg-[#2a1016] p-3">
+            <p className="label !text-[var(--red)]">Hallazgo</p>
+            <p className="mt-1 text-[15px] text-[var(--text-2)]">
+              {atacante ? (
+                <>
+                  <b className="text-[var(--red)]">{atacante}</b> acumula <b>{topIp[0][1]}</b> intentos fallidos y
+                  después <b>un acceso correcto</b>. Eso es fuerza bruta con éxito: hay que asumir el equipo
+                  como comprometido.
+                </>
+              ) : (
+                "Sin patrones de fuerza bruta evidentes en estas líneas."
+              )}
+            </p>
+          </div>
+          <div className="border-2 border-black bg-[var(--bg-sunken)] p-3">
+            <p className="label">Qué harías ahora</p>
+            <ol className="mt-1 ml-4 list-decimal text-[14px] leading-relaxed text-[var(--text-2)]">
+              <li>Cortar el acceso de esa IP y de esa cuenta root.</li>
+              <li>Revisar qué se creó: aparece un <span className="mono">useradd soporte</span>.</li>
+              <li>Prohibir login de root por SSH (<span className="mono">PermitRootLogin no</span>).</li>
+              <li>Poner límite de intentos (fail2ban) y 2FA.</li>
+            </ol>
+          </div>
+        </div>
+      )}
+
+      <p className="mt-2 border-l-4 border-[var(--violet)] bg-[#1b1233] p-2.5 text-[14px] leading-relaxed text-[var(--text-2)]">
+        Un log no grita: susurra. El patrón (14 fallos en 4 minutos desde la misma IP, y un acierto justo
+        después) es la firma clásica de un ataque de diccionario. Aprender a leer eso vale más que
+        memorizar herramientas.
+      </p>
+    </WidgetShell>
+  );
+}

@@ -1,7 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { CommandPalette } from "./components/CommandPalette";
+import { Examen } from "./views/Examen";
+import { Certificado } from "./views/Certificado";
 import { Laboratorio } from "./views/Labs";
 import { Nav } from "./components/Nav";
+import { Onboarding } from "./components/Onboarding";
 import { Footer } from "./components/Footer";
 import { Avisos, Hud } from "./components/ui";
 import { mundoById } from "./lib/content";
@@ -17,6 +20,8 @@ function parse(): Ruta {
   const [a, b, c] = parts;
   if (!a) return { v: "inicio" };
   if (a === "laboratorio") return { v: "laboratorio" };
+  if (a === "examen") return { v: "examen" };
+  if (a === "certificado") return { v: "certificado" };
   if (a === "mundo" && b && c) return { v: "nivel", mundo: b, nivel: c, lab: parts[3] === "lab" };
   if (a === "mundo" && b) return { v: "mundo", id: b };
   if (["retos", "phishing", "tutoriales", "glosario", "snippets", "progreso"].includes(a)) return { v: a } as Ruta;
@@ -74,7 +79,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    const titles: Record<string, string> = { laboratorio: "Laboratorio", retos: "Retos CTF", phishing: "Detector de phishing", tutoriales: "Guías", glosario: "Glosario", snippets: "Snippets", progreso: "Tu progreso" };
+    const titles: Record<string, string> = { examen: "Examen final", certificado: "Certificado", laboratorio: "Laboratorio", retos: "Retos CTF", phishing: "Detector de phishing", tutoriales: "Guías", glosario: "Glosario", snippets: "Snippets", progreso: "Tu progreso" };
     let t = "ciberseguridad de verdad";
     if (ruta.v === "mundo") t = mundoById(ruta.id)?.nombre ?? t;
     else if (ruta.v === "nivel") t = mundoById(ruta.mundo)?.niveles.find((n) => n.id === ruta.nivel)?.titulo ?? t;
@@ -89,10 +94,13 @@ export default function App() {
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-2 focus:top-2 focus:z-[300] focus:bg-[var(--accent)] focus:p-2 focus:text-black">Saltar al contenido</a>
       <Nav ruta={ruta} go={go} onBuscar={() => setBuscar(true)} />
       <CommandPalette abierto={buscar} onCerrar={() => setBuscar(false)} go={go} />
+      <Onboarding />
       {ruta.v === "inicio" && <Home go={go} />}
       {ruta.v === "mundo" && <WorldView id={ruta.id} go={go} />}
       {ruta.v === "nivel" && <LevelView mundo={ruta.mundo} nivel={ruta.nivel} lab={ruta.lab} go={go} />}
       {ruta.v === "laboratorio" && <Laboratorio go={go} />}
+      {ruta.v === "examen" && <Examen go={go} />}
+      {ruta.v === "certificado" && <Certificado go={go} />}
       {ruta.v === "retos" && <Retos />}
       {ruta.v === "phishing" && <Phishing />}
       {ruta.v === "tutoriales" && <Tutoriales go={go} />}

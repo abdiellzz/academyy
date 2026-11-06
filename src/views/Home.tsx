@@ -121,6 +121,7 @@ export function Home({ go }: { go: (r: Ruta) => void }) {
   const accesos: { v: Ruta["v"]; label: string }[] = [
     { v: "laboratorio", label: "Laboratorio" },
     { v: "retos", label: "Retos" },
+    { v: "examen", label: "Examen final" },
     { v: "phishing", label: "Phishing" },
     { v: "tutoriales", label: "Guías" },
     { v: "glosario", label: "Glosario" },
@@ -482,6 +483,41 @@ export function Home({ go }: { go: (r: Ruta) => void }) {
               </span>
             </button>
           ))}
+        </div>
+      </section>
+
+      {/* ── Examen final y certificado ── */}
+      <section className="mx-auto max-w-[1240px] px-4 pb-6" aria-labelledby="examen-title">
+        <div
+          className="card relative overflow-hidden p-5 sm:p-7"
+          style={{ background: "linear-gradient(0deg, #211607, #2c1d0a)", borderColor: "#000" }}
+        >
+          <div className="relative grid items-center gap-5 md:grid-cols-[1.35fr_1fr]">
+            <div>
+              <p className="label !text-[var(--accent)]">Al final del camino</p>
+              <h2 id="examen-title" className="mt-1.5">
+                El examen final y tu certificado
+              </h2>
+              <p className="mt-2 max-w-[560px] text-[15px] leading-relaxed text-[var(--text-2)]">
+                {20} preguntas al azar de los {C.mundos.length} mundos, {20} minutos de reloj y una nota final
+                sobre 100. Aprobando con 70 o más se desbloquea tu <b className="text-[var(--text)]">certificado
+                de finalización</b> con tu nombre, tu nota y un ID de emisión, listo para imprimir o guardar en PDF.
+              </p>
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                <span className="chip">20 preguntas</span>
+                <span className="chip">20 minutos</span>
+                <span className="chip" style={{ color: "var(--green)" }}>certificado incluido</span>
+              </div>
+            </div>
+            <div className="flex flex-col gap-2">
+              <button className="btn btn-xl btn-cta w-full" onClick={() => go({ v: "examen" })}>
+                <PixelIcon name="sword" size={16} /> Empezar el examen
+              </button>
+              <button className="btn w-full" onClick={() => go({ v: "certificado" })}>
+                <PixelIcon name="chest" size={14} /> Ver el certificado
+              </button>
+            </div>
+          </div>
         </div>
       </section>
 

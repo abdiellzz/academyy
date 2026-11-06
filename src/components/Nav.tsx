@@ -19,7 +19,8 @@ const HERRAMIENTAS: { v: Ruta["v"]; label: string; icon: PixelIconName; d: strin
 const PRINCIPAL: { v: Ruta["v"]; label: string; icon: PixelIconName }[] = [
   { v: "laboratorio", label: "Laboratorio", icon: "pickaxe" },
   { v: "retos", label: "Retos", icon: "sword" },
-  { v: "progreso", label: "Progreso", icon: "diamond" },
+  { v: "examen", label: "Examen", icon: "diamond" },
+  { v: "progreso", label: "Progreso", icon: "chest" },
 ];
 
 export function Nav({ ruta, go, onBuscar }: { ruta: Ruta; go: (r: Ruta) => void; onBuscar?: () => void }) {
@@ -169,7 +170,7 @@ export function Nav({ ruta, go, onBuscar }: { ruta: Ruta; go: (r: Ruta) => void;
             <button onClick={() => go({ v: "inicio" })} className={cn("flex items-center gap-2 border-2 border-black px-3 py-2.5 text-left font-bold", ruta.v === "inicio" ? "bg-[var(--accent)] text-[#1a0f00]" : "bg-[var(--surface-2)]")}>
               <PixelIcon name="home" size={16} /> Inicio
             </button>
-            {[{ v: "laboratorio", label: "Laboratorio", icon: "pickaxe" as PixelIconName }, { v: "retos", label: "Retos", icon: "sword" as PixelIconName }, { v: "progreso", label: "Progreso", icon: "diamond" as PixelIconName }, ...HERRAMIENTAS].map((it) => (
+            {[{ v: "laboratorio", label: "Laboratorio", icon: "pickaxe" as PixelIconName }, { v: "retos", label: "Retos", icon: "sword" as PixelIconName }, { v: "examen", label: "Examen", icon: "diamond" as PixelIconName }, { v: "progreso", label: "Progreso", icon: "chest" as PixelIconName }, ...HERRAMIENTAS].map((it) => (
               <button
                 key={it.v}
                 onClick={() => go({ v: it.v } as Ruta)}

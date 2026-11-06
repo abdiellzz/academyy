@@ -110,7 +110,7 @@ p { margin: 0; }
 
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  min-height: 42px; padding: 0 16px;
+  min-height: 46px; padding: 0 20px;
   border: 2px solid #000;
   background: var(--surface-3);
   color: var(--text);
@@ -128,8 +128,16 @@ p { margin: 0; }
 .btn-green:hover { background: #63ec95; }
 .btn-ghost { background: transparent; box-shadow: none; border-color: transparent; color: var(--text-2); }
 .btn-ghost:hover { border-color: #000; background: var(--surface-2); color: var(--text); }
-.btn-sm { min-height: 34px; padding: 0 11px; font-size: 9px; }
-.btn-xs { min-height: 28px; padding: 0 8px; font-size: 8px; }
+.btn-sm { min-height: 38px; padding: 0 13px; font-size: 9px; }
+.btn-xs { min-height: 30px; padding: 0 9px; font-size: 8px; }
+/* Botón grande: la acción principal de una pantalla, sin dudas. */
+.btn-xl {
+  min-height: 58px; padding: 0 26px; font-size: 12px; gap: 12px;
+  box-shadow: inset 2px 2px 0 #ffe0a0, inset -4px -4px 0 var(--accent-deep), 6px 6px 0 #000;
+}
+.btn-xl:hover { transform: translate(-2px, -2px); box-shadow: inset 2px 2px 0 #ffe0a0, inset -4px -4px 0 var(--accent-deep), 8px 8px 0 #000; }
+.btn-cta { background: var(--accent); color: #1a0f00; }
+.btn-cta:hover { background: var(--accent-soft); }
 /* compat motores */
 .btn-secondary { }
 .btn-emerald { background: var(--green); color: #04220f; }
@@ -478,3 +486,128 @@ input[type="checkbox"] { accent-color: var(--accent); }
 }
 .biome-capa { position: absolute; inset: 0; }
 .biome-horizonte { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; opacity: 0.55; }
+
+/* ═══════════════════════════════════════════════════════════
+   CERTIFICADO DE FINALIZACIÓN
+   ═══════════════════════════════════════════════════════════ */
+.cert {
+  position: relative;
+  background: #0d0b10;
+  border: 6px solid #000;
+  padding: 7px;
+  box-shadow: 6px 6px 0 #000;
+}
+.cert-marco {
+  position: relative;
+  padding: clamp(18px, 3vw, 40px) clamp(18px, 3.4vw, 52px);
+  min-height: 560px;
+  background-color: #0d0b10;
+  background-image:
+    repeating-conic-gradient(rgba(255, 255, 255, 0.028) 0% 25%, transparent 0% 50%),
+    repeating-linear-gradient(0deg, rgba(255, 176, 46, 0.55) 0 8px, transparent 8px 20px),
+    repeating-linear-gradient(90deg, rgba(255, 176, 46, 0.55) 0 8px, transparent 8px 20px);
+  background-size: 8px 8px, 100% 100%, 100% 100%;
+  background-position: 0 0, 0 0, 0 0;
+  background-repeat: repeat, no-repeat, no-repeat;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+/* el borde punteado va por dentro: dibujamos un marco de bloques con outline */
+.cert-marco::before {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border: 4px solid transparent;
+  background:
+    repeating-linear-gradient(90deg, var(--accent) 0 10px, transparent 10px 22px) top/100% 10px no-repeat,
+    repeating-linear-gradient(90deg, var(--accent) 0 10px, transparent 10px 22px) bottom/100% 10px no-repeat,
+    repeating-linear-gradient(0deg, var(--accent) 0 10px, transparent 10px 22px) left/10px 100% no-repeat,
+    repeating-linear-gradient(0deg, var(--accent) 0 10px, transparent 10px 22px) right/10px 100% no-repeat;
+  pointer-events: none;
+}
+.cert-esq { position: absolute; width: 34px; height: 34px; background: #ffd67a; border: 3px solid #000; z-index: 1; }
+.cert-esq-a { left: 6px; top: 6px; }
+.cert-esq-b { right: 6px; top: 6px; }
+.cert-esq-c { left: 6px; bottom: 6px; }
+.cert-esq-d { right: 6px; bottom: 6px; }
+
+.cert-cab { display: flex; align-items: center; gap: 14px; align-self: flex-start; }
+.cert-logo { height: clamp(34px, 4vw, 54px); width: auto; image-rendering: pixelated; }
+.cert-marca { font-family: var(--font-title); font-size: clamp(14px, 1.9vw, 22px); color: var(--text); letter-spacing: 0.02em; }
+.cert-sub { margin-top: 6px; font-family: var(--font-label); font-size: clamp(8px, 0.95vw, 11px); letter-spacing: 0.16em; color: var(--text-3); }
+
+.cert-titulo {
+  margin-top: clamp(14px, 2.4vw, 30px);
+  font-family: var(--font-title);
+  font-size: clamp(24px, 5.2vw, 62px);
+  color: var(--accent);
+  text-shadow: 4px 4px 0 #000;
+  letter-spacing: 0.02em;
+}
+.cert-subtitulo {
+  margin-top: 10px;
+  font-family: var(--font-title);
+  font-size: clamp(11px, 1.7vw, 20px);
+  color: var(--text);
+  text-shadow: 3px 3px 0 #000;
+}
+.cert-etiqueta { font-family: var(--font-label); font-size: clamp(8px, 0.95vw, 11px); letter-spacing: 0.18em; color: var(--text-3); }
+.cert-nombre {
+  margin-top: 6px;
+  font-family: var(--font-title);
+  font-size: clamp(16px, 2.4vw, 28px);
+  color: var(--text);
+  text-shadow: 3px 3px 0 #000;
+}
+.cert-linea { display: block; width: min(520px, 70%); height: 6px; margin-top: 10px; background: var(--accent); box-shadow: 0 6px 0 #000; }
+.cert-cuerpo {
+  margin-top: clamp(14px, 2vw, 24px);
+  max-width: 720px;
+  font-size: clamp(13px, 1.15vw, 16px);
+  line-height: 1.75;
+  color: var(--text-2);
+}
+
+.cert-pie { margin-top: auto; padding-top: clamp(16px, 2.4vw, 30px); width: 100%; display: grid; grid-template-columns: 1fr auto 1fr; align-items: end; gap: 16px; }
+.cert-datos { text-align: left; }
+.cert-dato { margin-top: 4px; font-family: var(--font-mono); font-size: clamp(11px, 1.1vw, 15px); color: var(--text-2); }
+.cert-nota { margin-top: 2px; font-family: var(--font-title); font-size: clamp(18px, 2.4vw, 30px); color: var(--green); text-shadow: 3px 3px 0 #000; }
+
+.cert-sello { position: relative; width: clamp(78px, 9vw, 116px); height: clamp(96px, 11vw, 140px); margin: 0 auto; }
+.cert-sello-cara {
+  position: absolute; left: 0; top: 0; width: 100%; height: clamp(58px, 7vw, 88px);
+  display: grid; place-items: center;
+  background: #3a2400; border: 4px solid #ffd67a; box-shadow: 0 6px 0 #000;
+  font-family: var(--font-title); font-size: clamp(16px, 2vw, 24px); color: #ffd67a;
+}
+.cert-sello-pct {
+  position: absolute; left: 0; top: clamp(44px, 5.4vw, 70px); width: 100%;
+  font-family: var(--font-label); font-size: clamp(9px, 1vw, 12px); color: var(--green); text-align: center;
+}
+.cert-sello-cinta { position: absolute; bottom: 0; width: 26%; height: clamp(32px, 4vw, 52px); background: #96283c; border: 3px solid #000; }
+.cert-cinta-a { left: 22%; }
+.cert-cinta-b { right: 22%; background: #6e1a2a; }
+
+.cert-firmas { display: flex; justify-content: flex-end; gap: clamp(18px, 3vw, 44px); }
+.cert-firma-linea { display: block; width: clamp(120px, 14vw, 190px); height: 4px; background: var(--text-3); }
+.cert-firma { margin-top: 6px; font-family: var(--font-label); font-size: clamp(8px, 0.95vw, 11px); letter-spacing: 0.14em; color: var(--text-2); }
+
+.cert-final {
+  margin-top: clamp(14px, 2vw, 22px);
+  width: 100%;
+  display: flex; flex-wrap: wrap; gap: 6px 18px; justify-content: space-between;
+  font-family: var(--font-label); font-size: clamp(7px, 0.85vw, 10px); letter-spacing: 0.1em; color: var(--text-3);
+  text-align: left;
+}
+.cert-aviso { color: #6d6382; }
+
+@media print {
+  header, footer, .space, .no-print, .skip-link { display: none !important; }
+  body { background: #0d0b10 !important; }
+  main { padding: 0 !important; max-width: none !important; }
+  .cert { box-shadow: none; border-width: 4px; }
+  .cert-marco { min-height: 0; }
+  @page { size: A4 landscape; margin: 8mm; }
+}
