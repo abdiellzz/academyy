@@ -34,7 +34,13 @@ src/lib/planet.ts     motor de la Tierra en 3D sin DOM: máscara de continentes 
                       girando, luces de ciudades, luna, cohete en órbita con estela y pines de
                       cada mundo)
 src/lib/store.ts      progreso en localStorage "factionvault-v4", XP (teoría 20 / práctica 40 / reto 60,
-                      CTF = puntos, guía 50, phishing 10 por acierto récord), nivelDe (80·n²), 15 LOGROS, notify()
+                      CTF = puntos, guía 50, phishing 10 por acierto récord, lab 30, examen 2×nota),
+                      nivelDe (80·n²), 19 LOGROS, labs[], examenMejor/examenes/ultimoExamen, estudiante, notify()
+src/lib/pwa.ts        registra public/sw.js solo en producción (en dev desregistra para no cachear)
+src/extra-niveles.ts  6 niveles añadidos (social 4 + cripto 2). content.ts llama ampliar(C) ANTES de
+                      calcular totalNiveles, para que todo el resto los vea como niveles normales
+src/views/Examen.tsx  20 preguntas al azar (banco = 45 retos de nivel), 20 min, nota /100, guarda la mejor
+src/views/Certificado.tsx  documento CSS (no canvas) rellenable con el nombre, ID de emisión y @media print
 src/lib/crypto.ts     caesar, normalizar, sha (WebCrypto), entropia, tiempoCrack, modPow, AES-GCM + PBKDF2
 src/lib/protect.ts    aviso self-XSS en consola y copia masiva con atribución. El anti-iframe está
                       desactivado (rompía las vistas previas embebidas)
@@ -53,7 +59,7 @@ src/components/
                       y snippets; navega con ↑↓/Enter
   widgets/CryptoWidgets.tsx  xor, vigenere, frecuencia, rsa, firma, kdf y brute
   Nav.tsx / Footer.tsx
-src/views/            Labs (Laboratorio: 23 simuladores en 5 áreas, tarjeta explicativa y widget
+src/views/            Labs (Laboratorio: 25 simuladores en 5 áreas, tarjeta explicativa y widget
                       en línea), Home («centro de mando»: Allen y Hailey, Tierra 3D con cohete en la esquina,
                       lista de destinos con preview, tablero, laboratorio abierto y accesos a todas
                       las secciones), World (WorldView + LevelView + reto),
@@ -84,9 +90,16 @@ malware/parches/respaldos 3-2-1 y privacidad + plan de incidentes. Es el mundo m
 todo son simuladores y cada práctica cierra con `porque` («¿por qué funciona así?»).
 El bloque de teoría `porque` se pinta con el mismo componente `Caja` que `why`, en violeta.
 
+## Examen y certificado
+- `#/examen`: 20 preguntas al azar de los 45 niveles, 20 minutos, nota entera sobre 100, aprobado en 70.
+  Se guarda la mejor nota (no la última); el resultado lista los fallos con su explicación.
+- `#/certificado`: solo con 70+. Documento en HTML/CSS (marco punteado, esquinas, sello y cintas) con
+  nombre editable, progreso real, nota, fecha e ID derivado (`FV-XXYY-ZZZZ`). `Ctrl+P` → PDF.
+  Dice explícitamente que **es un certificado de finalización de la plataforma, no una certificación oficial**.
+
 ## Backlog
 - Fuentes offline embebidas (woff2 en base64) para que el archivo sea 100% autónomo.
 - Mundo «Web/OWASP» (XSS, SQLi simulados) y mundo «Forense».
-- Exportar e importar el progreso; certificado pixel por mundo (canvas → PNG).
+- Certificado descargable como PNG real (hoy se imprime a PDF desde el navegador).
 - Sonidos 8-bit opcionales con WebAudio, respetando reduced-motion y un toggle.
 - Tests unitarios (vitest) para crypto, store y las calculadoras.

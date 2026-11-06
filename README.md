@@ -16,12 +16,19 @@ Hecha por **@abdiellzz** · [github.com/abdiellzz](https://github.com/abdiellzz)
 | Guías | 8 tutoriales paso a paso |
 | Glosario | 72 términos con buscador y filtros |
 | Snippets | 12 recetas de terminal y Python |
-| Progreso | XP, nivel, avance por mundo y 15 logros (se guarda en `localStorage`) |
+| Progreso | XP, nivel, avance por mundo, laboratorios y 19 logros (se guarda en `localStorage`) |
+| Examen final | 20 preguntas al azar del banco de los 45 niveles, 20 minutos, nota sobre 100 y repaso de los fallos |
+| Certificado | Se desbloquea con 70/100: tu nombre, la nota, el progreso, un ID de emisión y estilos de impresión (`Ctrl+P` → PDF). Deja claro que **no es una certificación oficial** |
+| Laboratorio de red | `ping`, `nmap` y `traceroute` contra la red ficticia 10.0.0.0/24, con puertos, servicios y un equipo intruso que hay que encontrar |
+| Logs | Lectura de `/var/log/auth.log` con filtro, detección de fuerza bruta y plan de respuesta |
+| PWA | `manifest.webmanifest`, iconos y service worker: se instala y funciona sin internet |
+| Primer arranque | Onboarding de 3 pantallas que explica qué es, cómo se usa y qué es un nivel |
 
 ## Cómo se usa
 
 - **Archivo final:** `dist/index.html`. Es un único HTML **autocontenido**: el CSS, el JS y los datos van dentro. Se puede abrir con doble clic o subir a cualquier hosting estático.
 - **Para regenerarlo** después de editar: `npm install` y luego `npm run build`.
+- **PWA:** en `npm run build` el service worker (`public/sw.js`) guarda la app. Instalada, abre offline; en desarrollo se desregistra a propósito para no cachear archivos a medio editar.
 - **Sin internet:** todo funciona salvo las fuentes pixel (*Press Start 2P*, *Pixelify Sans*, *VT323*, *Silkscreen*), que vienen de Google Fonts. Sin conexión caen a monoespaciadas del sistema (Courier New / Lucida Console) y la app sigue siendo usable. Si quieres las fuentes también offline, descarga los `.woff2` y decláralos con `@font-face` en `src/index.css`.
 - **AES y SHA-256** usan WebCrypto. En `file://` funcionan en Chrome, Edge y Firefox. Si algún navegador lo bloquea, sirve la página por `https` o `localhost`.
 
