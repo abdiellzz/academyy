@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { tomarBusqueda } from "../lib/busqueda";
 import { PixelIcon, type PixelIconName } from "../components/PixelArt";
 import { PhishingGame } from "../components/Practices";
@@ -185,7 +185,12 @@ export function Tutoriales({ go }: { go: (r: Ruta) => void }) {
 
 /* ═════════ GLOSARIO ═════════ */
 export function Glosario() {
-  const [q, setQ] = useState(() => tomarBusqueda());
+  const [q, setQ] = useState("");
+  // Si vienes del buscador global (⌘K) traemos el término ya escrito.
+  useEffect(() => {
+    const pendiente = tomarBusqueda();
+    if (pendiente) setQ(pendiente);
+  }, []);
   const [cat, setCat] = useState("Todos");
   const cats = ["Todos", ...Array.from(new Set(C.glosario.map((g) => g.categoria))).sort()];
   const list = useMemo(() => C.glosario.filter((g) => (cat === "Todos" || g.categoria === cat) && (!q || normalizar(g.termino + " " + g.definicion + " " + g.detalle).includes(normalizar(q)))), [q, cat]);
