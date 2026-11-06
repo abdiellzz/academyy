@@ -109,7 +109,7 @@ export function monkeyFaviconSvg(): string {
 
 export type PixelIconName =
   | "grass" | "chest" | "storm" | "diablo" | "ship" | "heart" | "diamond" | "snake"
-  | "monitor" | "globe" | "pickaxe" | "key" | "xp" | "flag" | "torch" | "sword";
+  | "monitor" | "globe" | "pickaxe" | "key" | "xp" | "flag" | "torch" | "sword" | "home";
 
 const ICONS: Record<PixelIconName, { grid: string[]; palette: Palette }> = {
   grass: {
@@ -171,6 +171,10 @@ const ICONS: Record<PixelIconName, { grid: string[]; palette: Palette }> = {
   torch: {
     grid: ["..YY..", ".YOOY.", "..OO..", "..WW..", "..WW..", "..WW..", "..WW.."],
     palette: { Y: "#ffe14a", O: "#ff8a1e", W: "#8b5a2b" },
+  },
+  home: {
+    grid: ["...RR...", "..RRRR..", ".RRRRRR.", "RRRRRRRR", ".WWWWWW.", ".WWDDWW.", ".WWDDWW.", ".WWWWWW."],
+    palette: { R: "#e8322b", W: "#c3b6df", D: "#3d3160" },
   },
   sword: {
     grid: [".......CC", "......CWC", ".....CWC.", "....CWC..", ".B.CWC...", "..BWC....", "..WB.....", ".W..B...."],

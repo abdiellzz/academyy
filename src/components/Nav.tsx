@@ -6,7 +6,7 @@ import type { Ruta } from "../types";
 import { cn } from "../utils/cn";
 
 const ITEMS: { v: Ruta["v"]; label: string; icon: PixelIconName }[] = [
-  { v: "inicio", label: "Mundos", icon: "grass" },
+  { v: "inicio", label: "Inicio", icon: "home" },
   { v: "retos", label: "Retos", icon: "sword" },
   { v: "phishing", label: "Phishing", icon: "flag" },
   { v: "tutoriales", label: "Guías", icon: "torch" },

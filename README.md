@@ -68,6 +68,7 @@ Notas:
 - Foco visible de 3px y navegación por teclado en el inicio (flechas, Inicio/Fin y Enter sobre los mundos).
 - Pestañas y opciones con roles ARIA; los avisos se anuncian con `aria-live`.
 - `prefers-reduced-motion` desactiva las animaciones, la Tierra girando y el warp-flash.
+- En el inicio la Tierra también gira arrastrándola con el mouse; las flechas mueven el destino y Enter despega.
 
 ## Aviso
 

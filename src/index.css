@@ -239,3 +239,143 @@ input[type="checkbox"] { accent-color: var(--accent); }
   .btn { padding: 0 12px; }
   .term, .code-pixel { font-size: 18px; }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   HOME · centro de mando
+   ═══════════════════════════════════════════════════════════ */
+
+.cmd-hero { position: relative; isolation: isolate; overflow: hidden; padding-bottom: 2rem; }
+
+/* rejilla tenue que se apaga hacia los bordes */
+.cmd-hero-grid {
+  position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background-image:
+    linear-gradient(to right, rgba(185, 139, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(185, 139, 255, 0.08) 1px, transparent 1px);
+  background-size: 44px 44px;
+  -webkit-mask-image: radial-gradient(ellipse 78% 72% at 30% 58%, #000 0%, transparent 74%);
+  mask-image: radial-gradient(ellipse 78% 72% at 30% 58%, #000 0%, transparent 74%);
+}
+/* horizonte de la Tierra, como la línea de un radar */
+.cmd-hero::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; z-index: 1;
+  background: linear-gradient(90deg, transparent 0%, rgba(90, 210, 255, 0.45) 35%, rgba(90, 210, 255, 0.12) 70%, transparent 100%);
+  pointer-events: none;
+}
+
+/* La Tierra grande en la esquina */
+.globe-dock {
+  position: relative;
+  width: min(92vw, 440px);
+  margin: -0.5rem auto 0;
+  padding-bottom: 1rem;
+  transform: translate3d(calc(var(--px, 0) * 16px), calc(var(--py, 0) * 12px), 0);
+  transition: transform 0.55s cubic-bezier(0.2, 0.7, 0.3, 1);
+  pointer-events: none;
+}
+.globe-dock canvas { pointer-events: auto; }
+.globe-float { animation: globe-float 8s ease-in-out infinite; }
+@keyframes globe-float { 50% { transform: translateY(-12px); } }
+.globe-tag { position: absolute; top: 1%; left: 1%; z-index: 2; }
+.globe-tag .live-dot { background: var(--cyan); }
+
+@media (min-width: 1024px) {
+  .globe-dock {
+    position: absolute;
+    left: -9%;
+    bottom: -17%;
+    width: min(46vw, 620px);
+    margin: 0;
+    padding: 0;
+  }
+  .globe-tag { top: 13%; left: 2%; }
+}
+@media (min-width: 1280px) {
+  .globe-dock { width: min(53vw, 840px); left: -12%; bottom: -22%; }
+}
+@media (min-width: 1600px) {
+  .globe-dock { width: min(50vw, 900px); left: -10%; bottom: -24%; }
+}
+
+/* Filas de destinos */
+.hero-title { font-size: clamp(21px, 3.5vw, 40px); line-height: 1.32; }
+
+.hero-brand { position: relative; z-index: 10; padding: 1.25rem 1rem 0; }
+@media (min-width: 1024px) {
+  .hero-brand { position: absolute; left: 1.5rem; top: 2.75rem; padding: 0; }
+}
+
+.dest {
+  --world: var(--accent);
+  position: relative;
+  display: grid;
+  grid-template-columns: 18px 44px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  text-align: left;
+  background: var(--surface);
+  border: 2px solid var(--border-neutral);
+  box-shadow: var(--hard-sm);
+  transition: transform 0.1s steps(2), border-color 0.12s linear, background 0.12s linear;
+}
+.dest:hover, .dest-on { background: var(--surface-2); border-color: var(--world); transform: translateX(-2px); }
+.dest-on { box-shadow: var(--hard-sm), inset 4px 0 0 var(--world); }
+.dest:active { transform: translateX(1px) translateY(1px); box-shadow: none; }
+
+.dest-hash { font-family: var(--font-title); font-size: 8px; color: var(--text-3); }
+.dest-tile { display: grid; place-items: center; width: 44px; height: 44px; border: 2px solid #000; }
+.dest-main { display: flex; min-width: 0; flex-direction: column; gap: 2px; }
+.dest-bioma { font-family: var(--font-label); font-size: 8.5px; letter-spacing: 0.14em; text-transform: uppercase; }
+.dest-nombre { font-weight: 700; font-size: 17px; line-height: 1.15; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dest-barra { display: block; height: 5px; margin-top: 3px; background: #120e1c; border: 1px solid #000; overflow: hidden; }
+.dest-barra > span { display: block; height: 100%; transition: width 0.4s steps(8); }
+.dest-meta { display: flex; align-items: center; gap: 6px; }
+.dest-pct { font-family: var(--font-label); font-size: 9px; color: var(--text-3); }
+.dest-flecha { font-family: var(--font-title); font-size: 10px; color: var(--text-3); transition: transform 0.12s steps(2), color 0.12s linear; }
+.dest:hover .dest-flecha, .dest-on .dest-flecha { color: var(--world); transform: translateX(2px); }
+
+/* Panel del destino elegido */
+.dest-detalle {
+  --world: var(--accent);
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: #120e1c;
+  border: 2px solid #000;
+  border-left: 4px solid var(--world);
+  box-shadow: var(--bevel), var(--hard);
+}
+
+/* Tablero */
+.stat-strip {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2px;
+  background: #000;
+  border: 2px solid #000;
+  box-shadow: var(--hard);
+}
+@media (min-width: 768px) { .stat-strip { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.stat { background: var(--surface); padding: 12px 14px; }
+.stat-num {
+  margin-top: 6px;
+  font-family: var(--font-title);
+  font-size: 20px;
+  line-height: 1.2;
+  color: var(--accent);
+  text-shadow: 2px 2px 0 #000;
+  overflow-wrap: anywhere;
+}
+
+/* Chips que se pueden pulsar y flecha de las tarjetas */
+.chip-btn { cursor: pointer; transition: transform 0.08s steps(2), color 0.12s linear, border-color 0.12s linear; }
+.chip-btn:hover { color: var(--accent); border-color: var(--accent); transform: translateY(-1px); }
+.chip-live { border-color: #000; background: #0f2418; color: var(--green); }
+.vault-arrow {
+  font-family: var(--font-title);
+  font-size: 14px;
+  color: var(--text-3);
+  transition: transform 0.12s steps(2), color 0.12s linear;
+}
+.card:hover .vault-arrow { color: var(--world); transform: translateX(3px); }

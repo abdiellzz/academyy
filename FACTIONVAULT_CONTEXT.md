@@ -25,20 +25,24 @@ src/App.tsx           router por hash (#/, #/mundo/:id, #/mundo/:id/:nivel, #/re
 src/index.css         sistema visual: paleta oficial, .card .chip .btn .btn-primary .label .term .vault-table .mono,
                       cielo con estrellas, .grass, .warp, reduced-motion
 src/lib/content.ts    C = window.FV_CONTENT; helpers
+src/lib/planet.ts     motor de la Tierra en 3D sin DOM: máscara de continentes (equirect 256×128),
+                      albedo, geometría precalculada y render de un frame RGBA (atmósfera, nubes
+                      girando, luces de ciudades, luna y pines de cada mundo)
 src/lib/store.ts      progreso en localStorage "factionvault-v4", XP (teoría 20 / práctica 40 / reto 60,
                       CTF = puntos, guía 50, phishing 10 por acierto récord), nivelDe (80·n²), 15 LOGROS, notify()
 src/lib/crypto.ts     caesar, normalizar, sha (WebCrypto), entropia, tiempoCrack, modPow, AES-GCM + PBKDF2
 src/lib/protect.ts    aviso self-XSS en consola, anti-iframe, copia masiva con atribución
 src/components/
-  Earth.tsx           Tierra pixel en canvas 128×128 (mapa 64×32 proyectado, terminador por bandas,
-                      atmósfera, luces nocturnas, luna orbitando, ~14 fps)
+  Globe.tsx           la Tierra del inicio: canvas 256×256, ~30 fps, arrastrable con el mouse y con
+                      la atmósfera del color del mundo elegido (usa lib/planet.ts)
   ui.tsx              Logo, GameBox, Bloque (render de teoría), Term, Hud, Avisos, Bar, CopyBtn, SectionHead
   Practices.tsx       PracticaView dispatcher + motores: Codigo, Orden, Escribir, PhishingGame, Cesar, Hash,
                       Password, Aes, DH, Widget (puente a widgets/)
   widgets/            motores heredados y probados de la v3 (Common/Net/Os)
   PixelArt.tsx        PixelArt, MONKEY_GRID (logo del mono), 16 PixelIcon
   Nav.tsx / Footer.tsx
-src/views/            Home (Tierra + mundos con roving tabindex), World (WorldView + LevelView + reto),
+src/views/            Home («centro de mando»: Tierra 3D en la esquina, lista de destinos con preview,
+                      tablero de progreso y accesos a todas las secciones), World (WorldView + LevelView + reto),
                       Sections (Retos, Phishing, Tutoriales, Glosario, Snippets, Progreso)
 ```
 
@@ -55,6 +59,10 @@ src/views/            Home (Tierra + mundos con roving tabindex), World (WorldVi
 - Un nivel completo (teoría → práctica escribir → reto) otorga XP, logro y subida de nivel.
 - La práctica de ordenar, la ronda de 10 del phishing, un reto CTF, la ejecución simulada de código y el cifrado/descifrado AES funcionan.
 - El progreso persiste.
+
+## Verificación del planeta
+`node --experimental-strip-types scripts/preview-planet.mjs 4` escribe PPM de cuatro ángulos en /tmp
+para revisar continentes y sombreado sin abrir el navegador (convertir con ImageMagick a PNG).
 
 ## Backlog
 - Fuentes offline embebidas (woff2 en base64) para que el archivo sea 100% autónomo.
