@@ -215,8 +215,14 @@ export function NotFound({ go }: { go: (r: Ruta) => void }) {
     <main id="main" className="mx-auto max-w-[700px] px-4 py-20 text-center">
       <PixelIcon name="heart" size={48} />
       <h1 className="mt-4">404 · Bloque no encontrado</h1>
-      <p className="mt-3 text-[var(--text-2)]">Este camino no existe (todavía). Vuelve al spawn.</p>
-      <button className="btn btn-primary mt-6" onClick={() => go({ v: "inicio" })}>Volver al inicio</button>
+      <p className="mt-3 text-[var(--text-2)]">
+        Este camino no existe (todavía). Puede que el enlace esté viejo o que el nivel haya cambiado de
+        nombre: vuelve al spawn o elige un mundo y sigue desde ahí.
+      </p>
+      <div className="mt-6 flex flex-wrap justify-center gap-2">
+        <button className="btn btn-primary" onClick={() => go({ v: "inicio" })}>Volver al inicio</button>
+        <button className="btn" onClick={() => go({ v: "laboratorio" })}>Ir al laboratorio</button>
+      </div>
     </main>
   );
 }

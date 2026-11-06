@@ -9,6 +9,10 @@ export function registrarSW(): void {
     return;
   }
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js").catch(() => {});
+    // Solo registramos si el archivo está publicado: así nunca aparece un 404
+    // en la consola cuando la app se sirve sin el service worker.
+    fetch("./sw.js", { method: "HEAD" })
+      .then((r) => (r.ok ? navigator.serviceWorker.register("./sw.js") : null))
+      .catch(() => null);
   });
 }
