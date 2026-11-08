@@ -24,8 +24,11 @@ export interface TarjetaRepaso {
 }
 
 export interface EstadoOperacion {
+  ronda: number;
   paso: number;
   decisiones: number[];
+  clasificaciones: number[][];
+  notas: string[];
   completada: boolean;
   xpOtorgada: boolean;
 }
@@ -51,7 +54,7 @@ export interface Progreso {
 }
 
 const KEY = "factionvault-v4";
-const EMPTY: Progreso = { niveles: {}, retos: [], tutoriales: [], phishingBest: 0, phishingPlayed: 0, logros: [], labs: [], proyectosFinalizados: [], proyectosNotas: {}, repaso: [], operacion: { paso: 0, decisiones: [], completada: false, xpOtorgada: false }, examenMejor: 0, examenMejorDetalle: null, examenes: 0, ultimoExamen: null, estudiante: "", metaEstudio: { objetivoSemanal: 3, semana: "", nivelesCompletados: 0, diasActivos: [] } };
+const EMPTY: Progreso = { niveles: {}, retos: [], tutoriales: [], phishingBest: 0, phishingPlayed: 0, logros: [], labs: [], proyectosFinalizados: [], proyectosNotas: {}, repaso: [], operacion: { ronda: 0, paso: 0, decisiones: [], clasificaciones: [], notas: [], completada: false, xpOtorgada: false }, examenMejor: 0, examenMejorDetalle: null, examenes: 0, ultimoExamen: null, estudiante: "", metaEstudio: { objetivoSemanal: 3, semana: "", nivelesCompletados: 0, diasActivos: [] } };
 
 function load(): Progreso {
   try {
@@ -60,7 +63,7 @@ function load(): Progreso {
     const saved = JSON.parse(raw) as Partial<Progreso>;
     const ultimoExamen = saved.ultimoExamen ?? null;
     const examenMejorDetalle = saved.examenMejorDetalle ?? (ultimoExamen && ultimoExamen.nota === (saved.examenMejor ?? 0) ? ultimoExamen : null);
-    return { ...EMPTY, ...saved, proyectosFinalizados: saved.proyectosFinalizados ?? [], proyectosNotas: saved.proyectosNotas ?? {}, repaso: saved.repaso ?? [], operacion: { ...EMPTY.operacion, ...saved.operacion, decisiones: saved.operacion?.decisiones ?? [] }, ultimoExamen, examenMejorDetalle, metaEstudio: { ...EMPTY.metaEstudio, ...saved.metaEstudio } };
+    return { ...EMPTY, ...saved, proyectosFinalizados: saved.proyectosFinalizados ?? [], proyectosNotas: saved.proyectosNotas ?? {}, repaso: saved.repaso ?? [], operacion: { ...EMPTY.operacion, ...saved.operacion, decisiones: saved.operacion?.decisiones ?? [], clasificaciones: saved.operacion?.clasificaciones ?? [], notas: saved.operacion?.notas ?? [] }, ultimoExamen, examenMejorDetalle, metaEstudio: { ...EMPTY.metaEstudio, ...saved.metaEstudio } };
   } catch {
     return EMPTY;
   }
@@ -206,13 +209,29 @@ export function guardarNotaProyecto(id: string, paso: number, nota: string) {
   commit({ ...state, proyectosNotas: { ...state.proyectosNotas, [id]: notas } });
 }
 
+export function guardarClasificacionOperacion(paso: number, pista: number, categoria: number) {
+  if (state.operacion.completada || paso !== state.operacion.paso) return;
+  const clasificaciones = [...state.operacion.clasificaciones];
+  const delPaso = [...(clasificaciones[paso] ?? [])];
+  delPaso[pista] = categoria;
+  clasificaciones[paso] = delPaso;
+  commit({ ...state, operacion: { ...state.operacion, clasificaciones } });
+}
+
+export function guardarNotaOperacion(paso: number, nota: string) {
+  if (state.operacion.completada || paso !== state.operacion.paso) return;
+  const notas = [...state.operacion.notas];
+  notas[paso] = nota;
+  commit({ ...state, operacion: { ...state.operacion, notas } });
+}
+
 export function guardarPasoOperacion(decision: number) {
   const actual = state.operacion;
   if (actual.completada || actual.paso >= 4) return;
   const paso = actual.paso + 1;
   const completada = paso >= 4;
   const xpOtorgada = actual.xpOtorgada || completada;
-  commit({ ...state, operacion: { paso, decisiones: [...actual.decisiones, decision], completada, xpOtorgada } });
+  commit({ ...state, operacion: { ...actual, paso, decisiones: [...actual.decisiones, decision], completada, xpOtorgada } });
   if (completada) {
     notify({ titulo: "Operación completada", texto: `${actual.xpOtorgada ? "Repetición terminada" : "+100 XP · informe de incidente listo"}`, icono: "shield" });
     sfx("subir");
@@ -220,7 +239,7 @@ export function guardarPasoOperacion(decision: number) {
 }
 
 export function reiniciarOperacion() {
-  commit({ ...state, operacion: { ...state.operacion, paso: 0, decisiones: [], completada: false } });
+  commit({ ...state, operacion: { ...state.operacion, ronda: state.operacion.ronda + 1, paso: 0, decisiones: [], clasificaciones: [], notas: [], completada: false } });
 }
 
 export function guardarExamen(r: ExamenResultado) {
