@@ -15,6 +15,7 @@ export type IconName =
   | "sun"
   | "moon"
   | "menu"
+  | "more-vertical"
   | "x"
   | "book"
   | "flask"
@@ -80,6 +81,7 @@ const paths: Record<IconName, React.ReactNode> = {
   sun: <><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></>,
   moon: <><path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.7 6.7 0 0 0 9.8 9.8Z" /></>,
   menu: <><path d="M4 7h16M4 12h16M4 17h16" /></>,
+  "more-vertical": <><circle cx="12" cy="5" r="1" /><circle cx="12" cy="12" r="1" /><circle cx="12" cy="19" r="1" /></>,
   x: <><path d="M18 6 6 18M6 6l12 12" /></>,
   book: <><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z" /><path d="M9 7h7" /></>,
   flask: <><path d="M9 3h6M10 3v6L4.5 18a2.4 2.4 0 0 0 2 3.5h11a2.4 2.4 0 0 0 2-3.5L14 9V3" /><path d="M7 15h10" /></>,

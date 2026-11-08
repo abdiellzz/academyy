@@ -58,23 +58,25 @@ export function modPow(b: number, e: number, m: number): number {
 const b64 = (u: Uint8Array) => btoa(String.fromCharCode(...u));
 const unb64 = (s: string) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
 
-async function clave(pass: string, salt: Uint8Array) {
+async function clave(pass: string, salt: Uint8Array, iterations: number) {
   const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pass), "PBKDF2", false, ["deriveKey"]);
-  return crypto.subtle.deriveKey({ name: "PBKDF2", salt: salt as BufferSource, iterations: 100000, hash: "SHA-256" }, base, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
+  return crypto.subtle.deriveKey({ name: "PBKDF2", salt: salt as BufferSource, iterations, hash: "SHA-256" }, base, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
 }
 
 export async function aesCifrar(texto: string, pass: string): Promise<string> {
   const salt = crypto.getRandomValues(new Uint8Array(16));
   const iv = crypto.getRandomValues(new Uint8Array(12));
-  const ct = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv: iv as BufferSource }, await clave(pass, salt), new TextEncoder().encode(texto)));
-  return `FV.${b64(salt)}.${b64(iv)}.${b64(ct)}`;
+  const ct = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv: iv as BufferSource }, await clave(pass, salt, 600000), new TextEncoder().encode(texto)));
+  return `FV2.${b64(salt)}.${b64(iv)}.${b64(ct)}`;
 }
 
 export async function aesDescifrar(payload: string, pass: string): Promise<{ ok: boolean; texto: string }> {
   try {
     const [v, s, i, c] = payload.trim().split(".");
-    if (v !== "FV" || !c) return { ok: false, texto: "Formato no reconocido: debe empezar por FV." };
-    const pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv: unb64(i) as BufferSource }, await clave(pass, unb64(s)), unb64(c) as BufferSource);
+    if ((v !== "FV" && v !== "FV2") || !c) return { ok: false, texto: "Formato no reconocido: debe empezar por FV2." };
+    // FV era la versión previa (100.000 iteraciones); FV2 usa 600.000. Mantener lectura protege salidas que el usuario ya guardó.
+    const iterations = v === "FV2" ? 600000 : 100000;
+    const pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv: unb64(i) as BufferSource }, await clave(pass, unb64(s), iterations), unb64(c) as BufferSource);
     return { ok: true, texto: new TextDecoder().decode(pt) };
   } catch {
     return { ok: false, texto: "No se pudo descifrar: contraseña incorrecta o datos alterados. ¡La etiqueta GCM te protegió!" };

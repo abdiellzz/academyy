@@ -13,7 +13,8 @@ export type TeoriaBloque =
   | { t: "result"; text: string }
   | { t: "steps"; items: { t: string; d: string }[] }
   | { t: "table"; head: string[]; rows: string[][] }
-  | { t: "term"; text: string; title?: string };
+  | { t: "term"; text: string; title?: string }
+  | { t: "source"; title: string; url: string; text: string; revisado: string };
 
 export type PracticaBase =
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -68,7 +69,7 @@ export interface MensajePhishing { id: string; canal: "sms" | "whatsapp" | "emai
 export interface Snippet { id: string; titulo: string; lenguaje: string; categoria: string; codigo: string; explicacion: string }
 
 export interface Contenido {
-  meta: { nombre: string; subtitulo: string; autor: string; github: string; version: string };
+  meta: { nombre: string; subtitulo: string; autor: string; github: string; linkedin: string; version: string };
   mundos: Mundo[];
   retos: RetoCTF[];
   glosario: Termino[];
@@ -83,6 +84,10 @@ export type Ruta =
   | { v: "nivel"; mundo: string; nivel: string; lab?: boolean }
   | { v: "retos" }
   | { v: "laboratorio" }
+  | { v: "proyectos"; id?: string }
+  | { v: "terminos" }
+  | { v: "privacidad" }
+  | { v: "propiedad" }
   | { v: "examen" }
   | { v: "certificado" }
   | { v: "phishing" }

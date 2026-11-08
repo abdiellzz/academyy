@@ -16,23 +16,23 @@ const PASOS: { icono: PixelIconName; kicker: string; titulo: string; texto: stri
     titulo: "Una bóveda para aprender seguridad de verdad",
     texto:
       `FactionVault es un curso interactivo de seguridad informática en pixel art. No hay vídeos de dos horas: hay ${C.mundos.length} mundos, cada uno con su terreno, y dentro se explica, se practica y se comprueba.`,
-    puntos: [`${C.mundos.length} mundos · ${totalNiveles} niveles`, "Todo en español y sin instalar nada", "Se guarda en tu navegador"],
+    puntos: [`${C.mundos.length} mundos · ${totalNiveles} niveles · 3 rutas sugeridas`, "Prácticas seguras con datos ficticios", "El progreso queda en este navegador"],
   },
   {
     icono: "pickaxe",
     kicker: "2 de 3 · Cómo se usa",
-    titulo: "Elige un mundo y síguelo en orden",
+    titulo: "Empieza por tu objetivo, no por un menú",
     texto:
-      "Cada mundo es un tema: seguridad, redes, sistemas, Python, criptografía e ingeniería social. Empieza por el que te llame y avanza; el buscador (⌘K o Ctrl+K) te lleva a cualquier cosa en dos teclas.",
-    puntos: ["Mundos arriba, en el menú", "⌘K abre el buscador", "El progreso y los logros se guardan solos"],
+      "Puedes comenzar desde cero, proteger tus cuentas o probar análisis técnico. Las rutas sugieren niveles y un proyecto final, pero no te bloquean: cambia de mundo cuando quieras. El buscador (⌘K o Ctrl+K) también te lleva directo a cualquier tema.",
+    puntos: ["La portada recomienda una primera misión", "⌘K abre el buscador", "El progreso y tus proyectos se guardan en este navegador"],
   },
   {
     icono: "torch",
     kicker: "3 de 3 · Qué es un nivel",
     titulo: "Teoría corta, práctica real y un reto",
     texto:
-      "Cada nivel tiene tres fases: lees lo justo, lo haces en un laboratorio que funciona de verdad, y respondes un reto que te explica el porqué. Al terminar las tres, el nivel queda marcado.",
-    puntos: ["Teoría con el «por qué»", "Laboratorio interactivo", "Reto con explicación"],
+      "Cada nivel combina explicación, práctica y reto. Los simuladores usan escenarios seguros; los ejercicios de Python corren en un intérprete didáctico limitado, no en un Python completo. Al terminar las fases, el nivel queda marcado.",
+    puntos: ["Objetivos visibles", "Práctica segura y repetible", "Reto con pistas y explicación"],
   },
 ];
 
@@ -40,6 +40,8 @@ export function Onboarding() {
   const [abierto, setAbierto] = useState(false);
   const [i, setI] = useState(0);
   const btn = useRef<HTMLButtonElement>(null);
+  const dialog = useRef<HTMLDivElement>(null);
+  const opener = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     try {
@@ -51,14 +53,26 @@ export function Onboarding() {
 
   useEffect(() => {
     if (!abierto) return;
+    opener.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     btn.current?.focus();
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") cerrar();
       if (e.key === "ArrowRight") setI((v) => Math.min(PASOS.length - 1, v + 1));
       if (e.key === "ArrowLeft") setI((v) => Math.max(0, v - 1));
+      if (e.key === "Tab") {
+        const items = Array.from(dialog.current?.querySelectorAll<HTMLElement>('a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])') ?? []);
+        if (!items.length) { e.preventDefault(); return; }
+        const first = items[0], last = items[items.length - 1];
+        if (e.shiftKey && (document.activeElement === first || !dialog.current?.contains(document.activeElement))) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && (document.activeElement === last || !dialog.current?.contains(document.activeElement))) { e.preventDefault(); first.focus(); }
+      }
     };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      opener.current?.focus();
+      opener.current = null;
+    };
   }, [abierto]);
 
   function cerrar() {
@@ -76,7 +90,7 @@ export function Onboarding() {
 
   return (
     <div className="fixed inset-0 z-[120] grid place-items-center bg-black/80 p-3" role="dialog" aria-modal="true" aria-labelledby="onb-title">
-      <div className="w-full max-w-[560px] border-4 border-black bg-[var(--surface)] shadow-[8px_8px_0_#000] rise">
+      <div ref={dialog} className="w-full max-w-[560px] border-4 border-black bg-[var(--surface)] shadow-[8px_8px_0_#000] rise">
         <div className="flex items-center justify-between border-b-2 border-black bg-[var(--bg-soft)] px-4 py-2.5">
           <div className="flex items-center gap-2">
             <PixelIcon name="chest" size={16} />

@@ -1,12 +1,12 @@
 import { useMemo, useRef, useState, type CSSProperties } from "react";
 import { Globe } from "../components/Globe";
-import { Adventurer, PixelIcon, type PixelIconName } from "../components/PixelArt";
-import { BiomaGrid } from "../components/Biome";
-import { Bar, GameBox, Logo, SectionHead } from "../components/ui";
+import { Adventurer, PixelIcon } from "../components/PixelArt";
+import { Bar } from "../components/ui";
 import { C, totalNiveles } from "../lib/content";
-import { LOGROS, nivelCompleto, nivelDe, nivelesCompletos, useProgreso, xpDe } from "../lib/store";
+import { PROYECTOS, RUTAS_APRENDIZAJE } from "../lib/learning";
+import { nivelCompleto, nivelDe, nivelesCompletos, useProgreso, xpDe } from "../lib/store";
 import type { Marker } from "../lib/planet";
-import type { Mundo, Nivel, Ruta } from "../types";
+import type { Ruta } from "../types";
 import { cn } from "../utils/cn";
 
 /* Coordenadas del pin de cada mundo en el planeta. */
@@ -19,28 +19,6 @@ const COORDS: Record<string, { lat: number; lon: number }> = {
   social: { lat: 25.2, lon: 55.3 }, // Dubái
 };
 
-/* Laboratorios: se buscan en el contenido para que los enlaces nunca queden viejos. */
-const LABS: { key: string; label: string; icon: PixelIconName; desc: string }[] = [
-  { key: "w:terminal", label: "Terminal Linux", icon: "monitor", desc: "Un mini-CTF dentro de una terminal real." },
-  { key: "w:subnet", label: "Subredes", icon: "globe", desc: "Máscaras, hosts y rangos sin fórmulas raras." },
-  { key: "w:firewall", label: "Firewall", icon: "shield", desc: "Abre y cierra puertos y mira quién pasa." },
-  { key: "w:chmod", label: "Permisos chmod", icon: "key", desc: "r/w/x sobre archivos, con binario incluido." },
-  { key: "password", label: "Medidor de contraseñas", icon: "key", desc: "Entropía real y tiempo de descifrado." },
-  { key: "phishing", label: "Detector de phishing", icon: "flag", desc: "Diez mensajes: legítimo o anzuelo." },
-  { key: "w:xor", label: "XOR bit a bit", icon: "diamond", desc: "El ladrillo de todo cifrado, torciendo bits." },
-  { key: "w:vigenere", label: "Vigenère", icon: "chest", desc: "La clave que se repite, y por qué se cae." },
-  { key: "w:frecuencia", label: "Criptoanálisis", icon: "torch", desc: "Rompe un cifrado con estadística del idioma." },
-  { key: "w:rsa", label: "RSA paso a paso", icon: "globe", desc: "Clave pública y privada con números pequeños." },
-  { key: "w:kdf", label: "PBKDF2 y sales", icon: "key", desc: "Cómo se guarda (de verdad) una contraseña." },
-  { key: "w:brute", label: "Fuerza bruta", icon: "sword", desc: "10 000 intentos reales contra un PIN de 4 cifras." },
-];
-
-function coords(lat: number, lon: number) {
-  const ns = lat >= 0 ? "N" : "S";
-  const ow = lon >= 0 ? "E" : "O";
-  return `${Math.abs(lat).toFixed(1)}° ${ns} · ${Math.abs(lon).toFixed(1)}° ${ow}`;
-}
-
 export function Home({ go }: { go: (r: Ruta) => void }) {
   const [p] = useProgreso();
   const [sel, setSel] = useState(0);
@@ -50,7 +28,7 @@ export function Home({ go }: { go: (r: Ruta) => void }) {
 
   const done = nivelesCompletos(p);
   const xp = xpDe(p);
-  const { lvl, falta } = nivelDe(xp);
+  const { lvl } = nivelDe(xp);
 
   const preview = hover ?? sel;
   const mundo = C.mundos[preview];
@@ -65,22 +43,6 @@ export function Home({ go }: { go: (r: Ruta) => void }) {
     ],
     [coord.lat, coord.lon, mundo.color],
   );
-
-  const labs = useMemo(() => {
-    const out: { key: string; label: string; icon: PixelIconName; desc: string; mundo: Mundo; nivel: Nivel }[] = [];
-    for (const l of LABS) {
-      buscar: for (const m of C.mundos)
-        for (const n of m.niveles)
-          for (const p of n.practica) {
-            const k = p.tipo === "widget" ? `w:${p.w}` : p.tipo;
-            if (k === l.key) {
-              out.push({ ...l, mundo: m, nivel: n });
-              break buscar;
-            }
-          }
-    }
-    return out;
-  }, []);
 
   const siguiente = useMemo(() => {
     for (const m of C.mundos)
@@ -118,80 +80,6 @@ export function Home({ go }: { go: (r: Ruta) => void }) {
     el.style.setProperty("--py", y.toFixed(3));
   }
 
-  const accesos: { v: Ruta["v"]; label: string }[] = [
-    { v: "laboratorio", label: "Laboratorio" },
-    { v: "retos", label: "Retos" },
-    { v: "examen", label: "Examen final" },
-    { v: "phishing", label: "Phishing" },
-    { v: "tutoriales", label: "Guías" },
-    { v: "glosario", label: "Glosario" },
-  ];
-
-  const secciones: {
-    v: Ruta["v"];
-    icon: PixelIconName;
-    color: string;
-    fondo: string;
-    titulo: string;
-    desc: string;
-    cuenta: string;
-  }[] = [
-    {
-      v: "retos",
-      icon: "sword",
-      color: "var(--accent)",
-      fondo: "#2a1d0c",
-      titulo: "Retos CTF",
-      desc: "Banderas escondidas en archivos, hashes y tráfico. Pista, solución y puntos.",
-      cuenta: `${C.retos.length} retos`,
-    },
-    {
-      v: "phishing",
-      icon: "flag",
-      color: "var(--red)",
-      fondo: "#2a0e14",
-      titulo: "Detector de phishing",
-      desc: "SMS, WhatsApp, correo y Discord falsos. Aprende a ver la señal antes del clic.",
-      cuenta: `${C.phishing.length} mensajes`,
-    },
-    {
-      v: "tutoriales",
-      icon: "torch",
-      color: "var(--green)",
-      fondo: "#0f2418",
-      titulo: "Guías paso a paso",
-      desc: "Recetas cortas para hacer cosas reales: tu primera VPN, respaldos, 2FA.",
-      cuenta: `${C.tutoriales.length} guías`,
-    },
-    {
-      v: "glosario",
-      icon: "chest",
-      color: "var(--cyan)",
-      fondo: "#0c1f2c",
-      titulo: "Glosario",
-      desc: "Todo término raro explicado como si fuera la primera vez que lo escuchas.",
-      cuenta: `${C.glosario.length} términos`,
-    },
-    {
-      v: "snippets",
-      icon: "snake",
-      color: "var(--violet)",
-      fondo: "#1c1238",
-      titulo: "Snippets",
-      desc: "Comandos de terminal y Python listos para copiar, con la explicación al lado.",
-      cuenta: `${C.snippets.length} recetas`,
-    },
-    {
-      v: "progreso",
-      icon: "diamond",
-      color: "var(--green)",
-      fondo: "#0b2419",
-      titulo: "Tu progreso",
-      desc: "XP, nivel, avance por mundo y logros. Se guarda en este navegador.",
-      cuenta: `Nivel ${lvl} · ${p.logros.length}/${LOGROS.length} logros`,
-    },
-  ];
-
   return (
     <main id="main">
       {/* ── Centro de mando ── */}
@@ -221,9 +109,6 @@ export function Home({ go }: { go: (r: Ruta) => void }) {
               <p className="mt-1 flex flex-wrap items-center gap-1.5">
                 <span className="chip">Nivel {lvl}</span>
                 <span className="chip">{xp} XP</span>
-                <span className="chip">
-                  {p.logros.length}/{LOGROS.length} logros
-                </span>
               </p>
             </div>
           </div>
@@ -239,14 +124,14 @@ export function Home({ go }: { go: (r: Ruta) => void }) {
                 {C.mundos.length} mundos, {totalNiveles} niveles y laboratorios que funcionan en el navegador.
                 Teoría corta, práctica larga y un reto al final de cada nivel: de cero a criterio técnico.
               </p>
-              <div className="mt-3 flex flex-wrap gap-1.5">
-                <span className="chip">Desde cero</span>
-                <span className="chip">Sin instalar nada</span>
-                <span className="chip">En español</span>
-                <span className="chip chip-live">
-                  {done}/{totalNiveles} niveles hechos
-                </span>
+              <p className="mt-3 text-[13px] text-[var(--text-3)]">{done}/{totalNiveles} niveles completados · progreso privado en este navegador</p>
+              <div className="mt-5 flex flex-wrap gap-2">
+                <button className="btn btn-primary" onClick={() => siguiente ? go({ v: "nivel", mundo: siguiente.m.id, nivel: siguiente.n.id }) : go({ v: "proyectos" })}>
+                  {done === 0 ? "Empezar mi primera misión · 8 min" : siguiente ? "Continuar mi ruta" : "Elegir un proyecto final"}
+                </button>
+                <button className="btn" onClick={() => go({ v: "proyectos" })}>Ver proyectos</button>
               </div>
+              <p className="mt-2 text-[12px] text-[var(--text-3)]">Sin cuenta, sin instalación y solo en entornos ficticios y seguros.</p>
 
               <div className="mt-6 mb-2 flex items-baseline justify-between gap-3">
                 <p className="label !text-[var(--text)]">Elige un mundo</p>
@@ -257,7 +142,7 @@ export function Home({ go }: { go: (r: Ruta) => void }) {
                 role="listbox"
                 aria-label="Elige un mundo"
                 aria-activedescendant={`dest-${mundo.id}`}
-                className="mt-5 space-y-2"
+                className="cmd-world-list mt-5 space-y-2"
               >
                 {C.mundos.map((m, i) => {
                   const n = m.niveles.filter((l) => nivelCompleto(p, `${m.id}/${l.id}`)).length;
@@ -318,11 +203,7 @@ export function Home({ go }: { go: (r: Ruta) => void }) {
                 <p className="mt-1 line-clamp-3 text-[15px] leading-relaxed text-[var(--text-2)]">
                   {mundo.descripcion}
                 </p>
-                <div className="mt-2.5 flex flex-wrap gap-1.5">
-                  <span className="chip">{mundo.niveles.length} niveles</span>
-                  <span className="chip">teoría + práctica + reto</span>
-                  <span className="chip">{coord ? coords(coord.lat, coord.lon) : ""}</span>
-                </div>
+                <p className="mt-2 text-[13px] text-[var(--text-3)]">{mundo.niveles.length} niveles · {pctMundo}% completado</p>
                 <div className="mt-3 flex flex-col gap-2 sm:flex-row">
                   <button
                     className="btn btn-primary flex-1"
@@ -342,19 +223,8 @@ export function Home({ go }: { go: (r: Ruta) => void }) {
                     </button>
                   )}
                 </div>
-                <p className="mt-2 text-[13px] text-[var(--text-3)]">
-                  {pctMundo}% completado · te faltan {mundo.niveles.length - doneMundo} niveles
-                </p>
               </div>
 
-              <div className="mt-3 flex flex-wrap items-center gap-1.5">
-                <span className="label">Ir directo a</span>
-                {accesos.map((a) => (
-                  <button key={a.v} className="chip chip-btn" onClick={() => go({ v: a.v } as Ruta)}>
-                    {a.label}
-                  </button>
-                ))}
-              </div>
             </div>
           </div>
         </div>
@@ -370,272 +240,67 @@ export function Home({ go }: { go: (r: Ruta) => void }) {
         </div>
       </section>
 
-      {/* ── Qué es esto y para quién ── */}
-      <section className="mx-auto max-w-[1240px] px-4 pt-8" aria-labelledby="proposito-title">
-        <div className="grid gap-4 lg:grid-cols-[1.05fr_1fr]">
-          <div className="card p-5">
-            <p className="label !text-[var(--accent)]">Qué es FactionVault</p>
-            <h2 id="proposito-title" className="mt-2">
-              Ciberseguridad explicada como se aprende de verdad
-            </h2>
-            <p className="mt-3 text-[16px] leading-relaxed text-[var(--text-2)]">
-              Una plataforma en español para entender cómo funcionan las cosas por dentro: redes,
-              sistemas operativos, Python, criptografía, ingeniería social y seguridad informática.
-              Cada nivel es teoría corta, un ejemplo cotidiano, un laboratorio que puedes tocar y un
-              reto que demuestra que lo entendiste.
-            </p>
-            <p className="mt-2 text-[16px] leading-relaxed text-[var(--text-2)]">
-              Sin vídeos de tres horas ni promesas raras: ejercicios, fallos que puedes cometer sin
-              romper nada y siempre la explicación del <b className="text-[var(--text)]">por qué</b>.
-            </p>
-            <button className="btn btn-primary btn-sm mt-4" onClick={() => go({ v: "laboratorio" })}>
-              <PixelIcon name="pickaxe" size={13} /> Entrar al laboratorio
-            </button>
-          </div>
-          <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
-            {[
-              {
-                icon: "grass" as PixelIconName,
-                t: "Si empiezas de cero",
-                d: "No hace falta programar ni un equipo potente: todo corre en el navegador.",
-              },
-              {
-                icon: "torch" as PixelIconName,
-                t: "Si aprendes por tu cuenta",
-                d: "Ruta ordenada, progreso guardado y un reto por nivel para no engañarte a ti mismo.",
-              },
-              {
-                icon: "shield" as PixelIconName,
-                t: "Si ya trabajas en esto",
-                d: "Laboratorios técnicos: subredes, permisos, hashes, HMAC, PBKDF2, RSA y fuerza bruta real.",
-              },
-            ].map((x) => (
-              <div key={x.t} className="card flex items-start gap-3 p-3.5">
-                <span className="grid h-10 w-10 shrink-0 place-items-center border-2 border-black bg-[var(--surface-3)]">
-                  <PixelIcon name={x.icon} size={22} />
-                </span>
-                <div>
-                  <p className="text-[16px] font-bold leading-tight">{x.t}</p>
-                  <p className="mt-1 text-[14px] leading-snug text-[var(--text-2)]">{x.d}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+      <section id="rutas-aprendizaje" className="mx-auto max-w-[1120px] px-4 py-8" aria-labelledby="rutas-title">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div><p className="label !text-[var(--green)]">Aprende con un propósito</p><h2 id="rutas-title" className="mt-2">Elige tu ruta</h2><p className="mt-2 max-w-[680px] text-[15px] text-[var(--text-2)]">Rutas sugeridas, no bloqueos: puedes cambiar de mundo cuando quieras. Cada una termina con un proyecto de práctica.</p></div>
+          <button className="btn btn-sm" onClick={() => go({ v: "proyectos" })}>Ver todos los proyectos →</button>
         </div>
-      </section>
-
-      {/* ── Tablero de progreso ── */}
-      <section className="mx-auto max-w-[1240px] px-4 py-8" aria-label="Tu tablero">
-        <div className="stat-strip rise">
-          {[
-            { k: "Nivel", v: String(lvl), s: `faltan ${falta} XP` },
-            { k: "XP total", v: String(xp), s: "experiencia acumulada" },
-            { k: "Niveles", v: `${done}/${totalNiveles}`, s: "completados" },
-            { k: "Logros", v: `${p.logros.length}/${LOGROS.length}`, s: "desbloqueados" },
-          ].map((s, i) => (
-            <div key={s.k} className="stat">
-              <p className="label">{s.k}</p>
-              <p className="stat-num">{s.v}</p>
-              <p className="text-[13px] text-[var(--text-3)]">{s.s}</p>
-              {i === 2 && (
-                <div className="mt-2">
-                  <Bar value={(done / totalNiveles) * 100} color="var(--green)" />
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── Laboratorio abierto ── */}
-      <section className="mx-auto max-w-[1240px] px-4 pb-4" aria-labelledby="lab-title">
-        <SectionHead kicker="Aprende haciendo" title="Laboratorio abierto">
-          <p className="max-w-[460px] text-[14px] text-[var(--text-3)]">
-            Simuladores de verdad, sin instalar nada. Entras directo a la práctica y cada una te explica el porqué.
-          </p>
-        </SectionHead>
-        <h2 id="lab-title" className="sr-only">
-          Laboratorio abierto
-        </h2>
-        <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {labs.map((l) => (
-            <button
-              key={l.key}
-              onClick={() => go({ v: "nivel", mundo: l.mundo.id, nivel: l.nivel.id, lab: true })}
-              className="card card-hover flex items-start gap-3 p-3.5 text-left"
-              style={{ ["--world" as string]: l.mundo.color }}
-            >
-              <span
-                className="grid h-11 w-11 shrink-0 place-items-center border-2 border-black"
-                style={{ background: l.mundo.fondo }}
-              >
-                <PixelIcon name={l.icon} size={24} className="bob" />
-              </span>
-              <span className="min-w-0 flex-1">
-                <span className="label" style={{ color: l.mundo.color }}>
-                  {l.mundo.nombre.replace("Mundo ", "")}
-                </span>
-                <span className="mt-0.5 block text-[17px] font-bold leading-tight">{l.label}</span>
-                <span className="mt-1 block text-[14px] leading-snug text-[var(--text-2)]">{l.desc}</span>
-              </span>
-              <span className="vault-arrow" aria-hidden>
-                →
-              </span>
-            </button>
-          ))}
-        </div>
-      </section>
-
-      {/* ── Examen final y certificado ── */}
-      <section className="mx-auto max-w-[1240px] px-4 pb-6" aria-labelledby="examen-title">
-        <div
-          className="card relative overflow-hidden p-5 sm:p-7"
-          style={{ background: "linear-gradient(0deg, #211607, #2c1d0a)", borderColor: "#000" }}
-        >
-          <div className="relative grid items-center gap-5 md:grid-cols-[1.35fr_1fr]">
-            <div>
-              <p className="label !text-[var(--accent)]">Al final del camino</p>
-              <h2 id="examen-title" className="mt-1.5">
-                El examen final y tu certificado
-              </h2>
-              <p className="mt-2 max-w-[560px] text-[15px] leading-relaxed text-[var(--text-2)]">
-                {20} preguntas al azar de los {C.mundos.length} mundos, {20} minutos de reloj y una nota final
-                sobre 100. Aprobando con 70 o más se desbloquea tu <b className="text-[var(--text)]">certificado
-                de finalización</b> con tu nombre, tu nota y un ID de emisión, listo para imprimir o guardar en PDF.
-              </p>
-              <div className="mt-3 flex flex-wrap gap-1.5">
-                <span className="chip">20 preguntas</span>
-                <span className="chip">20 minutos</span>
-                <span className="chip" style={{ color: "var(--green)" }}>certificado incluido</span>
-              </div>
-            </div>
-            <div className="flex flex-col gap-2">
-              <button className="btn btn-xl btn-cta w-full" onClick={() => go({ v: "examen" })}>
-                <PixelIcon name="sword" size={16} /> Empezar el examen
+        <div className="mt-4 grid gap-3 lg:grid-cols-3">
+          {RUTAS_APRENDIZAJE.map((ruta) => {
+            const avance = ruta.niveles.filter((ref) => nivelCompleto(p, `${ref.mundo}/${ref.nivel}`)).length;
+            const pendiente = ruta.niveles.find((ref) => !nivelCompleto(p, `${ref.mundo}/${ref.nivel}`));
+            const proyecto = PROYECTOS.find((x) => x.id === ruta.proyecto)!;
+            return <article key={ruta.id} className="card flex flex-col p-4">
+              <div className="flex items-center gap-2"><PixelIcon name={ruta.icono} size={22} /><p className="label !text-[var(--green)]">Ruta · {avance}/{ruta.niveles.length}</p></div>
+              <h3 className="mt-2 text-[18px]">{ruta.titulo}</h3>
+              <p className="mt-1 min-h-[42px] text-[14px] text-[var(--text-2)]">{ruta.para}</p>
+              <ol className="mt-3 list-decimal space-y-1 pl-5 text-[13px] text-[var(--text-2)]">
+                {ruta.niveles.map((ref) => {
+                  const mundoRuta = C.mundos.find((m) => m.id === ref.mundo);
+                  const nivelRuta = mundoRuta?.niveles.find((n) => n.id === ref.nivel);
+                  return <li key={`${ref.mundo}/${ref.nivel}`}>{nivelRuta?.titulo ?? ref.nivel}</li>;
+                })}
+              </ol>
+              <p className="mt-3 border-t border-[var(--border-neutral)] pt-2 text-[13px]"><b>Proyecto final:</b> {proyecto.titulo}</p>
+              <button className="btn btn-primary btn-sm mt-3" onClick={() => pendiente ? go({ v: "nivel", mundo: pendiente.mundo, nivel: pendiente.nivel }) : go({ v: "proyectos", id: ruta.proyecto })}>
+                {pendiente ? avance ? "Continuar ruta" : "Empezar ruta" : "Abrir proyecto final"} →
               </button>
-              <button className="btn w-full" onClick={() => go({ v: "certificado" })}>
-                <PixelIcon name="chest" size={14} /> Ver el certificado
-              </button>
-            </div>
-          </div>
+            </article>;
+          })}
+        </div>
+        <div className="card mt-4 grid gap-3 p-4 text-[13px] text-[var(--text-2)] md:grid-cols-3" aria-label="Compromisos de aprendizaje">
+          <p><b className="text-[var(--green)]">Práctica segura.</b> Los casos son ficticios; no requieren probar en sistemas ajenos.</p>
+          <p><b className="text-[var(--cyan)]">Aprendizaje visible.</b> Cada nivel muestra objetivos y las fases completadas.</p>
+          <p><b className="text-[var(--accent)]">Transparencia.</b> Las referencias muestran fecha de revisión y el certificado no es una credencial oficial.</p>
         </div>
       </section>
 
-      {/* ── Los biomas ── */}
-      <section className="mx-auto max-w-[1240px] px-4 pb-4" aria-labelledby="biomas-title">
-        <SectionHead kicker={`${C.mundos.length} mundos, ${C.mundos.length} terrenos`} title="Los biomas de la bóveda">
-          <p className="max-w-[460px] text-[14px] text-[var(--text-3)]">
-            Cada mundo tiene su propio terreno, su color y sus reglas. Entra al que te pida el cuerpo.
-          </p>
-        </SectionHead>
-        <h2 id="biomas-title" className="sr-only">
-          Biomas
-        </h2>
-        <div className="mt-6">
-          <BiomaGrid mundos={C.mundos} go={(id) => go({ v: "mundo", id })} />
-        </div>
-      </section>
-
-      {/* ── Todo lo que hay en la bóveda ── */}
-      <section className="mx-auto max-w-[1240px] px-4 pb-4" aria-labelledby="vault-title">
-        <SectionHead kicker="Todo en un solo lugar" title="Explora la bóveda">
-          <p className="max-w-[420px] text-[14px] text-[var(--text-3)]">
-            No todo son niveles: aquí tienes práctica suelta para el día a día.
-          </p>
-        </SectionHead>
-        <h2 id="vault-title" className="sr-only">
-          Secciones de la bóveda
-        </h2>
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {secciones.map((s) => (
-            <button
-              key={s.v}
-              onClick={() => go({ v: s.v } as Ruta)}
-              className="card card-hover group flex flex-col p-4 text-left"
-              style={{ ["--world" as string]: s.color }}
-            >
-              <div className="flex items-start gap-3">
-                <span
-                  className="grid h-12 w-12 shrink-0 place-items-center border-2 border-black"
-                  style={{ background: s.fondo }}
-                >
-                  <PixelIcon name={s.icon} size={30} className="bob" />
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="label" style={{ color: s.color }}>
-                    {s.cuenta}
-                  </p>
-                  <p className="mt-1 text-[19px] font-bold leading-tight">{s.titulo}</p>
-                </div>
-                <span className="vault-arrow" aria-hidden>
-                  →
-                </span>
-              </div>
-              <p className="mt-2.5 flex-1 text-[15px] leading-relaxed text-[var(--text-2)]">{s.desc}</p>
-            </button>
-          ))}
-        </div>
-      </section>
-
-      {/* ── La promesa de cada nivel ── */}
-      <section className="mx-auto max-w-[1240px] px-4 py-10" aria-labelledby="promesa-title">
-        <SectionHead kicker="La promesa" title="Así funciona cada nivel" />
-        <h2 id="promesa-title" className="sr-only">
-          Cómo funciona cada nivel
-        </h2>
-        <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {[
-            { icon: "torch", t: "1 · Teoría", d: "La idea explicada desde cero, con cada término definido la primera vez." },
-            { icon: "grass", t: "2 · Ejemplo", d: "Lo mismo, pero con Minecraft, Fortnite o algo bien de aquí de Panamá." },
-            { icon: "pickaxe", t: "3 · Práctica", d: "Simuladores: terminal, firewall, subredes, cifrados reales, phishing…" },
-            { icon: "sword", t: "4 · Reto", d: "Una pregunta para comprobar que lo entendiste. ¡Y +XP!" },
-          ].map((x) => (
-            <div key={x.t} className="card p-4">
-              <PixelIcon name={x.icon as PixelIconName} size={30} />
-              <h3 className="mt-3">{x.t}</h3>
-              <p className="mt-2 text-[16px] text-[var(--text-2)]">{x.d}</p>
-            </div>
-          ))}
-        </div>
-        <div className="mt-6 grid gap-4 md:grid-cols-3">
-          <GameBox juego="panama" titulo="«Mami, cambié de número»">
-            La estafa más famosa del país se aprende a esquivar en el Mundo Ingeniería Social. Spoiler: no te
-            eligen a ti, eligen al que se deja.
-          </GameBox>
-          <GameBox juego="minecraft" titulo="Tu servidor, tus reglas">
-            Whitelist, puertos y permisos explicados como lo que son: las reglas de tu servidor de Minecraft.
-          </GameBox>
-          <GameBox juego="fortnite" titulo="Por qué hay lag">
-            UDP, latencia y traceroute desde Panamá hasta el servidor. Entenderás tus 120 de ping.
-          </GameBox>
-        </div>
-      </section>
-
-      {/* cierre */}
-      <section className="mx-auto max-w-[1240px] px-4 pb-10">
-        <div className="card flex flex-col items-start justify-between gap-4 p-5 sm:flex-row sm:items-center">
-          <div className="flex items-center gap-3">
-            <Logo size={46} />
-            <div>
-              <p className="text-[17px] font-bold">¿Listo para el primer bloque?</p>
-              <p className="text-[14px] text-[var(--text-3)]">
-                {siguiente
-                  ? `Siguiente parada: ${siguiente.m.nombre} · ${siguiente.n.titulo}`
-                  : "Ya completaste todo. Ahora van los retos CTF."}
-              </p>
-            </div>
+      <section className="home-next mx-auto max-w-[1120px] px-4 py-8" aria-label="Tu siguiente paso">
+        <div className="home-next-card">
+          <div className="min-w-0 flex-1">
+            <p className="label !text-[var(--accent)]">Tu ruta · {done}/{totalNiveles} niveles</p>
+            <h2 className="mt-2">{siguiente ? siguiente.n.titulo : "Completaste todos los mundos"}</h2>
+            <p className="mt-2 text-[15px] text-[var(--text-2)]">
+              {siguiente
+                ? `${siguiente.m.nombre} · continúa desde donde te quedaste.`
+                : "Buen trabajo. Si quieres seguir practicando, los retos CTF te esperan."}
+            </p>
+            <div className="mt-4 max-w-[520px]"><Bar value={(done / totalNiveles) * 100} color="var(--green)" label="Niveles completados" /></div>
           </div>
           <button
-            className="btn btn-primary shrink-0"
-            onClick={() =>
-              siguiente
-                ? go({ v: "nivel", mundo: siguiente.m.id, nivel: siguiente.n.id })
-                : go({ v: "retos" })
-            }
+            className="btn btn-primary home-next-action"
+            onClick={() => siguiente
+              ? go({ v: "nivel", mundo: siguiente.m.id, nivel: siguiente.n.id })
+              : go({ v: "retos" })}
           >
-            <PixelIcon name={siguiente ? "grass" : "sword"} size={16} />
-            {siguiente ? (done ? "Continuar donde iba" : "Empezar desde cero") : "Ir a los retos"}
+            {siguiente ? "Continuar" : "Ir a los retos"}<span aria-hidden>→</span>
           </button>
+        </div>
+        <div className="home-shortcuts" aria-label="Accesos rápidos">
+          <button onClick={() => go({ v: "laboratorio" })}><b>Laboratorio</b><span>Practica en entorno ficticio</span></button>
+          <button onClick={() => go({ v: "proyectos" })}><b>Proyectos finales</b><span>Entrega un informe práctico</span></button>
+          <button onClick={() => go({ v: "retos" })}><b>Retos CTF</b><span>{C.retos.length} desafíos para resolver</span></button>
+          <button onClick={() => go({ v: "progreso" })}><b>Tu progreso</b><span>Nivel {lvl} · {xp} XP</span></button>
         </div>
       </section>
     </main>

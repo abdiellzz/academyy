@@ -411,12 +411,12 @@ async function pbkdf2(pass: string, salt: Uint8Array, iter: number): Promise<str
   }
 }
 
-const salAleatoria = () => hex(crypto.getRandomValues(new Uint8Array(8)));
+const salAleatoria = () => hex(crypto.getRandomValues(new Uint8Array(16)));
 
 export function KdfLab() {
   const [pass, setPass] = useState("panama2026");
   const [sal, setSal] = useState(salAleatoria);
-  const [iter, setIter] = useState(100000);
+  const [iter, setIter] = useState(600000);
   const [res, setRes] = useState<{ clave: string; ms: number } | null>(null);
   const [res2, setRes2] = useState<{ clave: string; ms: number } | null>(null);
   const [cargando, setCargando] = useState(false);
@@ -431,16 +431,17 @@ export function KdfLab() {
     setCargando(false);
   }
 
-  const intentos = 1e9; // un atacante con GPU prueba ~1000 millones de claves por segundo contra un hash simple
+  const intentos = 1e9; // escala hipotética: no representa una GPU ni el hardware de un atacante
   const ms = res?.ms ?? 0;
   const anios = ms > 0 ? (intentos * (ms / 1000)) / 31536000 : 0;
 
   return (
     <WidgetShell title="PBKDF2: cómo se guarda una contraseña" badge={<span className="chip !text-[9px] !text-[var(--green)]">WebCrypto</span>}>
+      <p className="mb-3 text-[13px] text-[var(--text-3)]">Usa solo una clave ficticia para la demostración; este laboratorio no guarda ni transmite entradas.</p>
       <div className="grid gap-2 sm:grid-cols-3">
         <label className="sm:col-span-1">
-          <span className="label">Contraseña</span>
-          <input className="field mono mt-1" value={pass} onChange={(e) => setPass(e.target.value)} />
+          <span className="label">Contraseña de prueba</span>
+          <input type="password" autoComplete="off" className="field mono mt-1" value={pass} onChange={(e) => setPass(e.target.value)} />
         </label>
         <label>
           <span className="label">Sal (aleatoria)</span>
@@ -449,7 +450,7 @@ export function KdfLab() {
         <label>
           <span className="label">Iteraciones</span>
           <select className="field mono mt-1" value={iter} onChange={(e) => setIter(+e.target.value)}>
-            {[1000, 10000, 100000, 300000].map((x) => <option key={x} value={x}>{x.toLocaleString("es")}</option>)}
+            {[1000, 10000, 100000, 300000, 600000].map((x) => <option key={x} value={x}>{x.toLocaleString("es")}</option>)}
           </select>
         </label>
       </div>
@@ -477,18 +478,14 @@ export function KdfLab() {
             <p className="mono text-[22px] text-[var(--cyan)]">{iter.toLocaleString("es")}</p>
           </div>
           <div className="border-2 border-black bg-[var(--bg-sunken)] p-2">
-            <p className="label">10⁹ pruebas tardarían</p>
-            <p className="mono text-[18px] text-[var(--violet)]">{anios < 1 ? `${(anios * 365).toFixed(0)} días` : `${anios.toFixed(0)} años`}</p>
+            <p className="label">Proyección didáctica</p>
+            <p className="mono text-[18px] text-[var(--violet)]">10⁹ a este ritmo: {anios < 1 ? `${(anios * 365).toFixed(0)} días` : `${anios.toFixed(0)} años`}</p>
           </div>
         </div>
       )}
 
       <Pista>
-        Nunca se guarda la contraseña: se guarda el resultado de un <b>KDF</b> con una <b>sal</b> única por
-        usuario. La sal mata las tablas precalculadas (rainbow tables) porque la misma contraseña da claves
-        distintas en cada cuenta. Las <b>iteraciones</b> son trabajo extra: al servidor le cuesta unos
-        milisegundos, al atacante le multiplica el coste por millones. Hoy se recomienda Argon2id antes que
-        PBKDF2, y contraseñas largas antes que cualquier truco.
+        Un sistema de contraseñas no guarda la clave en claro: guarda un hash/KDF lento con una <b>sal aleatoria y única</b>. La sal evita que una misma contraseña produzca el mismo resultado y frena tablas precalculadas; no es secreta ni detiene por sí sola un ataque. Más iteraciones cuestan tiempo tanto al servicio como a quien prueba claves. La cifra de abajo solo extrapola la velocidad medida en este navegador: <b>no predice el hardware de un atacante</b>. No escribas una contraseña real. Para sistemas nuevos, revisa recomendaciones actuales como <a href="https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/Password_Storage_Cheat_Sheet.md" target="_blank" rel="noopener noreferrer" className="underline">OWASP Password Storage</a> (revisado el 6 nov. 2026); Argon2id suele preferirse cuando está disponible.
       </Pista>
     </WidgetShell>
   );

@@ -174,6 +174,76 @@ export function PythonLab() {
   );
 }
 
+/* ───────────────────────── Micro-retos de Python ───────────────────────── */
+const PYTHON_MISIONES: Record<string, { titulo: string; contexto: string; codigo: string; esperado: string; pista: string; porque: string }> = {
+  inventario: {
+    titulo: "Ficha de servicio",
+    contexto: "Combina variables para documentar un servicio de red.",
+    codigo: 'ip = "10.0.0.8"\npuerto = 443\nservicio = "HTTPS"\nprint(f"{ip}:{puerto} -> {servicio}")',
+    esperado: "10.0.0.8:443 -> HTTPS",
+    pista: "La f-string inserta el valor de cada variable dentro del texto.",
+    porque: "Separar los datos de su presentación facilita actualizar inventarios sin reescribir todo el mensaje.",
+  },
+  puertos: {
+    titulo: "Revisión de puertos",
+    contexto: "Recorre una lista y cuenta los puertos que requieren atención.",
+    codigo: 'puertos = [22, 80, 443, 3306]\nriesgo = 0\nfor puerto in puertos:\n    if puerto == 22 or puerto == 3306:\n        riesgo += 1\nprint(f"Puertos que requieren revisión: {riesgo}")',
+    esperado: "Puertos que requieren revisión: 2",
+    pista: "Dentro del bucle, aumenta riesgo cuando el puerto sea 22 o 3306.",
+    porque: "Automatizar la revisión de una lista evita saltarse servicios expuestos al revisar una red propia.",
+  },
+  logs: {
+    titulo: "Contador de inicios fallidos",
+    contexto: "Lee eventos de ejemplo y cuenta los intentos fallidos.",
+    codigo: 'eventos = ["LOGIN_OK 10.0.0.2", "LOGIN_FAIL 203.0.113.7", "LOGIN_FAIL 203.0.113.7"]\nfallos = 0\nfor evento in eventos:\n    if evento == "LOGIN_FAIL 203.0.113.7":\n        fallos += 1\nprint(f"Intentos fallidos: {fallos}")',
+    esperado: "Intentos fallidos: 2",
+    pista: "Compara cada evento con la línea LOGIN_FAIL y aumenta el contador.",
+    porque: "Los registros son texto; convertir señales repetidas en un conteo ayuda a detectar actividad que merece revisión.",
+  },
+  indicadores: {
+    titulo: "Busca un indicador conocido",
+    contexto: "Filtra una lista de IP de una red ficticia y encuentra la que aparece en una alerta.",
+    codigo: 'ips = ["10.0.0.4", "203.0.113.9", "10.0.0.12"]\nalerta = "203.0.113.9"\ncoincidencias = []\nfor ip in ips:\n    if ip == alerta:\n        coincidencias.append(ip)\nprint(coincidencias)',
+    esperado: "[203.0.113.9]",
+    pista: "Compara cada elemento con alerta y agrega las coincidencias a la lista.",
+    porque: "Comparar indicadores contra datos de una red de práctica es una forma sencilla de automatizar una investigación inicial.",
+  },
+};
+
+export function PythonChallengeLab({ mission, onDone }: { mission: string; onDone: () => void }) {
+  const reto = PYTHON_MISIONES[mission] ?? PYTHON_MISIONES.inventario;
+  const [code, setCode] = useState(reto.codigo);
+  const [salida, setSalida] = useState("");
+  const [error, setError] = useState("");
+  const [resultado, setResultado] = useState<null | boolean>(null);
+  function ejecutar() {
+    const res = ejecutarPython(code);
+    const texto = res.salida.join("\n");
+    setSalida(texto);
+    setError(res.error ?? "");
+    const ok = !res.error && texto.trim() === reto.esperado.trim();
+    setResultado(ok);
+    if (ok) onDone();
+  }
+  return (
+    <WidgetShell title={`python · ${reto.titulo}`} badge={<span className="chip !text-[9px] !text-[var(--green)]">reto ejecutable</span>}>
+      <p className="mb-3 text-[14px] leading-relaxed text-[var(--text-2)]">{reto.contexto} Edita el código, ejecútalo y compara la salida.</p>
+      <label className="label" htmlFor={`py-${mission}`}>Código Python</label>
+      <textarea id={`py-${mission}`} className="field mono mt-1 min-h-[150px] w-full leading-relaxed" spellCheck={false} value={code} onChange={(e) => { setCode(e.target.value); setResultado(null); }} />
+      <div className="mt-2 flex flex-wrap gap-2">
+        <button className="btn btn-primary btn-sm" onClick={ejecutar}>Ejecutar y comprobar</button>
+        <button className="btn btn-sm" onClick={() => { setCode(reto.codigo); setSalida(""); setError(""); setResultado(null); }}>Reiniciar código</button>
+      </div>
+      <div className="mt-3"><Term title="salida">{error ? <span className="text-[var(--red)]">{error}</span> : salida || "Ejecuta el código para ver el resultado."}</Term></div>
+      <div className="mt-3 grid gap-2 sm:grid-cols-2">
+        <p className="border border-[var(--border-neutral)] bg-[var(--surface-2)] p-3 text-[13px] text-[var(--text-2)]"><b className="text-[var(--accent)]">Pista:</b> {reto.pista}</p>
+        <p className="border border-[var(--border-neutral)] bg-[var(--surface-2)] p-3 text-[13px] text-[var(--text-2)]"><b className="text-[var(--green)]">¿Por qué?</b> {reto.porque}</p>
+      </div>
+      {resultado !== null && <p className={cn("mt-3 text-[14px]", resultado ? "text-[var(--green)]" : "text-[var(--accent)]")} role="status">{resultado ? "¡Correcto! El reto quedó completado." : `Aún no coincide. La salida esperada es: ${reto.esperado}`}</p>}
+    </WidgetShell>
+  );
+}
+
 /* ───────────────────────── Captura de paquetes ───────────────────────── */
 
 interface Paquete {

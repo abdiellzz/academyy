@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { BiomeBanner } from "../components/Biome";
+import { ConceptVisual } from "../components/ConceptVisual";
+import { CONCEPTOS } from "../lib/conceptos";
 import { PixelIcon } from "../components/PixelArt";
 import { PracticaView } from "../components/Practices";
 import { Bar, Bloque, GameBox } from "../components/ui";
@@ -29,7 +31,7 @@ export function WorldView({ id, go }: { id: string; go: (r: Ruta) => void }) {
             </div>
             <div className="card w-full max-w-[280px] p-4">
               <div className="flex items-center gap-3"><PixelIcon name={m.icono} size={40} /><div><p className="text-[18px]" style={{ fontFamily: "var(--font-title)", color: m.color }}>{Math.round((done / m.niveles.length) * 100)}%</p><p className="label mt-1">{done}/{m.niveles.length} niveles</p></div></div>
-              <div className="mt-3"><Bar value={(done / m.niveles.length) * 100} color={m.color} /></div>
+              <div className="mt-3"><Bar value={(done / m.niveles.length) * 100} color={m.color} label={`Niveles completados en ${m.nombre}`} /></div>
               <button className="btn btn-primary btn-sm mt-3 w-full" onClick={() => go({ v: "nivel", mundo: m.id, nivel: next.id })}>{done ? "Continuar" : "Empezar en el nivel 0"}</button>
             </div>
           </div>
@@ -126,7 +128,25 @@ export function LevelView({ mundo, nivel, lab, go }: { mundo: string; nivel: str
       <div className="sticky top-16 z-30 border-b-2 border-black bg-[var(--surface)]">
         <div className="mx-auto flex max-w-[900px] gap-1 overflow-x-auto px-4 py-2" role="tablist" aria-label="Fases del nivel">
           {FASES.map((f, i) => (
-            <button key={f.id} role="tab" aria-selected={fase === i} aria-controls="fase-panel" className={cn("tab-btn shrink-0", fase === i && "active")} onClick={() => setFase(i)}>
+            <button
+              key={f.id}
+              id={`fase-tab-${i}`}
+              type="button"
+              role="tab"
+              aria-selected={fase === i}
+              aria-controls="fase-panel"
+              tabIndex={fase === i ? 0 : -1}
+              className={cn("tab-btn shrink-0", fase === i && "active")}
+              onClick={() => setFase(i)}
+              onKeyDown={(e) => {
+                const next = e.key === "ArrowRight" ? (i + 1) % FASES.length : e.key === "ArrowLeft" ? (i + FASES.length - 1) % FASES.length : e.key === "Home" ? 0 : e.key === "End" ? FASES.length - 1 : -1;
+                if (next >= 0) {
+                  e.preventDefault();
+                  setFase(next);
+                  document.getElementById(`fase-tab-${next}`)?.focus();
+                }
+              }}
+            >
               <PixelIcon name={f.icon} size={13} /> {f.label}
               {f.id !== "ejemplo" && hechas[f.id] ? <span aria-label="completada"> ✔</span> : null}
             </button>
@@ -134,8 +154,9 @@ export function LevelView({ mundo, nivel, lab, go }: { mundo: string; nivel: str
         </div>
       </div>
 
-      <section id="fase-panel" role="tabpanel" className="mx-auto max-w-[860px] space-y-5 px-4 py-8">
+      <section id="fase-panel" role="tabpanel" aria-labelledby={`fase-tab-${fase}`} tabIndex={0} className="mx-auto max-w-[860px] space-y-5 px-4 py-8">
         {fase === 0 && <>
+          <ConceptVisual diagram={CONCEPTOS[n.id]} lessonId={n.id} />
           {n.teoria.map((b, i) => <Bloque key={i} b={b} />)}
           <Siguiente label="Entendido, ver el ejemplo" onClick={() => { marcarFase(key, "teoria"); setFase(1); }} />
         </>}
@@ -167,10 +188,14 @@ function Siguiente({ label, onClick }: { label: string; onClick: () => void }) {
 function RetoNivel({ n, m, k, go, next }: { n: Nivel; m: Mundo; k: string; go: (r: Ruta) => void; next?: Nivel }) {
   const [p] = useProgreso();
   const [pick, setPick] = useState<number | null>(null);
+  const [errores, setErrores] = useState(0);
+  const [mostrarExplicacion, setMostrarExplicacion] = useState(false);
   const yaHecho = nivelCompleto(p, k);
   const correct = pick === n.reto.respuesta;
   function choose(i: number) {
     setPick(i);
+    setMostrarExplicacion(false);
+    if (i !== n.reto.respuesta) setErrores((x) => x + 1);
     if (i === n.reto.respuesta && !yaHecho) {
       marcarFase(k, "reto");
       notify({ titulo: "¡Nivel superado!", texto: `${n.titulo} · +60 XP`, icono: "diamond" });
@@ -181,22 +206,28 @@ function RetoNivel({ n, m, k, go, next }: { n: Nivel; m: Mundo; k: string; go: (
       <div className="card p-5">
         <div className="flex items-center gap-2"><PixelIcon name="sword" size={20} /><span className="label !text-[var(--accent)]">Reto del nivel</span>{yaHecho && <span className="chip ml-auto !text-[var(--green)]">✔ superado</span>}</div>
         <p className="mt-3 text-[20px] font-bold">{n.reto.pregunta}</p>
-        <div className="mt-4 grid gap-2" role="radiogroup" aria-label="Opciones de respuesta">
+        <fieldset className="mt-4 grid gap-2 border-0 p-0">
+          <legend className="sr-only">Opciones de respuesta para: {n.reto.pregunta}</legend>
           {n.reto.opciones.map((o, i) => {
             const right = pick !== null && i === n.reto.respuesta && correct;
             const wrong = pick === i && i !== n.reto.respuesta;
             return (
-              <button key={o} role="radio" aria-checked={pick === i} onClick={() => choose(i)} disabled={correct}
-                className={cn("flex items-center gap-3 border-2 border-black p-3 text-left", right ? "bg-[#16301f]" : wrong ? "blink-red bg-[#3a1418]" : "bg-[var(--surface-2)] hover:bg-[var(--surface-3)]")}>
+              <label key={o} className={cn("level-option flex items-center gap-3 border-2 border-black p-3 text-left", right ? "bg-[#16301f]" : wrong ? "blink-red bg-[#3a1418]" : "bg-[var(--surface-2)] hover:bg-[var(--surface-3)]")}>
+                <input type="radio" name={`reto-${k}`} value={i} checked={pick === i} onChange={() => choose(i)} disabled={correct} />
                 <span className="grid h-8 w-8 shrink-0 place-items-center border-2 border-black bg-black/40 text-[10px]" style={{ fontFamily: "var(--font-title)" }}>{String.fromCharCode(65 + i)}</span>{o}
-              </button>
+              </label>
             );
           })}
-        </div>
+        </fieldset>
         {pick !== null && (
-          <p className={cn("mt-4 border-2 border-black p-3", correct ? "bg-[#16301f]" : "bg-[#2a1d0c]")} role="status">
-            <b className={correct ? "text-[var(--green)]" : "text-[var(--accent)]"}>{correct ? "¡Correcto! " : "Casi, inténtalo otra vez. "}</b>{correct ? n.reto.explicacion : "Pista: vuelve a la teoría si hace falta, no hay apuro."}
-          </p>
+          <div className={cn("mt-4 border-2 border-black p-3", correct ? "bg-[#16301f]" : "bg-[#2a1d0c]")} role="status" aria-live="polite">
+            <b className={correct ? "text-[var(--green)]" : "text-[var(--accent)]"}>{correct ? "¡Correcto! " : "Todavía no. "}</b>
+            {correct ? n.reto.explicacion : <>
+              <p className="mt-1">Pista {Math.min(errores, n.objetivos.length)}: vuelve a este objetivo del nivel — <b>{n.objetivos[Math.min(Math.max(errores - 1, 0), n.objetivos.length - 1)]}</b></p>
+              <button className="mt-2 text-left text-[14px] text-[var(--cyan)] underline" onClick={() => setMostrarExplicacion((x) => !x)} aria-expanded={mostrarExplicacion}>{mostrarExplicacion ? "Ocultar explicación" : "Ver respuesta y explicación"}</button>
+              {mostrarExplicacion && <p className="mt-2 border-t border-white/20 pt-2"><b>Respuesta:</b> {n.reto.opciones[n.reto.respuesta]}. {n.reto.explicacion}</p>}
+            </>}
+          </div>
         )}
       </div>
       {correct && (

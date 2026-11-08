@@ -1,24 +1,27 @@
 # FactionVault — ciberseguridad de verdad
 
 ¡Qué xopá! FactionVault enseña ciberseguridad **desde cero absoluto**, en español de Panamá y con estética pixel-art.
-Cada nivel sigue la misma promesa: **teoría + ejemplo + práctica + reto**.
+Cada nivel sigue la misma promesa: **teoría + mapa visual propio + ejemplo + práctica + reto**. Los diagramas explican flujos, capas y comparaciones clave.
 
-Hecha por **@abdiellzz** · [github.com/abdiellzz](https://github.com/abdiellzz)
+Creada por **Abdiel Camargo (@abdiellzz)** · [GitHub](https://github.com/abdiellzz) · [LinkedIn](https://www.linkedin.com/in/camargoabdiel/)
 
 ## Qué trae
 
 | Sección | Contenido |
 |---|---|
 | 7 mundos | Seguridad (5 niveles), Redes (8), Sistemas (8), Python (8), Criptografía (8), Ingeniería Social (8), Web (5) · 50 niveles en total |
-| Laboratorio | Laboratorio abierto en el inicio: entras directo a la práctica, sin pasar por la teoría. Cada práctica cierra con un bloque «¿por qué funciona así?». Incluye Terminal Linux con mini-CTF, firewall, calculadora de subredes, binario, encapsulamiento, procesos, planificador de CPU, memoria, chmod, código Python con salida verificada, César, SHA-256, medidor de contraseñas, AES-GCM real, Diffie-Hellman, ordenar pasos, escribir respuesta y detector de phishing |
+| Laboratorio | 29 simuladores en 5 áreas. Incluye Terminal Linux con mini-CTF, redes, criptografía y cuatro micro-retos de Python editables y ejecutables con un intérprete educativo limitado y seguro. Cada práctica explica qué hace y por qué |
 | Retos CTF | 42 retos con pista, solución y puntos |
 | Detector de phishing | 12 mensajes (SMS, WhatsApp, correo, Discord), rondas de 10 |
 | Guías | 8 tutoriales paso a paso |
 | Glosario | 72 términos con buscador y filtros |
 | Snippets | 12 recetas de terminal y Python |
-| Progreso | XP, nivel, avance por mundo, laboratorios y 20 logros (se guarda en `localStorage`) |
-| Examen final | 20 preguntas al azar del banco de los 45 niveles, 20 minutos, nota sobre 100 y repaso de los fallos |
-| Certificado | Se desbloquea con 70/100. Se descarga en **PDF** (A4 horizontal) o **PNG**: tu nombre, la nota, el progreso real y un ID de emisión. Deja claro que **no es una certificación oficial** y se puede ver en modo ejemplo antes de aprobar |
+| Progreso | XP, avance por mundo y objetivos filtrables, laboratorios, proyectos, 20 logros y meta semanal configurable con racha de estudio (se guarda en `localStorage`) |
+| Examen final | Se desbloquea al completar los 50 niveles de los 7 mundos. Evalúa 18 preguntas estratificadas de un banco de 64 (al menos 2 por mundo; 50 de nivel + 14 casos de transferencia) y 2 laboratorios prácticos (Python y análisis de tráfico) en 25 minutos; nota sobre 100 y repaso explicado |
+| Certificado | Se habilita al completar todos los mundos y aprobar el examen con 70/100. Se descarga en **PDF** (A4 horizontal) o **PNG**, con estética voxel/pixel, nombre, nota, progreso real e ID de emisión. Aclara que **no es una certificación oficial**. La vista de muestra lleva marca de agua y no ofrece acciones para editar, imprimir o descargar |
+| Referencias | Las lecciones de XSS, SQLi, sesiones, autenticación y criptografía enlazan guías de OWASP fechadas. Se corrigieron estimaciones de contraseñas y afirmaciones absolutas sobre cifrado. |
+| Términos y privacidad | Páginas públicas en el footer con reglas de uso seguro, datos locales, servicios externos y una política explícita de propiedad intelectual/uso autorizado. Son borradores informativos que requieren revisión jurídica antes de usarse como contrato. |
+| Proyectos finales | Tres misiones seguras con datos ficticios: plan de defensa de una cuenta, triage de inicios de sesión y análisis de tráfico. Cada una genera un informe en pantalla y da 50 XP una sola vez. |
 | Laboratorio de red | `ping`, `nmap` y `traceroute` contra la red ficticia 10.0.0.0/24, con puertos, servicios y un equipo intruso que hay que encontrar |
 | Logs | Lectura de `/var/log/auth.log` con filtro, detección de fuerza bruta y plan de respuesta |
 | PWA | `manifest.webmanifest`, iconos y service worker: se instala y funciona sin internet |
@@ -29,7 +32,9 @@ Hecha por **@abdiellzz** · [github.com/abdiellzz](https://github.com/abdiellzz)
 
 - **Archivo final:** `dist/index.html`. Es un único HTML **autocontenido**: el CSS, el JS y los datos van dentro. Se puede abrir con doble clic o subir a cualquier hosting estático.
 - **Para regenerarlo** después de editar: `npm install` y luego `npm run build`.
-- **Comprobar el contenido:** `npm run verify` revisa ids duplicados, niveles incompletos, retos mal formados y que cada laboratorio apunte a un nivel que existe. Sale con código 1 si algo falla.
+- **Comprobar calidad básica:** `npm run verify` revisa objetivos y referencias fechadas, rutas y proyectos finales, enlaces a laboratorios, 40 muestras equilibradas del examen, el intérprete Python acotado y pruebas de cifrado/lectura de formatos anteriores. Sale con código 1 si algo falla.
+- **Presupuesto de rendimiento:** `npm run build` comprueba que el HTML único no exceda 950 kB (315 kB gzip). El planeta pausa su animación fuera de pantalla, en pestañas ocultas y con movimiento reducido.
+- **QA manual pendiente:** sigue `docs/QA-EDUCATIVA.md` para teclado, lector de pantalla, contraste, tamaños móviles y revisión pedagógica; esas pruebas requieren navegador/dispositivo y no se declaran aprobadas por el build.
 - **Si eres un agente o vienes de fuera:** lee `AGENT_NOTES.md` (estado, trampas y backlog) y `FACTIONVAULT_CONTEXT.md` (arquitectura).
 - **PDF sin librerías:** el certificado se dibuja en un `<canvas>` a 2× y se mete en un PDF A4 horizontal armado a mano (`src/lib/certificado.ts`), comprimido con `CompressionStream` (`FlateDecode`). Si el navegador no lo soporta, cae a JPEG (`DCTDecode`).
 - **PWA:** en `npm run build` el service worker (`public/sw.js`) guarda la app. Instalada, abre offline; en desarrollo se desregistra a propósito para no cachear archivos a medio editar.
@@ -42,7 +47,7 @@ Todo el contenido vive en `src/content.js`, que define `window.FV_CONTENT`. Para
 
 ```js
 const FV_CONTENT = {
-  meta: { nombre, subtitulo, autor, github, version },
+  meta: { nombre, subtitulo, autor, github, linkedin, version },
   mundos: [{
     id, nombre, bioma, tagline, descripcion, color, fondo, icono, intro,
     niveles: [{
@@ -87,4 +92,4 @@ Notas:
 ## Aviso
 
 Herramienta educativa: practica solo en sistemas propios o autorizados. Comparte el enlace, no el código 😉
-Licencia: ver `LICENSE` (todos los derechos reservados, © @abdiellzz).
+Derechos de autor: ver `LICENSE` (material original; componentes de terceros conservan sus licencias, recogidas en `THIRD_PARTY_NOTICES.md`).

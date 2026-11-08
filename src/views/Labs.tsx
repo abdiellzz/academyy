@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { PixelIcon, type PixelIconName } from "../components/PixelArt";
+import { LearningFlow } from "../components/LearningFlow";
 import { PracticaView } from "../components/Practices";
 import { marcarLab, useProgreso } from "../lib/store";
 import { Term } from "../components/ui";
@@ -47,7 +48,7 @@ const AREAS: { id: string; nombre: string; icono: PixelIconName; desc: string }[
     id: "python",
     nombre: "Python",
     icono: "snake",
-    desc: "Programa tus propias herramientas: una consola que ejecuta código de verdad, con retos.",
+    desc: "Practica variables, puertos y registros con un intérprete didáctico acotado; no es una instalación de Python completa."
   },
   {
     id: "seguridad",
@@ -119,7 +120,7 @@ export const LABS: Lab[] = [
     nombre: "PBKDF2 y sales",
     icono: "key",
     que: "La forma correcta de guardar contraseñas (y la razón de que las filtraciones importen).",
-    haces: "Deriva claves de verdad, cambia la sal y las iteraciones y mide el tiempo que le costaría a un atacante.",
+    haces: "Deriva claves en este navegador, cambia la sal y las iteraciones y compara el coste medido aquí; no predice la velocidad del hardware de un atacante.",
     nivel: "Media",
     minutos: 8,
     practica: { tipo: "widget", w: "kdf" },
@@ -294,6 +295,51 @@ export const LABS: Lab[] = [
   },
 
   {
+    id: "python-inventario",
+    area: "python",
+    nombre: "Variables para un inventario",
+    icono: "monitor",
+    que: "Cómo guardar y presentar datos de un servicio de red con variables y f-strings.",
+    haces: "Edita una ficha de IP, puerto y servicio; ejecútala y comprueba el resultado.",
+    nivel: "Fácil",
+    minutos: 5,
+    practica: { tipo: "widget", w: "python-inventario" },
+  },
+  {
+    id: "python-puertos",
+    area: "python",
+    nombre: "Revisión de puertos",
+    icono: "shield",
+    que: "Cómo recorrer una lista y buscar puertos que merecen una revisión manual.",
+    haces: "Programa un conteo de puertos SSH y bases de datos en una lista ficticia.",
+    nivel: "Fácil",
+    minutos: 7,
+    practica: { tipo: "widget", w: "python-puertos" },
+  },
+  {
+    id: "python-logs",
+    area: "python",
+    nombre: "Contador de inicios fallidos",
+    icono: "monitor",
+    que: "Cómo resumir eventos de autenticación con un bucle y una condición.",
+    haces: "Lee líneas de ejemplo, cuenta los fallos y compara el resultado esperado.",
+    nivel: "Media",
+    minutos: 8,
+    practica: { tipo: "widget", w: "python-logs" },
+  },
+  {
+    id: "python-indicadores",
+    area: "python",
+    nombre: "Filtro de indicadores",
+    icono: "search",
+    que: "Cómo buscar una dirección conocida en una lista de datos ficticios.",
+    haces: "Compara IP por IP con una alerta y guarda las coincidencias encontradas.",
+    nivel: "Media",
+    minutos: 8,
+    practica: { tipo: "widget", w: "python-indicadores" },
+  },
+
+  {
     id: "password",
     area: "seguridad",
     nombre: "Medidor de contraseñas",
@@ -365,6 +411,10 @@ const LAB_LUGAR: Record<string, { mundo: string; nivel: string }> = {
   planificador: { mundo: "sistemas", nivel: "cpu" },
   memoria: { mundo: "sistemas", nivel: "memoria" },
   python: { mundo: "python", nivel: "listas-bucles" },
+  "python-inventario": { mundo: "python", nivel: "variables" },
+  "python-puertos": { mundo: "python", nivel: "condiciones-funciones" },
+  "python-logs": { mundo: "python", nivel: "logs" },
+  "python-indicadores": { mundo: "python", nivel: "proyecto-scanner" },
   password: { mundo: "cripto", nivel: "passwords" },
   phishing: { mundo: "social", nivel: "phishing" },
   logs: { mundo: "python", nivel: "logs" },
@@ -373,6 +423,9 @@ const LAB_LUGAR: Record<string, { mundo: string; nivel: string }> = {
 export function Laboratorio({ go }: { go: (r: Ruta) => void }) {
   const [area, setArea] = useState("cripto");
   const [abierto, setAbierto] = useState<Lab | null>(null);
+  const [modoLab, setModoLab] = useState<"guiado" | "reto">("guiado");
+  const [pistasReto, setPistasReto] = useState(0);
+  const [reinicio, setReinicio] = useState(0);
   const [prog] = useProgreso();
   const hechos = prog.labs.length;
 
@@ -397,16 +450,17 @@ export function Laboratorio({ go }: { go: (r: Ruta) => void }) {
             <span className="chip">sin instalar nada</span>
             <span className="chip">con pistas y explicación</span>
           </div>
+          <LearningFlow className="mt-4 max-w-[680px]" />
         </div>
       </section>
 
       <div className="sticky top-16 z-30 border-b-2 border-black bg-[var(--surface)]">
-        <div className="mx-auto flex max-w-[1160px] gap-1 overflow-x-auto px-4 py-2" role="tablist" aria-label="Áreas del laboratorio">
+        <div className="mx-auto flex max-w-[1160px] gap-1 overflow-x-auto px-4 py-2" role="group" aria-label="Filtrar por área del laboratorio">
           {AREAS.map((a) => (
             <button
               key={a.id}
-              role="tab"
-              aria-selected={area === a.id}
+              type="button"
+              aria-pressed={area === a.id}
               className={cn("tab-btn shrink-0", area === a.id && "active")}
               onClick={() => {
                 setArea(a.id);
@@ -451,13 +505,11 @@ export function Laboratorio({ go }: { go: (r: Ruta) => void }) {
                     </p>
                   </div>
                 </div>
-                <p className="mt-2 text-[15px] leading-relaxed text-[var(--text-2)]">
-                  <b className="text-[var(--text)]">¿Qué es?</b> {l.que}
-                </p>
-                <p className="mt-1.5 text-[15px] leading-relaxed text-[var(--text-2)]">
-                  <b className="text-[var(--text)]">Qué vas a hacer:</b> {l.haces}
-                </p>
-                <button className={cn("btn btn-sm mt-3 w-full", activo ? "" : "btn-primary")} onClick={() => setAbierto(activo ? null : l)}>
+                {!(activo && modoLab === "reto") && <>
+                  <p className="mt-2 text-[15px] leading-relaxed text-[var(--text-2)]"><b className="text-[var(--text)]">¿Qué es?</b> {l.que}</p>
+                  <p className="mt-1.5 text-[15px] leading-relaxed text-[var(--text-2)]"><b className="text-[var(--text)]">Qué vas a hacer:</b> {l.haces}</p>
+                </>}
+                <button className={cn("btn btn-sm mt-3 w-full", activo ? "" : "btn-primary")} onClick={() => { setAbierto(activo ? null : l); setModoLab("guiado"); setPistasReto(0); setReinicio((n) => n + 1); }}>
                   <PixelIcon name="pickaxe" size={12} /> {activo ? "Cerrar laboratorio" : "Abrir laboratorio"}
                 </button>
               </div>
@@ -469,11 +521,24 @@ export function Laboratorio({ go }: { go: (r: Ruta) => void }) {
           <div className="mt-5 rise">
             <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
               <p className="label !text-[var(--accent)]">▸ En marcha · {abierto.nombre}</p>
-              <button className="btn btn-xs" onClick={() => setAbierto(null)}>
-                cerrar ✕
-              </button>
+              <button className="btn btn-xs" onClick={() => setAbierto(null)}>Cerrar ✕</button>
             </div>
-            <PracticaView p={abierto.practica} onDone={() => marcarLab(abierto.id)} />
+            <div className="card mb-3 p-3" aria-label="Preparación del laboratorio">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <p className="label">Elige cómo practicar · no cambia tu puntuación</p>
+                <div role="group" aria-label="Modo de práctica" className="flex gap-1">
+                  <button className={cn("btn btn-xs", modoLab === "guiado" && "btn-primary")} aria-pressed={modoLab === "guiado"} onClick={() => { setModoLab("guiado"); setPistasReto(0); }}>Guiado</button>
+                  <button className={cn("btn btn-xs", modoLab === "reto" && "btn-primary")} aria-pressed={modoLab === "reto"} onClick={() => { setModoLab("reto"); setPistasReto(0); }}>Reto</button>
+                </div>
+              </div>
+              <p className="mt-2 text-[15px] text-[var(--text-2)]"><b>{modoLab === "guiado" ? "Contexto:" : "Misión:"}</b> {modoLab === "guiado" ? abierto.que : abierto.haces}</p>
+              {modoLab === "guiado" && <p className="mt-1 text-[14px] text-[var(--text-2)]"><b>Qué vas a hacer:</b> {abierto.haces}</p>}
+              {modoLab === "reto" && pistasReto > 0 && <p className="mt-2 border-l-2 border-[var(--accent)] pl-2 text-[14px] text-[var(--text-2)]" aria-live="polite"><b>Pista {pistasReto}:</b> {pistasReto === 1 ? abierto.que : abierto.extra ?? abierto.practica.porque ?? "Prueba un cambio pequeño, observa la salida y compárala con el objetivo."}</p>}
+              {modoLab === "reto" && pistasReto < 2 && <button className="mt-2 text-[14px] text-[var(--cyan)] underline" onClick={() => setPistasReto((n) => Math.min(2, n + 1))}>Revelar pista {pistasReto + 1} de 2</button>}
+              {prog.labs.includes(abierto.id) && <p className="mt-2 text-[13px] text-[var(--green)]" role="status">Laboratorio ya completado; puedes repetirlo para practicar.</p>}
+            </div>
+            <PracticaView key={`${abierto.id}-${modoLab}-${reinicio}`} p={abierto.practica} onDone={() => marcarLab(abierto.id)} />
+            <button className="btn btn-ghost btn-xs mt-2" onClick={() => setReinicio((n) => n + 1)}>Reiniciar práctica (no borra tu progreso)</button>
             <div className="card mt-3 flex flex-wrap items-center justify-between gap-3 p-3">
               <p className="text-[14px] text-[var(--text-2)]">
                 ¿Quieres el nivel completo con teoría, ejemplo y reto?

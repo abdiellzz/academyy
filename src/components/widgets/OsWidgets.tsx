@@ -481,7 +481,7 @@ export function TerminalWidget({ mission = "basico" }: { mission?: string }) {
   return (
     <WidgetShell title={mission === "ctf" ? "Terminal · Misión CTF" : "Terminal Linux · Misión básica"} badge={<span className="chip !text-[9px]">{done.filter(Boolean).length}/{done.length} objetivos</span>}>
       <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_230px]">
-        <div className="term" onClick={() => document.getElementById(`term-${mission}`)?.focus()} data-allow-copy>
+        <div className="term" onClick={() => document.getElementById(`term-${mission}`)?.focus()} >
           <div ref={scroller} className="h-[300px] overflow-y-auto p-3">
             {lines.map((l, i) => (
               <div key={i} className={cn("whitespace-pre-wrap break-words", l.kind === "cmd" && "text-[#d8ffd8]", l.kind === "err" && "text-[#ff8a8a]", l.kind === "ok" && "text-[#ffe14a]")}>{l.t}</div>

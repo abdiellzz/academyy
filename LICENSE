@@ -1,22 +1,29 @@
-FactionVault — Licencia de uso
-Copyright (c) 2026 abdiellzz (https://github.com/abdiellzz)
-TODOS LOS DERECHOS RESERVADOS.
+FactionVault — aviso de derechos de autor y uso
+Copyright (c) 2026 Abdiel Camargo (@abdiellzz)
+Perfiles: https://github.com/abdiellzz · https://www.linkedin.com/in/camargoabdiel/
 
-Este software, su código fuente, diseño visual, logotipo (mono pixel con cofre
-"FactionVault"), textos educativos, lecciones, retos y demás contenidos son
-propiedad exclusiva de su autor.
+SALVO LOS COMPONENTES Y MATERIALES DE TERCEROS IDENTIFICADOS EN SUS PROPIOS
+AVISOS, TODOS LOS DERECHOS SOBRE EL MATERIAL ORIGINAL DE FACTIONVAULT ESTÁN
+RESERVADOS. Esto incluye el código original, el diseño visual, el logotipo
+(mono pixel con cofre «FactionVault»), los textos educativos, las lecciones,
+los retos y demás material original atribuido al proyecto.
 
-Se permite ÚNICAMENTE:
+Se permite:
   - Usar la aplicación publicada para aprender, de forma personal y gratuita.
   - Compartir el enlace oficial de la aplicación.
 
-Queda PROHIBIDO, sin autorización previa y por escrito del autor:
-  - Copiar, redistribuir, publicar o revender el código fuente o sus partes.
-  - Crear obras derivadas, clones o versiones modificadas.
-  - Reutilizar el logotipo, la marca "FactionVault" o los contenidos educativos.
+Sin autorización previa y por escrito del titular, no se concede permiso para:
+  - Copiar, redistribuir, publicar o revender el material original protegido.
+  - Crear obras derivadas, clones o versiones modificadas del material original.
+  - Reutilizar el logotipo, la marca «FactionVault» o los contenidos educativos.
   - Incrustar la aplicación dentro de otros sitios web.
 
-EL SOFTWARE SE PROPORCIONA "TAL CUAL", SIN GARANTÍAS DE NINGÚN TIPO. Es una
+Los componentes y materiales de terceros conservan sus titulares y licencias
+respectivas; este aviso no los reemplaza ni restringe. Consulta
+THIRD_PARTY_NOTICES.md para los avisos de las dependencias incluidas en la
+aplicación.
+
+EL SOFTWARE SE PROPORCIONA «TAL CUAL», SIN GARANTÍAS DE NINGÚN TIPO. Es una
 herramienta educativa: sus cifrados clásicos no deben usarse para proteger
 información real, y las técnicas enseñadas solo deben practicarse en sistemas
 propios o con autorización expresa.
