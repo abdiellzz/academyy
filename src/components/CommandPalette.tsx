@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { PixelIcon, type PixelIconName } from "./PixelArt";
 import { C } from "../lib/content";
 import { LABS } from "../views/Labs";
-import { PROYECTOS } from "../lib/learning";
 import { pedirBusqueda } from "../lib/busqueda";
 import type { Ruta } from "../types";
 import { cn } from "../utils/cn";
@@ -58,16 +57,6 @@ function construir(): Hit[] {
       sub: `${l.area} · ${l.nivel} · ${l.minutos} min`,
       icon: l.icono,
       ruta: { v: "laboratorio" },
-    });
-  }
-  for (const proyecto of PROYECTOS) {
-    out.push({
-      key: `proyecto-${proyecto.id}`,
-      tipo: "Proyecto final",
-      titulo: proyecto.titulo,
-      sub: proyecto.subtitulo,
-      icon: "diamond",
-      ruta: { v: "proyectos", id: proyecto.id },
     });
   }
   for (const r of C.retos) {

@@ -23,8 +23,8 @@ const PASOS: { icono: PixelIconName; kicker: string; titulo: string; texto: stri
     kicker: "2 de 3 · Cómo se usa",
     titulo: "Empieza por tu objetivo, no por un menú",
     texto:
-      "Puedes comenzar desde cero, proteger tus cuentas o probar análisis técnico. Las rutas sugieren niveles y un proyecto final, pero no te bloquean: cambia de mundo cuando quieras. El buscador (⌘K o Ctrl+K) también te lleva directo a cualquier tema.",
-    puntos: ["La portada recomienda una primera misión", "⌘K abre el buscador", "El progreso y tus proyectos se guardan en este navegador"],
+      "Puedes comenzar desde cero, proteger tus cuentas o probar análisis técnico. Las rutas sugieren niveles, pero no te bloquean: cambia de mundo cuando quieras. El buscador (⌘K o Ctrl+K) también te lleva directo a cualquier tema.",
+    puntos: ["La portada recomienda una primera misión", "⌘K abre el buscador", "El progreso se guarda en este navegador"],
   },
   {
     icono: "torch",

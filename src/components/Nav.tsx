@@ -16,7 +16,6 @@ const HERRAMIENTAS: { v: Ruta["v"]; label: string; d: string }[] = [
   { v: "tutoriales", label: "Guías", d: "Pasos cortos para hacer algo útil" },
   { v: "glosario", label: "Glosario", d: "Significados claros, sin vueltas" },
   { v: "snippets", label: "Snippets", d: "Comandos explicados antes de copiarlos" },
-  { v: "proyectos", label: "Proyectos", d: "Misiones finales con informe práctico" },
   { v: "phishing", label: "Detector de phishing", d: "Practica reconocer mensajes trampa" },
   { v: "certificado", label: "Certificado", d: "Consulta tu diploma y tus resultados" },
 ];
@@ -122,7 +121,7 @@ export function Nav({ ruta, go, onBuscar }: { ruta: Ruta; go: (r: Ruta) => void;
 
           <div className="relative">
             <button
-              className={cn(claseBtn(menu === "herr" || ["operacion", "repaso", "tutoriales", "glosario", "snippets", "proyectos", "phishing", "certificado"].includes(ruta.v)), "nav-more")}
+              className={cn(claseBtn(menu === "herr" || ["operacion", "repaso", "tutoriales", "glosario", "snippets", "phishing", "certificado"].includes(ruta.v)), "nav-more")}
               onClick={() => setMenu(menu === "herr" ? null : "herr")}
               aria-label="Más opciones"
               title="Más opciones"

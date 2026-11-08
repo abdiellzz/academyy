@@ -133,7 +133,6 @@ dup(PROYECTOS.map((x) => x.id), "Proyecto final");
 dup(RUTAS_APRENDIZAJE.map((x) => x.id), "Ruta de aprendizaje");
 if (PROYECTOS.length !== 3 || RUTAS_APRENDIZAJE.length !== 3) mal("Se esperan 3 rutas y 3 proyectos de cierre");
 for (const ruta of RUTAS_APRENDIZAJE) {
-  if (!PROYECTOS.some((x) => x.id === ruta.proyecto)) mal(`Ruta ${ruta.id}: proyecto «${ruta.proyecto}» inexistente`);
   for (const ref of ruta.niveles) {
     const m = C.mundos.find((x) => x.id === ref.mundo);
     if (!m?.niveles.some((n) => n.id === ref.nivel)) mal(`Ruta ${ruta.id}: nivel «${ref.mundo}/${ref.nivel}» inexistente`);
@@ -146,7 +145,7 @@ for (const proyecto of PROYECTOS) {
     if (paso.opciones.length < 3 || paso.correcta < 0 || paso.correcta >= paso.opciones.length || !paso.porQue) mal(`Proyecto ${proyecto.id}, paso ${i + 1}: pregunta o explicación inválida`);
   }
 }
-console.log(`✔ Rutas de aprendizaje y ${PROYECTOS.length} proyectos ficticios validados.`);
+console.log(`✔ Rutas de aprendizaje y recursos de práctica ficticios validados.`);
 
 /* 7b · Diagramas visuales por nivel -------------------------------- */
 const idsNiveles = new Set(niveles.map((n) => n.id));
@@ -235,13 +234,14 @@ if (!C.meta.linkedin?.startsWith("https://www.linkedin.com/in/")) mal("Metadatos
 const nav = readFileSync(fileURLToPath(new URL("../src/components/Nav.tsx", import.meta.url)), "utf8");
 const operacion = readFileSync(fileURLToPath(new URL("../src/views/Operacion.tsx", import.meta.url)), "utf8");
 const repaso = readFileSync(fileURLToPath(new URL("../src/views/Repaso.tsx", import.meta.url)), "utf8");
-const proyectosUI = readFileSync(fileURLToPath(new URL("../src/views/Proyectos.tsx", import.meta.url)), "utf8");
+const home = readFileSync(fileURLToPath(new URL("../src/views/Home.tsx", import.meta.url)), "utf8");
+const palette = readFileSync(fileURLToPath(new URL("../src/components/CommandPalette.tsx", import.meta.url)), "utf8");
 const store = readFileSync(fileURLToPath(new URL("../src/lib/store.ts", import.meta.url)), "utf8");
 if (!app.includes("a === \"operacion\"") || !app.includes("a === \"repaso\"") || !app.includes("ruta.v === \"operacion\"") || !app.includes("ruta.v === \"repaso\"") || !footer.includes("#/operacion") || !footer.includes("#/repaso") || !nav.includes("Operación Bóveda") || !nav.includes("Repaso inteligente")) mal("Misión y repaso: faltan rutas o puntos de entrada");
 if (!operacion.includes("203.0.113") || !operacion.includes(".example") || !operacion.includes("Caso ficticio") || !operacion.includes("guardarPasoOperacion") || (operacion.match(/correcta: true/g) ?? []).length !== 4 || operacion.includes("fetch(") || operacion.includes("new WebSocket") || operacion.includes("XMLHttpRequest")) mal("Operación Bóveda: evidencia/etapas ficticias, guardado local o aislamiento de red incompletos");
 if (!operacion.includes("guardarClasificacionOperacion") || !operacion.includes("guardarNotaOperacion") || !operacion.includes("pistasDeRonda") || !operacion.includes("sin penalización") || !store.includes("ronda: state.operacion.ronda + 1") || !store.includes("clasificaciones: saved.operacion?.clasificaciones") || !legal.includes("clasificaciones de pistas y notas de Operación Bóveda")) mal("Operación Bóveda: clasificación, notas locales, rejugabilidad o aviso de privacidad incompletos");
 if (!repaso.includes("calificarRepaso") || !repaso.includes("intervalos crecientes") || !legal.includes("tarjetas de repaso")) mal("Repaso: flujo de tarjetas o transparencia de almacenamiento local incompletos");
-if (!store.includes("proyectosNotas") || !store.includes("guardarNotaProyecto") || !proyectosUI.includes("pregunta.instrucciones.map") || !proyectosUI.includes("pregunta.evidencia") || !proyectosUI.includes("guardarNotaProyecto") || !proyectosUI.includes("informe se muestra aquí; no se exporta") || !legal.includes("notas que escribas en los proyectos")) mal("Proyectos: instrucciones paso a paso, evidencia, notas locales o transparencia de privacidad/exportación incompletas");
+if (app.includes("./views/Proyectos") || app.includes('a === "proyectos"') || app.includes('ruta.v === "proyectos"') || nav.includes('label: "Proyectos"') || footer.includes("#/proyectos") || home.includes('v: "proyectos"') || palette.includes("PROYECTOS")) mal("Proyectos: la sección sigue accesible desde navegación, portada, buscador o ruta directa");
 const proteccionCliente = readFileSync(fileURLToPath(new URL("../src/lib/protect.ts", import.meta.url)), "utf8");
 if (proteccionCliente.includes('addEventListener("copy"')) mal("Protección cliente: no interceptar el portapapeles como mecanismo anti-copia");
 else console.log("✔ Términos, privacidad, propiedad intelectual, navegación legal y metadatos validados.");
