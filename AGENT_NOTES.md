@@ -59,7 +59,7 @@ Los stubs mínimos para SSR: `localStorage` (Map), `window` (`addEventListener`,
 | `src/index.css` | Paleta, `.card/.btn/.chip/.label/.field`, biomas, hero, certificado (`.cert-*`) y `@media print`. |
 | `public/` | `manifest.webmanifest`, `sw.js`, iconos 192/512/maskable, `favicon.ico`, `apple-touch-icon*`, `robots.txt`. |
 
-**Rutas (hash):** `#/`, `#/mundo/:id`, `#/mundo/:mundo/:nivel[/lab]`, `#/retos`, `#/laboratorio`, `#/examen`, `#/certificado`, `#/progreso`, `#/proyectos/:id?`, `#/terminos`, `#/privacidad`, `#/propiedad-intelectual`, `#/phishing`, `#/tutoriales`, `#/glosario`, `#/snippets`.
+**Rutas (hash):** `#/`, `#/mundo/:id`, `#/mundo/:mundo/:nivel[/lab]`, `#/retos`, `#/laboratorio`, `#/examen`, `#/certificado`, `#/progreso`, `#/proyectos/:id?`, `#/operacion`, `#/repaso`, `#/terminos`, `#/privacidad`, `#/propiedad-intelectual`, `#/phishing`, `#/tutoriales`, `#/glosario`, `#/snippets`.
 
 ---
 

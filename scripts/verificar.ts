@@ -16,6 +16,7 @@ import { ejecutarPython } from "../src/lib/py";
 import { aesCifrar, aesDescifrar } from "../src/lib/crypto";
 import { PROYECTOS, RUTAS_APRENDIZAJE } from "../src/lib/learning";
 import { CONCEPTOS } from "../src/lib/conceptos";
+import { siguienteRepaso } from "../src/lib/review";
 import { crearBancoExamen, seleccionarPreguntasEquilibradas, TRANSFERENCIA } from "../src/views/Examen";
 
 const problemas: string[] = [];
@@ -158,6 +159,16 @@ for (const id of idsNiveles) {
 for (const id of Object.keys(CONCEPTOS)) if (!idsNiveles.has(id)) mal(`Diagrama educativo: nivel inexistente «${id}»`);
 console.log(`✔ ${Object.keys(CONCEPTOS).length} diagramas conceptuales enlazados a los niveles del curso.`);
 
+/* 7c · Programación de repaso espaciado ------------------------------ */
+const fechaPrueba = new Date(2026, 0, 31, 12);
+const primerRepaso = siguienteRepaso(0, true, fechaPrueba);
+const repasoProgresivo = siguienteRepaso(1, true, fechaPrueba);
+const repasoDificil = siguienteRepaso(4, false, fechaPrueba);
+if (primerRepaso.nivel !== 1 || primerRepaso.dias !== 1 || primerRepaso.proxima !== "2026-02-01") mal("Repaso: primer intervalo o cruce de mes incorrecto");
+if (repasoProgresivo.nivel !== 2 || repasoProgresivo.dias !== 3 || repasoProgresivo.proxima !== "2026-02-03") mal("Repaso: el intervalo no crece tras recordar");
+if (repasoDificil.nivel !== 0 || repasoDificil.dias !== 1 || repasoDificil.proxima !== "2026-02-01") mal("Repaso: una tarjeta difícil no vuelve a mañana");
+console.log("✔ Repaso espaciado: intervalos crecientes, reinicio si cuesta y fechas al cruzar mes validados.");
+
 /* 8 · Intérprete seguro de Python para laboratorios ------------------ */
 const pruebasPython = [
   { nombre: "f-string y variables", codigo: 'ip = "10.0.0.8"\npuerto = 443\nprint(f"{ip}:{puerto}")', esperado: "10.0.0.8:443" },
@@ -220,6 +231,12 @@ const app = readFileSync(fileURLToPath(new URL("../src/App.tsx", import.meta.url
 if (!legal.includes("Términos y condiciones") || !legal.includes("Privacidad") || !legal.includes("Google Fonts") || !legal.includes("borrador informativo") || !legal.toLowerCase().includes("política de propiedad intelectual") || !legal.includes("una política no bloquea la copia") || !legal.includes("linkedin.com/in/camargoabdiel")) mal("Documentos legales: falta cobertura de propiedad, transparencia de terceros, crédito LinkedIn o aviso de revisión jurídica");
 if (!footer.includes("#/terminos") || !footer.includes("#/privacidad") || !footer.includes("#/propiedad-intelectual") || !footer.includes("C.meta.linkedin") || !app.includes("ruta.v === \"terminos\"") || !app.includes("ruta.v === \"privacidad\"") || !app.includes("ruta.v === \"propiedad\"")) mal("Documentos legales: rutas, crédito LinkedIn o enlaces del footer incompletos");
 if (!C.meta.linkedin?.startsWith("https://www.linkedin.com/in/")) mal("Metadatos: falta el perfil de LinkedIn válido del creador");
+const nav = readFileSync(fileURLToPath(new URL("../src/components/Nav.tsx", import.meta.url)), "utf8");
+const operacion = readFileSync(fileURLToPath(new URL("../src/views/Operacion.tsx", import.meta.url)), "utf8");
+const repaso = readFileSync(fileURLToPath(new URL("../src/views/Repaso.tsx", import.meta.url)), "utf8");
+if (!app.includes("a === \"operacion\"") || !app.includes("a === \"repaso\"") || !app.includes("ruta.v === \"operacion\"") || !app.includes("ruta.v === \"repaso\"") || !footer.includes("#/operacion") || !footer.includes("#/repaso") || !nav.includes("Operación Bóveda") || !nav.includes("Repaso inteligente")) mal("Misión y repaso: faltan rutas o puntos de entrada");
+if (!operacion.includes("203.0.113") || !operacion.includes(".example") || !operacion.includes("Caso íntegramente ficticio") || !operacion.includes("guardarPasoOperacion") || (operacion.match(/correcta: true/g) ?? []).length !== 4 || operacion.includes("fetch(") || operacion.includes("new WebSocket") || operacion.includes("XMLHttpRequest")) mal("Operación Bóveda: evidencia/etapas ficticias, guardado local o aislamiento de red incompletos");
+if (!repaso.includes("calificarRepaso") || !repaso.includes("intervalos crecientes") || !legal.includes("tarjetas de repaso")) mal("Repaso: flujo de tarjetas o transparencia de almacenamiento local incompletos");
 const proteccionCliente = readFileSync(fileURLToPath(new URL("../src/lib/protect.ts", import.meta.url)), "utf8");
 if (proteccionCliente.includes('addEventListener("copy"')) mal("Protección cliente: no interceptar el portapapeles como mecanismo anti-copia");
 else console.log("✔ Términos, privacidad, propiedad intelectual, navegación legal y metadatos validados.");

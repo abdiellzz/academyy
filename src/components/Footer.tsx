@@ -34,6 +34,8 @@ export function Footer({ go }: { go: (r: Ruta) => void }) {
           <nav aria-label="Legal y recursos">
             <p className="label mb-3">Información</p>
             <ul className="m-0 grid list-none gap-2 p-0">
+              <li><a href="#/operacion" className="text-[14px] text-[var(--text-2)] underline-offset-4 hover:text-[var(--accent)] hover:underline">Operación Bóveda</a></li>
+              <li><a href="#/repaso" className="text-[14px] text-[var(--text-2)] underline-offset-4 hover:text-[var(--accent)] hover:underline">Repaso inteligente</a></li>
               <li><a href="#/proyectos" className="text-[14px] text-[var(--text-2)] underline-offset-4 hover:text-[var(--accent)] hover:underline">Proyectos finales</a></li>
               <li><a href="#/terminos" className="text-[14px] text-[var(--text-2)] underline-offset-4 hover:text-[var(--accent)] hover:underline">Términos y condiciones</a></li>
               <li><a href="#/privacidad" className="text-[14px] text-[var(--text-2)] underline-offset-4 hover:text-[var(--accent)] hover:underline">Privacidad</a></li>

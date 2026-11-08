@@ -6,7 +6,7 @@ import { PixelIcon } from "../components/PixelArt";
 import { PracticaView } from "../components/Practices";
 import { Bar, Bloque, GameBox } from "../components/ui";
 import { mundoById } from "../lib/content";
-import { marcarFase, notify, nivelCompleto, useProgreso } from "../lib/store";
+import { marcarFase, notify, nivelCompleto, registrarFalloRepaso, useProgreso } from "../lib/store";
 import type { Mundo, Nivel, Ruta } from "../types";
 import { cn } from "../utils/cn";
 
@@ -195,7 +195,10 @@ function RetoNivel({ n, m, k, go, next }: { n: Nivel; m: Mundo; k: string; go: (
   function choose(i: number) {
     setPick(i);
     setMostrarExplicacion(false);
-    if (i !== n.reto.respuesta) setErrores((x) => x + 1);
+    if (i !== n.reto.respuesta) {
+      setErrores((x) => x + 1);
+      registrarFalloRepaso({ id: `nivel-${k}`, tema: m.nombre, pregunta: n.reto.pregunta, opciones: n.reto.opciones, respuesta: n.reto.respuesta, explicacion: n.reto.explicacion });
+    }
     if (i === n.reto.respuesta && !yaHecho) {
       marcarFase(k, "reto");
       notify({ titulo: "¡Nivel superado!", texto: `${n.titulo} · +60 XP`, icono: "diamond" });

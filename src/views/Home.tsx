@@ -129,6 +129,7 @@ export function Home({ go }: { go: (r: Ruta) => void }) {
                 <button className="btn btn-primary" onClick={() => siguiente ? go({ v: "nivel", mundo: siguiente.m.id, nivel: siguiente.n.id }) : go({ v: "proyectos" })}>
                   {done === 0 ? "Empezar mi primera misión · 8 min" : siguiente ? "Continuar mi ruta" : "Elegir un proyecto final"}
                 </button>
+                <button className="btn" onClick={() => go({ v: "operacion" })}><PixelIcon name="shield" size={14} /> Operación Bóveda</button>
                 <button className="btn" onClick={() => go({ v: "proyectos" })}>Ver proyectos</button>
               </div>
               <p className="mt-2 text-[12px] text-[var(--text-3)]">Sin cuenta, sin instalación y solo en entornos ficticios y seguros.</p>

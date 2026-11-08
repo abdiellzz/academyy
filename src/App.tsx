@@ -4,6 +4,8 @@ import { Examen } from "./views/Examen";
 import { Certificado } from "./views/Certificado";
 import { Laboratorio } from "./views/Labs";
 import { Proyectos } from "./views/Proyectos";
+import { Operacion } from "./views/Operacion";
+import { Repaso } from "./views/Repaso";
 import { Legal } from "./views/Legal";
 import { Nav } from "./components/Nav";
 import { Onboarding } from "./components/Onboarding";
@@ -24,6 +26,8 @@ function parse(): Ruta {
   if (!a) return { v: "inicio" };
   if (a === "laboratorio") return { v: "laboratorio" };
   if (a === "proyectos") return { v: "proyectos", id: b };
+  if (a === "operacion") return { v: "operacion" };
+  if (a === "repaso") return { v: "repaso" };
   if (a === "terminos") return { v: "terminos" };
   if (a === "privacidad") return { v: "privacidad" };
   if (a === "propiedad-intelectual") return { v: "propiedad" };
@@ -99,7 +103,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    const titles: Record<string, string> = { examen: "Examen final", certificado: "Certificado", laboratorio: "Laboratorio", proyectos: "Proyectos finales", terminos: "Términos y condiciones", privacidad: "Privacidad", propiedad: "Propiedad intelectual", retos: "Retos CTF", phishing: "Detector de phishing", tutoriales: "Guías", glosario: "Glosario", snippets: "Snippets", progreso: "Tu progreso" };
+    const titles: Record<string, string> = { examen: "Examen final", certificado: "Certificado", laboratorio: "Laboratorio", proyectos: "Proyectos finales", operacion: "Operación Bóveda", repaso: "Repaso inteligente", terminos: "Términos y condiciones", privacidad: "Privacidad", propiedad: "Propiedad intelectual", retos: "Retos CTF", phishing: "Detector de phishing", tutoriales: "Guías", glosario: "Glosario", snippets: "Snippets", progreso: "Tu progreso" };
     let t = "ciberseguridad de verdad";
     if (ruta.v === "mundo") t = mundoById(ruta.id)?.nombre ?? t;
     else if (ruta.v === "nivel") t = mundoById(ruta.mundo)?.niveles.find((n) => n.id === ruta.nivel)?.titulo ?? t;
@@ -119,6 +123,8 @@ export default function App() {
       {ruta.v === "nivel" && <LevelView mundo={ruta.mundo} nivel={ruta.nivel} lab={ruta.lab} go={go} />}
       {ruta.v === "laboratorio" && <Laboratorio go={go} />}
       {ruta.v === "proyectos" && <Proyectos id={ruta.id} />}
+      {ruta.v === "operacion" && <Operacion />}
+      {ruta.v === "repaso" && <Repaso />}
       {ruta.v === "terminos" && <Legal tipo="terminos" />}
       {ruta.v === "privacidad" && <Legal tipo="privacidad" />}
       {ruta.v === "propiedad" && <Legal tipo="propiedad" />}
@@ -130,7 +136,7 @@ export default function App() {
       {ruta.v === "glosario" && <Glosario />}
       {ruta.v === "snippets" && <Snippets />}
       {ruta.v === "progreso" && <Progreso go={go} />}
-      {!["inicio", "mundo", "nivel", "laboratorio", "proyectos", "terminos", "privacidad", "propiedad", "examen", "certificado", "retos", "phishing", "tutoriales", "glosario", "snippets", "progreso"].includes(ruta.v) && <NotFound go={go} />}
+      {!["inicio", "mundo", "nivel", "laboratorio", "proyectos", "operacion", "repaso", "terminos", "privacidad", "propiedad", "examen", "certificado", "retos", "phishing", "tutoriales", "glosario", "snippets", "progreso"].includes(ruta.v) && <NotFound go={go} />}
       <Footer go={go} />
       <Avisos />
       {warp && <div key={warp.k} className="warp" style={{ ["--world" as string]: warp.color }} onAnimationEnd={() => setWarp(null)} aria-hidden />}

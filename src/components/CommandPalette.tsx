@@ -26,7 +26,10 @@ const normal = (s: string) =>
   s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
 function construir(): Hit[] {
-  const out: Hit[] = [];
+  const out: Hit[] = [
+    { key: "mission-operation", tipo: "Misión", titulo: "Operación Bóveda", sub: "Investiga un incidente ficticio y entrega un informe", icon: "shield", ruta: { v: "operacion" } },
+    { key: "smart-review", tipo: "Repaso", titulo: "Repaso inteligente", sub: "Practica preguntas falladas con intervalos", icon: "torch", ruta: { v: "repaso" } },
+  ];
   for (const m of C.mundos) {
     out.push({
       key: `m-${m.id}`,

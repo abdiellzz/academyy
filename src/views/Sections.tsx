@@ -257,6 +257,9 @@ export function Progreso({ go }: { go: (r: Ruta) => void }) {
   const xp = xpDe(p);
   const { lvl, pct, falta } = nivelDe(xp);
   const done = nivelesCompletos(p);
+  const ahora = new Date();
+  const hoy = `${ahora.getFullYear()}-${String(ahora.getMonth() + 1).padStart(2, "0")}-${String(ahora.getDate()).padStart(2, "0")}`;
+  const repasosHoy = p.repaso.filter((x) => x.proxima <= hoy).length;
   const semana = semanaActual();
   const meta = p.metaEstudio.semana === semana ? p.metaEstudio.nivelesCompletados : 0;
   const diasActivos = new Set(p.metaEstudio.diasActivos);
@@ -277,6 +280,22 @@ export function Progreso({ go }: { go: (r: Ruta) => void }) {
           ))}
         </div>
         <div className="card mt-4 p-4"><div className="mb-1 flex justify-between"><span className="label">Hacia el nivel {lvl + 1}</span><span className="label">faltan {falta} XP</span></div><Bar value={pct} color="var(--green)" label="Progreso hacia el siguiente nivel" /></div>
+
+        <div className="mt-4 grid gap-3 md:grid-cols-2">
+          <article className="card flex flex-col p-4">
+            <div className="flex items-center gap-2"><PixelIcon name="shield" size={22} /><p className="label !text-[var(--cyan)]">Simulación defensiva</p></div>
+            <h2 className="mt-2 text-[17px]">Operación Bóveda</h2>
+            <p className="mt-1 flex-1 text-[14px] text-[var(--text-2)]">{p.operacion.completada ? "Misión completada. Puedes repetirla para revisar el razonamiento." : `${p.operacion.paso}/4 decisiones seguras registradas en una investigación ficticia.`}</p>
+            <div className="mt-3"><Bar value={(p.operacion.paso / 4) * 100} color="var(--cyan)" label="Progreso de Operación Bóveda" /></div>
+            <button className="btn btn-sm mt-3 self-start" onClick={() => go({ v: "operacion" })}>{p.operacion.completada ? "Revisar informe" : "Continuar misión"} →</button>
+          </article>
+          <article className="card flex flex-col p-4">
+            <div className="flex items-center gap-2"><PixelIcon name="torch" size={22} /><p className="label !text-[var(--violet)]">Práctica de recuperación</p></div>
+            <h2 className="mt-2 text-[17px]">Repaso inteligente</h2>
+            <p className="mt-1 flex-1 text-[14px] text-[var(--text-2)]">{repasosHoy ? `${repasosHoy} ${repasosHoy === 1 ? "pregunta pendiente" : "preguntas pendientes"} para hoy.` : p.repaso.length ? "No hay tarjetas pendientes hoy; las siguientes volverán según su intervalo." : "Las preguntas que te cuesten en niveles y examen aparecerán aquí."}</p>
+            <button className="btn btn-sm mt-3 self-start" onClick={() => go({ v: "repaso" })}>Abrir repaso →</button>
+          </article>
+        </div>
 
         <section className="study-goal-card mt-4" aria-labelledby="study-goal-title">
           <div className="flex flex-wrap items-start justify-between gap-3">

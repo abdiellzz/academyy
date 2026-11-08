@@ -85,6 +85,8 @@ export type Ruta =
   | { v: "retos" }
   | { v: "laboratorio" }
   | { v: "proyectos"; id?: string }
+  | { v: "operacion" }
+  | { v: "repaso" }
   | { v: "terminos" }
   | { v: "privacidad" }
   | { v: "propiedad" }

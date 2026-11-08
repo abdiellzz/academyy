@@ -123,7 +123,7 @@ Su paleta vive en `PALETAS` de `src/components/Biome.tsx` con la clave `web`.
   la misma imagen. La vista de muestra usa datos ficticios, marca de agua y no ofrece edición, impresión ni descarga.
 
 ## Documentos legales
-- `#/terminos`, `#/privacidad` y `#/propiedad-intelectual` se sirven desde `src/views/Legal.tsx` y están enlazados en el footer; la política explica límites reales de anti-copia.
+- `#/operacion` (`src/views/Operacion.tsx`) es una misión defensiva de cuatro etapas con datos ficticios; `#/repaso` (`src/views/Repaso.tsx`) programa tarjetas falladas con intervalos crecientes. Ambos estados se guardan solo en `localStorage`. `#/terminos`, `#/privacidad` y `#/propiedad-intelectual` se sirven desde `src/views/Legal.tsx` y están enlazados en el footer; la política explica límites reales de anti-copia.
 - Describen con transparencia los datos locales, caché offline, Google Fonts, servicios externos y uso seguro; son borradores informativos, no una afirmación de cumplimiento legal. Requieren revisión jurídica antes de usarlos como contrato/política definitiva.
 
 ## QA pendiente

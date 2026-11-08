@@ -4,7 +4,7 @@ import { LearningFlow } from "../components/LearningFlow";
 import { Bar } from "../components/ui";
 import { ejecutarPython } from "../lib/py";
 import { C, totalNiveles } from "../lib/content";
-import { guardarExamen, nivelCompleto, useProgreso } from "../lib/store";
+import { guardarExamen, nivelCompleto, registrarFalloRepaso, useProgreso } from "../lib/store";
 import { sfx } from "../lib/sonido";
 import type { Ruta } from "../types";
 import { cn } from "../utils/cn";
@@ -278,6 +278,17 @@ export function Examen({ go }: { go: (r: Ruta) => void }) {
     finRef.current = true;
     const aciertos = preguntas.reduce((a, q, k) => a + (esCorrecta(q, respuestas[k]) ? 1 : 0), 0);
     const n = Math.round((aciertos / Math.max(1, preguntas.length)) * 100);
+    for (const [k, pregunta] of preguntas.entries()) {
+      if (esCorrecta(pregunta, respuestas[k]) || pregunta.tipo === "python") continue;
+      registrarFalloRepaso({
+        id: `examen-${pregunta.mundo}-${pregunta.tipo}-${pregunta.titulo}`,
+        tema: `Examen · ${pregunta.mundo}`,
+        pregunta: pregunta.pregunta,
+        opciones: pregunta.tipo === "opcion" ? pregunta.opciones : pregunta.flujos.map((f) => `${f.protocolo} · ${f.origen} → ${f.destino}`),
+        respuesta: pregunta.respuesta,
+        explicacion: pregunta.explicacion,
+      });
+    }
     const usados = MINUTOS * 60 - restante;
     setNota(n);
     setSegundos(usados);

@@ -22,6 +22,8 @@ Creada por **Abdiel Camargo (@abdiellzz)** · [GitHub](https://github.com/abdiel
 | Referencias | Las lecciones de XSS, SQLi, sesiones, autenticación y criptografía enlazan guías de OWASP fechadas. Se corrigieron estimaciones de contraseñas y afirmaciones absolutas sobre cifrado. |
 | Términos y privacidad | Páginas públicas en el footer con reglas de uso seguro, datos locales, servicios externos y una política explícita de propiedad intelectual/uso autorizado. Son borradores informativos que requieren revisión jurídica antes de usarse como contrato. |
 | Proyectos finales | Tres misiones seguras con datos ficticios: plan de defensa de una cuenta, triage de inicios de sesión y análisis de tráfico. Cada una genera un informe en pantalla y da 50 XP una sola vez. |
+| Operación Bóveda | Investigación defensiva en 4 etapas con correo, registros, regla de reenvío y captura de red ficticios. Las decisiones correctas llevan a un informe explicativo y 100 XP una sola vez; no contacta sistemas reales. |
+| Repaso inteligente | Las respuestas incorrectas en retos de nivel y examen generan tarjetas locales para hoy; al recordar, los intervalos crecen (1, 3, 7, 14 y 30 días). No penaliza ni comparte progreso. |
 | Laboratorio de red | `ping`, `nmap` y `traceroute` contra la red ficticia 10.0.0.0/24, con puertos, servicios y un equipo intruso que hay que encontrar |
 | Logs | Lectura de `/var/log/auth.log` con filtro, detección de fuerza bruta y plan de respuesta |
 | PWA | `manifest.webmanifest`, iconos y service worker: se instala y funciona sin internet |
