@@ -13,10 +13,8 @@ import { cn } from "../utils/cn";
 const HERRAMIENTAS: { v: Ruta["v"]; label: string; d: string }[] = [
   { v: "operacion", label: "Operación Bóveda", d: "Investiga un incidente simulado" },
   { v: "repaso", label: "Repaso inteligente", d: "Recuerda preguntas que te costaron" },
-  { v: "tutoriales", label: "Guías", d: "Pasos cortos para hacer algo útil" },
   { v: "glosario", label: "Glosario", d: "Significados claros, sin vueltas" },
   { v: "snippets", label: "Snippets", d: "Comandos explicados antes de copiarlos" },
-  { v: "proyectos", label: "Proyectos", d: "Misiones finales con informe práctico" },
   { v: "phishing", label: "Detector de phishing", d: "Practica reconocer mensajes trampa" },
   { v: "certificado", label: "Certificado", d: "Consulta tu diploma y tus resultados" },
 ];
@@ -71,6 +69,7 @@ export function Nav({ ruta, go, onBuscar }: { ruta: Ruta; go: (r: Ruta) => void;
         <button onClick={() => go({ v: "inicio" })} aria-label="FactionVault, ir al inicio" className="shrink-0">
           <Logo />
         </button>
+        {ruta.v !== "inicio" && <button type="button" className="btn btn-ghost btn-xs shrink-0 px-2" onClick={() => go(ruta.v === "nivel" ? { v: "mundo", id: ruta.mundo } : { v: "inicio" })} aria-label={ruta.v === "nivel" ? "Volver al mundo" : "Volver al inicio"} title={ruta.v === "nivel" ? "Volver al mundo" : "Volver al inicio"}><span aria-hidden="true">←</span><span className="hidden sm:inline">Volver</span></button>}
 
         <nav aria-label="Navegación principal" className="ml-auto hidden items-center gap-1 min-[1180px]:flex">
           <button className={claseBtn(ruta.v === "inicio")} onClick={() => go({ v: "inicio" })} aria-current={ruta.v === "inicio" ? "page" : undefined}>
@@ -122,7 +121,7 @@ export function Nav({ ruta, go, onBuscar }: { ruta: Ruta; go: (r: Ruta) => void;
 
           <div className="relative">
             <button
-              className={cn(claseBtn(menu === "herr" || ["operacion", "repaso", "tutoriales", "glosario", "snippets", "proyectos", "phishing", "certificado"].includes(ruta.v)), "nav-more")}
+              className={cn(claseBtn(menu === "herr" || ["operacion", "repaso", "glosario", "snippets", "phishing", "certificado"].includes(ruta.v)), "nav-more")}
               onClick={() => setMenu(menu === "herr" ? null : "herr")}
               aria-label="Más opciones"
               title="Más opciones"

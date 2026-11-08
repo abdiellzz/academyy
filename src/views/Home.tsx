@@ -3,7 +3,7 @@ import { Globe } from "../components/Globe";
 import { Adventurer, PixelIcon } from "../components/PixelArt";
 import { Bar } from "../components/ui";
 import { C, totalNiveles } from "../lib/content";
-import { PROYECTOS, RUTAS_APRENDIZAJE } from "../lib/learning";
+import { RUTAS_APRENDIZAJE } from "../lib/learning";
 import { nivelCompleto, nivelDe, nivelesCompletos, useProgreso, xpDe } from "../lib/store";
 import type { Marker } from "../lib/planet";
 import type { Ruta } from "../types";
@@ -126,11 +126,10 @@ export function Home({ go }: { go: (r: Ruta) => void }) {
               </p>
               <p className="mt-3 text-[13px] text-[var(--text-3)]">{done}/{totalNiveles} niveles completados · progreso privado en este navegador</p>
               <div className="mt-5 flex flex-wrap gap-2">
-                <button className="btn btn-primary" onClick={() => siguiente ? go({ v: "nivel", mundo: siguiente.m.id, nivel: siguiente.n.id }) : go({ v: "proyectos" })}>
-                  {done === 0 ? "Empezar mi primera misión · 8 min" : siguiente ? "Continuar mi ruta" : "Elegir un proyecto final"}
+                <button className="btn btn-primary" onClick={() => siguiente ? go({ v: "nivel", mundo: siguiente.m.id, nivel: siguiente.n.id }) : go({ v: "retos" })}>
+                  {done === 0 ? "Empezar mi primera misión · 8 min" : siguiente ? "Continuar mi ruta" : "Explorar retos CTF"}
                 </button>
                 <button className="btn" onClick={() => go({ v: "operacion" })}><PixelIcon name="shield" size={14} /> Operación Bóveda</button>
-                <button className="btn" onClick={() => go({ v: "proyectos" })}>Ver proyectos</button>
               </div>
               <p className="mt-2 text-[12px] text-[var(--text-3)]">Sin cuenta, sin instalación y solo en entornos ficticios y seguros.</p>
 
@@ -243,14 +242,13 @@ export function Home({ go }: { go: (r: Ruta) => void }) {
 
       <section id="rutas-aprendizaje" className="mx-auto max-w-[1120px] px-4 py-8" aria-labelledby="rutas-title">
         <div className="flex flex-wrap items-end justify-between gap-3">
-          <div><p className="label !text-[var(--green)]">Aprende con un propósito</p><h2 id="rutas-title" className="mt-2">Elige tu ruta</h2><p className="mt-2 max-w-[680px] text-[15px] text-[var(--text-2)]">Rutas sugeridas, no bloqueos: puedes cambiar de mundo cuando quieras. Cada una termina con un proyecto de práctica.</p></div>
-          <button className="btn btn-sm" onClick={() => go({ v: "proyectos" })}>Ver todos los proyectos →</button>
+          <div><p className="label !text-[var(--green)]">Aprende con un propósito</p><h2 id="rutas-title" className="mt-2">Elige tu ruta</h2><p className="mt-2 max-w-[680px] text-[15px] text-[var(--text-2)]">Rutas sugeridas, no bloqueos: puedes cambiar de mundo cuando quieras. Avanza de nivel a tu ritmo y vuelve a practicar cuando lo necesites.</p></div>
         </div>
         <div className="mt-4 grid gap-3 lg:grid-cols-3">
           {RUTAS_APRENDIZAJE.map((ruta) => {
             const avance = ruta.niveles.filter((ref) => nivelCompleto(p, `${ref.mundo}/${ref.nivel}`)).length;
             const pendiente = ruta.niveles.find((ref) => !nivelCompleto(p, `${ref.mundo}/${ref.nivel}`));
-            const proyecto = PROYECTOS.find((x) => x.id === ruta.proyecto)!;
+            const destino = pendiente ?? ruta.niveles[ruta.niveles.length - 1];
             return <article key={ruta.id} className="card flex flex-col p-4">
               <div className="flex items-center gap-2"><PixelIcon name={ruta.icono} size={22} /><p className="label !text-[var(--green)]">Ruta · {avance}/{ruta.niveles.length}</p></div>
               <h3 className="mt-2 text-[18px]">{ruta.titulo}</h3>
@@ -262,9 +260,9 @@ export function Home({ go }: { go: (r: Ruta) => void }) {
                   return <li key={`${ref.mundo}/${ref.nivel}`}>{nivelRuta?.titulo ?? ref.nivel}</li>;
                 })}
               </ol>
-              <p className="mt-3 border-t border-[var(--border-neutral)] pt-2 text-[13px]"><b>Proyecto final:</b> {proyecto.titulo}</p>
-              <button className="btn btn-primary btn-sm mt-3" onClick={() => pendiente ? go({ v: "nivel", mundo: pendiente.mundo, nivel: pendiente.nivel }) : go({ v: "proyectos", id: ruta.proyecto })}>
-                {pendiente ? avance ? "Continuar ruta" : "Empezar ruta" : "Abrir proyecto final"} →
+              <p className="mt-3 border-t border-[var(--border-neutral)] pt-2 text-[13px]"><b>Al completar la ruta:</b> {ruta.resultado}</p>
+              <button className="btn btn-primary btn-sm mt-3" onClick={() => go({ v: "nivel", mundo: destino.mundo, nivel: destino.nivel })}>
+                {pendiente ? avance ? "Continuar ruta" : "Empezar ruta" : "Repasar último nivel"} →
               </button>
             </article>;
           })}
@@ -299,7 +297,6 @@ export function Home({ go }: { go: (r: Ruta) => void }) {
         </div>
         <div className="home-shortcuts" aria-label="Accesos rápidos">
           <button onClick={() => go({ v: "laboratorio" })}><b>Laboratorio</b><span>Practica en entorno ficticio</span></button>
-          <button onClick={() => go({ v: "proyectos" })}><b>Proyectos finales</b><span>Entrega un informe práctico</span></button>
           <button onClick={() => go({ v: "retos" })}><b>Retos CTF</b><span>{C.retos.length} desafíos para resolver</span></button>
           <button onClick={() => go({ v: "progreso" })}><b>Tu progreso</b><span>Nivel {lvl} · {xp} XP</span></button>
         </div>

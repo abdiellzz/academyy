@@ -10,7 +10,6 @@ import { actualizarObjetivoSemanal, diasSemanaActual, LOGROS, nivelCompleto, niv
 import type { RetoCTF, Ruta } from "../types";
 import { cn } from "../utils/cn";
 import { LABS } from "./Labs";
-import { PROYECTOS } from "../lib/learning";
 
 function Hero({ icon, kicker, title, children }: { icon: PixelIconName; kicker: string; title: string; children: React.ReactNode }) {
   return (
@@ -275,7 +274,7 @@ export function Progreso({ go }: { go: (r: Ruta) => void }) {
       <Hero icon="diamond" kicker={`Nivel ${lvl} · ${xp} XP`} title="Tu progreso">Todo se guarda en este navegador (sin cuentas ni servidores). Si borras los datos del sitio, empiezas de nuevo.</Hero>
       <section className="mx-auto max-w-[1100px] px-4 py-8">
         <div className="grid gap-3 sm:grid-cols-4">
-          {[["Nivel", lvl, "var(--green)"], ["XP", xp, "var(--accent)"], ["Niveles", `${done}/${totalNiveles}`, "var(--cyan)"], ["Retos", `${p.retos.length}/${C.retos.length}`, "var(--violet)"], ["Laboratorios", `${p.labs.length}/${LABS.length}`, "var(--green)"], ["Proyectos", `${p.proyectosFinalizados.length}/${PROYECTOS.length}`, "var(--cyan)"], ["Examen", p.examenes ? `${p.examenMejor}/100` : "—", "var(--accent)"]].map(([l, v, c]) => (
+          {[["Nivel", lvl, "var(--green)"], ["XP", xp, "var(--accent)"], ["Niveles", `${done}/${totalNiveles}`, "var(--cyan)"], ["Retos", `${p.retos.length}/${C.retos.length}`, "var(--violet)"], ["Laboratorios", `${p.labs.length}/${LABS.length}`, "var(--green)"], ["Examen", p.examenes ? `${p.examenMejor}/100` : "—", "var(--accent)"]].map(([l, v, c]) => (
             <div key={l as string} className="card p-4 text-center"><p className="label">{l}</p><p className="mt-2 text-[18px]" style={{ fontFamily: "var(--font-title)", color: c as string }}>{v}</p></div>
           ))}
         </div>

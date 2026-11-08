@@ -3,7 +3,6 @@ import { CommandPalette } from "./components/CommandPalette";
 import { Examen } from "./views/Examen";
 import { Certificado } from "./views/Certificado";
 import { Laboratorio } from "./views/Labs";
-import { Proyectos } from "./views/Proyectos";
 import { Operacion } from "./views/Operacion";
 import { Repaso } from "./views/Repaso";
 import { Legal } from "./views/Legal";
@@ -16,7 +15,7 @@ import { nivelDe, notify, useProgreso, xpDe } from "./lib/store";
 import { sfx } from "./lib/sonido";
 import { Home } from "./views/Home";
 import { LevelView, NotFound, WorldView } from "./views/World";
-import { Glosario, Phishing, Progreso, Retos, Snippets, Tutoriales } from "./views/Sections";
+import { Glosario, Phishing, Progreso, Retos, Snippets } from "./views/Sections";
 import type { Ruta } from "./types";
 
 /* Rutas por hash: #/  #/mundo/redes  #/mundo/redes/ip-subredes  #/retos … */
@@ -25,7 +24,6 @@ function parse(): Ruta {
   const [a, b, c] = parts;
   if (!a) return { v: "inicio" };
   if (a === "laboratorio") return { v: "laboratorio" };
-  if (a === "proyectos") return { v: "proyectos", id: b };
   if (a === "operacion") return { v: "operacion" };
   if (a === "repaso") return { v: "repaso" };
   if (a === "terminos") return { v: "terminos" };
@@ -35,13 +33,12 @@ function parse(): Ruta {
   if (a === "certificado") return { v: "certificado" };
   if (a === "mundo" && b && c) return { v: "nivel", mundo: b, nivel: c, lab: parts[3] === "lab" };
   if (a === "mundo" && b) return { v: "mundo", id: b };
-  if (["retos", "phishing", "tutoriales", "glosario", "snippets", "progreso"].includes(a)) return { v: a } as Ruta;
+  if (["retos", "phishing", "glosario", "snippets", "progreso"].includes(a)) return { v: a } as Ruta;
   if (mundoById(a)) return { v: "mundo", id: a };
   return { v: "inicio" };
 }
 function toHash(r: Ruta): string {
   if (r.v === "inicio") return "#/";
-  if (r.v === "proyectos" && r.id) return `#/proyectos/${r.id}`;
   if (r.v === "mundo") return `#/mundo/${r.id}`;
   if (r.v === "nivel") return `#/mundo/${r.mundo}/${r.nivel}${r.lab ? "/lab" : ""}`;
   return `#/${r.v}`;
@@ -103,7 +100,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    const titles: Record<string, string> = { examen: "Examen final", certificado: "Certificado", laboratorio: "Laboratorio", proyectos: "Proyectos finales", operacion: "Operación Bóveda", repaso: "Repaso inteligente", terminos: "Términos y condiciones", privacidad: "Privacidad", propiedad: "Propiedad intelectual", retos: "Retos CTF", phishing: "Detector de phishing", tutoriales: "Guías", glosario: "Glosario", snippets: "Snippets", progreso: "Tu progreso" };
+    const titles: Record<string, string> = { examen: "Examen final", certificado: "Certificado", laboratorio: "Laboratorio", operacion: "Operación Bóveda", repaso: "Repaso inteligente", terminos: "Términos y condiciones", privacidad: "Privacidad", propiedad: "Propiedad intelectual", retos: "Retos CTF", phishing: "Detector de phishing", glosario: "Glosario", snippets: "Snippets", progreso: "Tu progreso" };
     let t = "ciberseguridad de verdad";
     if (ruta.v === "mundo") t = mundoById(ruta.id)?.nombre ?? t;
     else if (ruta.v === "nivel") t = mundoById(ruta.mundo)?.niveles.find((n) => n.id === ruta.nivel)?.titulo ?? t;
@@ -122,7 +119,6 @@ export default function App() {
       {ruta.v === "mundo" && <WorldView id={ruta.id} go={go} />}
       {ruta.v === "nivel" && <LevelView mundo={ruta.mundo} nivel={ruta.nivel} lab={ruta.lab} go={go} />}
       {ruta.v === "laboratorio" && <Laboratorio go={go} />}
-      {ruta.v === "proyectos" && <Proyectos id={ruta.id} />}
       {ruta.v === "operacion" && <Operacion />}
       {ruta.v === "repaso" && <Repaso />}
       {ruta.v === "terminos" && <Legal tipo="terminos" />}
@@ -132,11 +128,10 @@ export default function App() {
       {ruta.v === "certificado" && <Certificado go={go} />}
       {ruta.v === "retos" && <Retos />}
       {ruta.v === "phishing" && <Phishing />}
-      {ruta.v === "tutoriales" && <Tutoriales go={go} />}
       {ruta.v === "glosario" && <Glosario />}
       {ruta.v === "snippets" && <Snippets />}
       {ruta.v === "progreso" && <Progreso go={go} />}
-      {!["inicio", "mundo", "nivel", "laboratorio", "proyectos", "operacion", "repaso", "terminos", "privacidad", "propiedad", "examen", "certificado", "retos", "phishing", "tutoriales", "glosario", "snippets", "progreso"].includes(ruta.v) && <NotFound go={go} />}
+      {!["inicio", "mundo", "nivel", "laboratorio", "operacion", "repaso", "terminos", "privacidad", "propiedad", "examen", "certificado", "retos", "phishing", "glosario", "snippets", "progreso"].includes(ruta.v) && <NotFound go={go} />}
       <Footer go={go} />
       <Avisos />
       {warp && <div key={warp.k} className="warp" style={{ ["--world" as string]: warp.color }} onAnimationEnd={() => setWarp(null)} aria-hidden />}

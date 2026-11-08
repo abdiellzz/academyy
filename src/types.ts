@@ -84,7 +84,6 @@ export type Ruta =
   | { v: "nivel"; mundo: string; nivel: string; lab?: boolean }
   | { v: "retos" }
   | { v: "laboratorio" }
-  | { v: "proyectos"; id?: string }
   | { v: "operacion" }
   | { v: "repaso" }
   | { v: "terminos" }
@@ -93,7 +92,6 @@ export type Ruta =
   | { v: "examen" }
   | { v: "certificado" }
   | { v: "phishing" }
-  | { v: "tutoriales" }
   | { v: "glosario" }
   | { v: "snippets" }
   | { v: "progreso" };
