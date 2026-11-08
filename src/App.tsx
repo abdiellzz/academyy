@@ -15,7 +15,7 @@ import { nivelDe, notify, useProgreso, xpDe } from "./lib/store";
 import { sfx } from "./lib/sonido";
 import { Home } from "./views/Home";
 import { LevelView, NotFound, WorldView } from "./views/World";
-import { Glosario, Phishing, Progreso, Retos, Snippets, Tutoriales } from "./views/Sections";
+import { Glosario, Phishing, Progreso, Retos, Snippets } from "./views/Sections";
 import type { Ruta } from "./types";
 
 /* Rutas por hash: #/  #/mundo/redes  #/mundo/redes/ip-subredes  #/retos … */
@@ -33,7 +33,7 @@ function parse(): Ruta {
   if (a === "certificado") return { v: "certificado" };
   if (a === "mundo" && b && c) return { v: "nivel", mundo: b, nivel: c, lab: parts[3] === "lab" };
   if (a === "mundo" && b) return { v: "mundo", id: b };
-  if (["retos", "phishing", "tutoriales", "glosario", "snippets", "progreso"].includes(a)) return { v: a } as Ruta;
+  if (["retos", "phishing", "glosario", "snippets", "progreso"].includes(a)) return { v: a } as Ruta;
   if (mundoById(a)) return { v: "mundo", id: a };
   return { v: "inicio" };
 }
@@ -100,7 +100,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    const titles: Record<string, string> = { examen: "Examen final", certificado: "Certificado", laboratorio: "Laboratorio", operacion: "Operación Bóveda", repaso: "Repaso inteligente", terminos: "Términos y condiciones", privacidad: "Privacidad", propiedad: "Propiedad intelectual", retos: "Retos CTF", phishing: "Detector de phishing", tutoriales: "Guías", glosario: "Glosario", snippets: "Snippets", progreso: "Tu progreso" };
+    const titles: Record<string, string> = { examen: "Examen final", certificado: "Certificado", laboratorio: "Laboratorio", operacion: "Operación Bóveda", repaso: "Repaso inteligente", terminos: "Términos y condiciones", privacidad: "Privacidad", propiedad: "Propiedad intelectual", retos: "Retos CTF", phishing: "Detector de phishing", glosario: "Glosario", snippets: "Snippets", progreso: "Tu progreso" };
     let t = "ciberseguridad de verdad";
     if (ruta.v === "mundo") t = mundoById(ruta.id)?.nombre ?? t;
     else if (ruta.v === "nivel") t = mundoById(ruta.mundo)?.niveles.find((n) => n.id === ruta.nivel)?.titulo ?? t;
@@ -128,11 +128,10 @@ export default function App() {
       {ruta.v === "certificado" && <Certificado go={go} />}
       {ruta.v === "retos" && <Retos />}
       {ruta.v === "phishing" && <Phishing />}
-      {ruta.v === "tutoriales" && <Tutoriales go={go} />}
       {ruta.v === "glosario" && <Glosario />}
       {ruta.v === "snippets" && <Snippets />}
       {ruta.v === "progreso" && <Progreso go={go} />}
-      {!["inicio", "mundo", "nivel", "laboratorio", "operacion", "repaso", "terminos", "privacidad", "propiedad", "examen", "certificado", "retos", "phishing", "tutoriales", "glosario", "snippets", "progreso"].includes(ruta.v) && <NotFound go={go} />}
+      {!["inicio", "mundo", "nivel", "laboratorio", "operacion", "repaso", "terminos", "privacidad", "propiedad", "examen", "certificado", "retos", "phishing", "glosario", "snippets", "progreso"].includes(ruta.v) && <NotFound go={go} />}
       <Footer go={go} />
       <Avisos />
       {warp && <div key={warp.k} className="warp" style={{ ["--world" as string]: warp.color }} onAnimationEnd={() => setWarp(null)} aria-hidden />}

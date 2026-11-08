@@ -92,7 +92,6 @@ export type Ruta =
   | { v: "examen" }
   | { v: "certificado" }
   | { v: "phishing" }
-  | { v: "tutoriales" }
   | { v: "glosario" }
   | { v: "snippets" }
   | { v: "progreso" };

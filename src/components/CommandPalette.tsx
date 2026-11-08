@@ -7,7 +7,7 @@ import type { Ruta } from "../types";
 import { cn } from "../utils/cn";
 
 /* ═══════════════════════════════════════════════════════════════════
-   Buscador global (⌘K / Ctrl+K): mundos, niveles, retos, términos y guías
+   Buscador global (⌘K / Ctrl+K): mundos, niveles, retos y términos
    en un solo sitio. Todo lo que hay en la bóveda, a dos teclas.
    ═══════════════════════════════════════════════════════════════════ */
 
@@ -78,16 +78,6 @@ function construir(): Hit[] {
       icon: "torch",
       ruta: { v: "glosario" },
       q: g.termino,
-    });
-  }
-  for (const t of C.tutoriales) {
-    out.push({
-      key: `t-${t.id}`,
-      tipo: "Guía",
-      titulo: t.titulo,
-      sub: `${t.descripcion} · ${t.minutos} min`,
-      icon: "pickaxe",
-      ruta: { v: "tutoriales" },
     });
   }
   for (const s of C.snippets) {
@@ -171,7 +161,7 @@ export function CommandPalette({ abierto, onCerrar, go }: { abierto: boolean; on
         <input
           ref={input}
           className="w-full border-0 bg-[var(--bg-sunken)] px-3 py-3 text-[18px] outline-none"
-          placeholder="nivel, reto, término, guía…  (ej: RSA, firewall, phishing)"
+          placeholder="nivel, reto, término…  (ej: RSA, firewall, phishing)"
           value={q}
           onChange={(e) => {
             setQ(e.target.value);
