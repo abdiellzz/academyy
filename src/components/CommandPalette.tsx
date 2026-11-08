@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { PixelIcon, type PixelIconName } from "./PixelArt";
 import { C } from "../lib/content";
 import { LABS } from "../views/Labs";
+import { PROYECTOS } from "../lib/learning";
 import { pedirBusqueda } from "../lib/busqueda";
 import type { Ruta } from "../types";
 import { cn } from "../utils/cn";
@@ -25,7 +26,10 @@ const normal = (s: string) =>
   s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
 function construir(): Hit[] {
-  const out: Hit[] = [];
+  const out: Hit[] = [
+    { key: "mission-operation", tipo: "Misión", titulo: "Operación Bóveda", sub: "Investiga un incidente ficticio y entrega un informe", icon: "shield", ruta: { v: "operacion" } },
+    { key: "smart-review", tipo: "Repaso", titulo: "Repaso inteligente", sub: "Practica preguntas falladas con intervalos", icon: "torch", ruta: { v: "repaso" } },
+  ];
   for (const m of C.mundos) {
     out.push({
       key: `m-${m.id}`,
@@ -54,6 +58,16 @@ function construir(): Hit[] {
       sub: `${l.area} · ${l.nivel} · ${l.minutos} min`,
       icon: l.icono,
       ruta: { v: "laboratorio" },
+    });
+  }
+  for (const proyecto of PROYECTOS) {
+    out.push({
+      key: `proyecto-${proyecto.id}`,
+      tipo: "Proyecto final",
+      titulo: proyecto.titulo,
+      sub: proyecto.subtitulo,
+      icon: "diamond",
+      ruta: { v: "proyectos", id: proyecto.id },
     });
   }
   for (const r of C.retos) {
@@ -106,14 +120,31 @@ export function CommandPalette({ abierto, onCerrar, go }: { abierto: boolean; on
   const [q, setQ] = useState("");
   const [sel, setSel] = useState(0);
   const input = useRef<HTMLInputElement | null>(null);
+  const dialog = useRef<HTMLDivElement | null>(null);
+  const opener = useRef<HTMLElement | null>(null);
   const todos = useMemo(() => (cache ??= construir()), []);
 
   useEffect(() => {
     if (!abierto) return;
+    opener.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     setQ("");
     setSel(0);
     const t = window.setTimeout(() => input.current?.focus(), 40);
-    return () => window.clearTimeout(t);
+    const trap = (e: KeyboardEvent) => {
+      if (e.key !== "Tab") return;
+      const items = Array.from(dialog.current?.querySelectorAll<HTMLElement>('a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])') ?? []);
+      if (!items.length) { e.preventDefault(); return; }
+      const first = items[0], last = items[items.length - 1];
+      if (e.shiftKey && (document.activeElement === first || !dialog.current?.contains(document.activeElement))) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && (document.activeElement === last || !dialog.current?.contains(document.activeElement))) { e.preventDefault(); first.focus(); }
+    };
+    document.addEventListener("keydown", trap);
+    return () => {
+      window.clearTimeout(t);
+      document.removeEventListener("keydown", trap);
+      opener.current?.focus();
+      opener.current = null;
+    };
   }, [abierto]);
 
   const hits = useMemo(() => {
@@ -134,6 +165,7 @@ export function CommandPalette({ abierto, onCerrar, go }: { abierto: boolean; on
   return (
     <div className="fixed inset-0 z-[400] flex items-start justify-center bg-black/70 px-4 pt-[12vh]" onClick={onCerrar} role="presentation">
       <div
+        ref={dialog}
         className="w-full max-w-[620px] border-2 border-black bg-[var(--surface)] shadow-[6px_6px_0_#000]"
         onClick={(e) => e.stopPropagation()}
         role="dialog"

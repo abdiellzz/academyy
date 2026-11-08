@@ -2,20 +2,22 @@ import { useEffect, useMemo, useState } from "react";
 import { tomarBusqueda } from "../lib/busqueda";
 import { PixelIcon, type PixelIconName } from "../components/PixelArt";
 import { PhishingGame } from "../components/Practices";
+import { LearningFlow } from "../components/LearningFlow";
 import { Bar, CopyBtn, SectionHead, Term } from "../components/ui";
 import { C, mundoById, totalNiveles } from "../lib/content";
 import { normalizar } from "../lib/crypto";
-import { LOGROS, nivelDe, nivelesCompletos, notify, resetProgreso, useProgreso, xpDe } from "../lib/store";
+import { actualizarObjetivoSemanal, diasSemanaActual, LOGROS, nivelCompleto, nivelDe, nivelesCompletos, notify, resetProgreso, rachaEstudio, semanaActual, useProgreso, xpDe } from "../lib/store";
 import type { RetoCTF, Ruta } from "../types";
 import { cn } from "../utils/cn";
 import { LABS } from "./Labs";
+import { PROYECTOS } from "../lib/learning";
 
 function Hero({ icon, kicker, title, children }: { icon: PixelIconName; kicker: string; title: string; children: React.ReactNode }) {
   return (
     <section className="border-b-2 border-black bg-[#150f26]">
       <div className="mx-auto flex max-w-[1100px] flex-col gap-4 px-4 py-10 sm:flex-row sm:items-center">
         <span className="grid h-20 w-20 shrink-0 place-items-center border-2 border-black bg-black/40 shadow-[4px_4px_0_#000]"><PixelIcon name={icon} size={48} /></span>
-        <div><p className="label !text-[var(--accent)]">▶ {kicker}</p><h1 className="mt-2">{title}</h1><p className="mt-2 max-w-[680px] text-[18px] text-[var(--text-2)]">{children}</p></div>
+        <div className="min-w-0 flex-1"><p className="label !text-[var(--accent)]">▶ {kicker}</p><h1 className="mt-2">{title}</h1><p className="mt-2 max-w-[680px] text-[18px] text-[var(--text-2)]">{children}</p><LearningFlow className="mt-4 max-w-[680px]" /></div>
       </div>
     </section>
   );
@@ -39,8 +41,8 @@ export function Retos() {
     <main id="main">
       <Hero icon="sword" kicker={`${C.retos.length} retos · ${score}/${max} puntos`} title="Retos CTF">Capture The Flag: problemas sueltos para demostrar lo que sabes. Equivocarse es parte del juego; cada reto trae pista y solución explicada.</Hero>
       <section className="mx-auto max-w-[1100px] px-4 py-8">
-        <div className="no-scrollbar flex gap-1.5 overflow-x-auto pb-2" role="tablist" aria-label="Categorías de retos">
-          {cats.map((c) => <button key={c} role="tab" aria-selected={cat === c} className={cn("tab-btn shrink-0", cat === c && "active")} onClick={() => setCat(c)}>{c}</button>)}
+        <div className="no-scrollbar flex gap-1.5 overflow-x-auto pb-2" role="group" aria-label="Filtrar retos por categoría">
+          {cats.map((c) => <button key={c} type="button" aria-pressed={cat === c} className={cn("tab-btn shrink-0", cat === c && "active")} onClick={() => setCat(c)}>{c}</button>)}
         </div>
         <div className="mt-4 grid gap-4 lg:grid-cols-[300px_1fr]">
           <ul className="card m-0 max-h-[560px] list-none overflow-auto p-2" aria-label="Lista de retos">
@@ -67,6 +69,7 @@ function RetoCard({ r, solved, onSolve }: { r: RetoCTF; solved: boolean; onSolve
   const [v, setV] = useState("");
   const [fails, setFails] = useState(0);
   const [hint, setHint] = useState(false);
+  const [solucionVisible, setSolucionVisible] = useState(false);
   const [wrong, setWrong] = useState(false);
   function check(val = v) {
     if (solved || !val.trim()) return;
@@ -102,11 +105,12 @@ function RetoCard({ r, solved, onSolve }: { r: RetoCTF; solved: boolean; onSolve
       {solved && <div className="mt-4 border-2 border-black bg-[#16301f] p-3" role="status"><p className="label !text-[var(--green)]">✔ Solución: {r.solucion}</p><p className="mt-1">{r.explicacion}</p></div>}
       {!solved && (
         <div className="mt-4 flex flex-wrap gap-2">
-          <button className="btn btn-sm" onClick={() => setHint((h) => !h)}>{hint ? "Ocultar pista" : "Ver pista"}</button>
-          {fails >= 2 && <button className="btn btn-sm btn-ghost" onClick={() => alert(`Solución: ${r.solucion}\n\n${r.explicacion}`)}>Rendirme y ver solución</button>}
+          <button className="btn btn-sm" aria-expanded={hint} onClick={() => setHint((h) => !h)}>{hint ? "Ocultar pista" : "Ver pista"}</button>
+          {fails >= 2 && <button className="btn btn-sm btn-ghost" aria-expanded={solucionVisible} onClick={() => setSolucionVisible((v) => !v)}>{solucionVisible ? "Ocultar solución" : "Ver solución explicada"}</button>}
         </div>
       )}
-      {hint && !solved && <p className="mt-2 border-2 border-black bg-[#2a1d0c] p-3">{r.pista}</p>}
+      {hint && !solved && <p className="mt-2 border-2 border-black bg-[#2a1d0c] p-3" role="note">{r.pista}</p>}
+      {solucionVisible && !solved && <div className="mt-2 border-2 border-black bg-[#1b1233] p-3" role="region" aria-label="Solución explicada"><b>Solución: </b>{r.solucion}<p className="mt-1 text-[var(--text-2)]">{r.explicacion}</p></div>}
     </article>
   );
 }
@@ -149,7 +153,7 @@ export function Tutoriales({ go }: { go: (r: Ruta) => void }) {
         <button className="btn btn-ghost btn-xs" onClick={() => { setSel(null); setStep(0); }}>◀ Todas las guías</button>
         <h1 className="mt-4">{t.titulo}</h1>
         <p className="mt-2 text-[var(--text-2)]">{t.descripcion}</p>
-        <div className="mt-4"><Bar value={((step + 1) / t.pasos.length) * 100} /></div>
+        <div className="mt-4"><Bar value={((step + 1) / t.pasos.length) * 100} label={`Progreso de la guía: paso ${step + 1} de ${t.pasos.length}`} /></div>
         <ol className="no-scrollbar mt-4 flex list-none gap-1 overflow-x-auto p-0">
           {t.pasos.map((s, i) => <li key={s.titulo}><button onClick={() => setStep(i)} aria-current={i === step ? "step" : undefined} className={cn("step-dot", i < step && "done", i === step && "now")} aria-label={`Paso ${i + 1}: ${s.titulo}`}>{i + 1}</button></li>)}
         </ol>
@@ -232,7 +236,7 @@ export function Snippets() {
           {C.snippets.filter((s) => cat === "Todos" || s.categoria === cat).map((s) => (
             <article key={s.id} className="card p-4">
               <div className="flex items-center justify-between gap-2"><div><p className="label !text-[var(--accent)]">{s.categoria} · {s.lenguaje}</p><h3 className="mt-1">{s.titulo}</h3></div><CopyBtn value={s.codigo} /></div>
-              <pre className="code-pixel mt-3 p-3" data-allow-copy>{s.codigo}</pre>
+              <pre className="code-pixel mt-3 p-3">{s.codigo}</pre>
               <p className="mt-3 text-[16px] text-[var(--text-2)]"><b className="text-[var(--green)]">Qué hace: </b>{s.explicacion}</p>
             </article>
           ))}
@@ -246,19 +250,76 @@ export function Snippets() {
 /* ═════════ PROGRESO ═════════ */
 export function Progreso({ go }: { go: (r: Ruta) => void }) {
   const [p] = useProgreso();
+  const [mundoMapa, setMundoMapa] = useState("todos");
+  const [soloPendientes, setSoloPendientes] = useState(false);
+  const rutaCompleta = C.mundos.every((m) => m.niveles.every((n) => nivelCompleto(p, `${m.id}/${n.id}`)));
+  const mundoPendiente = C.mundos.find((m) => !m.niveles.every((n) => nivelCompleto(p, `${m.id}/${n.id}`)));
   const xp = xpDe(p);
   const { lvl, pct, falta } = nivelDe(xp);
   const done = nivelesCompletos(p);
+  const ahora = new Date();
+  const hoy = `${ahora.getFullYear()}-${String(ahora.getMonth() + 1).padStart(2, "0")}-${String(ahora.getDate()).padStart(2, "0")}`;
+  const repasosHoy = p.repaso.filter((x) => x.proxima <= hoy).length;
+  const semana = semanaActual();
+  const meta = p.metaEstudio.semana === semana ? p.metaEstudio.nivelesCompletados : 0;
+  const diasActivos = new Set(p.metaEstudio.diasActivos);
+  const racha = rachaEstudio(p);
+  const dias = diasSemanaActual();
+  const mapaObjetivos = C.mundos.flatMap((m) => m.niveles.map((n) => {
+    const key = `${m.id}/${n.id}`;
+    const fases = p.niveles[key] ?? {};
+    return { m, n, key, fases };
+  })).filter(({ m, fases }) => (mundoMapa === "todos" || m.id === mundoMapa) && (!soloPendientes || !fases.reto));
   return (
     <main id="main">
       <Hero icon="diamond" kicker={`Nivel ${lvl} · ${xp} XP`} title="Tu progreso">Todo se guarda en este navegador (sin cuentas ni servidores). Si borras los datos del sitio, empiezas de nuevo.</Hero>
       <section className="mx-auto max-w-[1100px] px-4 py-8">
         <div className="grid gap-3 sm:grid-cols-4">
-          {[["Nivel", lvl, "var(--green)"], ["XP", xp, "var(--accent)"], ["Niveles", `${done}/${totalNiveles}`, "var(--cyan)"], ["Retos", `${p.retos.length}/${C.retos.length}`, "var(--violet)"], ["Laboratorios", `${p.labs.length}/${LABS.length}`, "var(--green)"], ["Examen", p.examenes ? `${p.examenMejor}/100` : "—", "var(--accent)"]].map(([l, v, c]) => (
+          {[["Nivel", lvl, "var(--green)"], ["XP", xp, "var(--accent)"], ["Niveles", `${done}/${totalNiveles}`, "var(--cyan)"], ["Retos", `${p.retos.length}/${C.retos.length}`, "var(--violet)"], ["Laboratorios", `${p.labs.length}/${LABS.length}`, "var(--green)"], ["Proyectos", `${p.proyectosFinalizados.length}/${PROYECTOS.length}`, "var(--cyan)"], ["Examen", p.examenes ? `${p.examenMejor}/100` : "—", "var(--accent)"]].map(([l, v, c]) => (
             <div key={l as string} className="card p-4 text-center"><p className="label">{l}</p><p className="mt-2 text-[18px]" style={{ fontFamily: "var(--font-title)", color: c as string }}>{v}</p></div>
           ))}
         </div>
-        <div className="card mt-4 p-4"><div className="mb-1 flex justify-between"><span className="label">Hacia el nivel {lvl + 1}</span><span className="label">faltan {falta} XP</span></div><Bar value={pct} color="var(--green)" /></div>
+        <div className="card mt-4 p-4"><div className="mb-1 flex justify-between"><span className="label">Hacia el nivel {lvl + 1}</span><span className="label">faltan {falta} XP</span></div><Bar value={pct} color="var(--green)" label="Progreso hacia el siguiente nivel" /></div>
+
+        <div className="mt-4 grid gap-3 md:grid-cols-2">
+          <article className="card flex flex-col p-4">
+            <div className="flex items-center gap-2"><PixelIcon name="shield" size={22} /><p className="label !text-[var(--cyan)]">Simulación defensiva</p></div>
+            <h2 className="mt-2 text-[17px]">Operación Bóveda</h2>
+            <p className="mt-1 flex-1 text-[14px] text-[var(--text-2)]">{p.operacion.completada ? "Misión completada. Puedes repetirla para revisar el razonamiento." : `${p.operacion.paso}/4 decisiones seguras registradas en una investigación ficticia.`}</p>
+            <div className="mt-3"><Bar value={(p.operacion.paso / 4) * 100} color="var(--cyan)" label="Progreso de Operación Bóveda" /></div>
+            <button className="btn btn-sm mt-3 self-start" onClick={() => go({ v: "operacion" })}>{p.operacion.completada ? "Revisar informe" : "Continuar misión"} →</button>
+          </article>
+          <article className="card flex flex-col p-4">
+            <div className="flex items-center gap-2"><PixelIcon name="torch" size={22} /><p className="label !text-[var(--violet)]">Práctica de recuperación</p></div>
+            <h2 className="mt-2 text-[17px]">Repaso inteligente</h2>
+            <p className="mt-1 flex-1 text-[14px] text-[var(--text-2)]">{repasosHoy ? `${repasosHoy} ${repasosHoy === 1 ? "pregunta pendiente" : "preguntas pendientes"} para hoy.` : p.repaso.length ? "No hay tarjetas pendientes hoy; las siguientes volverán según su intervalo." : "Las preguntas que te cuesten en niveles y examen aparecerán aquí."}</p>
+            <button className="btn btn-sm mt-3 self-start" onClick={() => go({ v: "repaso" })}>Abrir repaso →</button>
+          </article>
+        </div>
+
+        <section className="study-goal-card mt-4" aria-labelledby="study-goal-title">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div><p className="label !text-[var(--accent)]">Ritmo de estudio</p><h2 id="study-goal-title" className="mt-1">Tu meta semanal</h2></div>
+            <label className="study-goal-select"><span className="sr-only">Niveles para completar por semana</span>
+              <select className="field" value={p.metaEstudio.objetivoSemanal} onChange={(e) => actualizarObjetivoSemanal(Number(e.target.value))}>
+                {[1, 2, 3, 5, 7].map((n) => <option key={n} value={n}>{n} {n === 1 ? "nivel" : "niveles"} por semana</option>)}
+              </select>
+            </label>
+          </div>
+          <div className="mt-4 flex flex-wrap items-end justify-between gap-2">
+            <p className="text-[14px] text-[var(--text-2)]">{meta} de {p.metaEstudio.objetivoSemanal} niveles completados esta semana</p>
+            <p className="study-streak">{racha ? `Racha: ${racha} ${racha === 1 ? "día" : "días"}` : "Arranca tu racha hoy"}</p>
+          </div>
+          <div className="mt-2"><Bar value={(meta / p.metaEstudio.objetivoSemanal) * 100} color={meta >= p.metaEstudio.objetivoSemanal ? "var(--green)" : "var(--accent)"} label="Avance de la meta semanal" /></div>
+          <ol className="study-days" aria-label="Días con niveles completados esta semana">
+            {dias.map((dia, i) => {
+              const label = new Intl.DateTimeFormat("es", { weekday: "long" }).format(new Date(`${dia}T12:00:00`));
+              const activo = diasActivos.has(dia);
+              return <li key={dia} className={activo ? "is-active" : ""} aria-label={`${label}: ${activo ? "nivel completado" : "sin niveles completados"}`} title={`${label}: ${activo ? "completado" : "pendiente"}`}><span aria-hidden>{["L", "M", "X", "J", "V", "S", "D"][i]}</span><b aria-hidden>{activo ? "✓" : "·"}</b></li>;
+            })}
+          </ol>
+          <p className="mt-3 text-[12px] text-[var(--text-3)]">La meta cuenta niveles terminados; el progreso se guarda en este navegador.</p>
+        </section>
 
         <div className="card mt-4 flex flex-wrap items-center gap-4 p-4">
           <PixelIcon name="sword" size={30} />
@@ -266,22 +327,55 @@ export function Progreso({ go }: { go: (r: Ruta) => void }) {
             <p className="label">Examen final y certificado</p>
             <p className="mt-1 text-[15px] text-[var(--text-2)]">
               {p.examenes === 0
-                ? "Aún no lo has intentado: 20 preguntas al azar y, si apruebas, tu certificado."
-                : `Mejor nota: ${p.examenMejor}/100 en ${p.examenes} ${p.examenes === 1 ? "intento" : "intentos"}.`}
+                ? "Aún no lo has intentado. El certificado requiere completar todos los mundos y aprobar."
+                : `Mejor nota: ${p.examenMejor}/100 en ${p.examenes} ${p.examenes === 1 ? "intento" : "intentos"}.${p.examenMejor >= 70 && !rutaCompleta ? " Te falta completar todos los mundos para emitir el certificado." : ""}`}
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <button className="btn btn-sm btn-primary" onClick={() => go({ v: "examen" })}>{p.examenes ? "Repetir examen" : "Hacer el examen"}</button>
-            {p.examenMejor >= 70 && <button className="btn btn-sm" onClick={() => go({ v: "certificado" })}>Ver certificado</button>}
+            <button className="btn btn-sm btn-primary" onClick={() => rutaCompleta ? go({ v: "examen" }) : mundoPendiente ? go({ v: "mundo", id: mundoPendiente.id }) : go({ v: "examen" })}>{rutaCompleta ? (p.examenes ? "Repetir examen" : "Hacer el examen") : "Completar los mundos"}</button>
+            {p.examenMejor >= 70 && rutaCompleta && <button className="btn btn-sm" onClick={() => go({ v: "certificado" })}>Ver certificado</button>}
+            {p.examenMejor >= 70 && !rutaCompleta && mundoPendiente && <button className="btn btn-sm" onClick={() => go({ v: "mundo", id: mundoPendiente.id })}>Seguir ruta</button>}
           </div>
         </div>
         <SectionHead kicker="Mundos" title="Avance por mundo" />
         <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           {C.mundos.map((m) => { const n = m.niveles.filter((l) => p.niveles[`${m.id}/${l.id}`]?.reto).length; return (
             <button key={m.id} className="card card-hover p-3 text-left" onClick={() => go({ v: "mundo", id: m.id })} style={{ ["--world" as string]: m.color }}>
-              <PixelIcon name={m.icono} size={28} /><p className="mt-2 font-bold" style={{ color: m.color }}>{m.nombre.replace("Mundo ", "")}</p><div className="mt-2"><Bar value={(n / m.niveles.length) * 100} color={m.color} /></div><p className="label mt-1">{n}/{m.niveles.length}</p>
+              <PixelIcon name={m.icono} size={28} /><p className="mt-2 font-bold" style={{ color: m.color }}>{m.nombre.replace("Mundo ", "")}</p><div className="mt-2"><Bar value={(n / m.niveles.length) * 100} color={m.color} label={`Niveles completados en ${m.nombre}`} /></div><p className="label mt-1">{n}/{m.niveles.length}</p>
             </button>); })}
         </div>
+        <section className="mt-10" aria-labelledby="mapa-objetivos-title">
+          <SectionHead kicker="Competencias y dominio" title="Mapa de aprendizaje" />
+          <p id="mapa-objetivos-title" className="sr-only">Mapa de objetivos por nivel</p>
+          <p className="mt-2 text-[14px] text-[var(--text-2)]">Cada nivel publica sus objetivos. Marca teoría, práctica y reto por separado; el reto completo es el que cuenta para desbloquear el examen.</p>
+          <div className="mt-3 flex flex-wrap items-end gap-3">
+            <label className="min-w-[210px] flex-1"><span className="label">Filtrar mundo</span>
+              <select className="field mt-1" value={mundoMapa} onChange={(e) => setMundoMapa(e.target.value)}>
+                <option value="todos">Todos los mundos</option>
+                {C.mundos.map((m) => <option key={m.id} value={m.id}>{m.nombre.replace("Mundo ", "")}</option>)}
+              </select>
+            </label>
+            <button className="btn btn-sm" type="button" aria-pressed={soloPendientes} onClick={() => setSoloPendientes((x) => !x)}>{soloPendientes ? "Mostrar todos" : "Solo pendientes"}</button>
+          </div>
+          <details className="card mt-3 p-3">
+            <summary className="cursor-pointer font-bold">Ver objetivos ({mapaObjetivos.length} niveles)</summary>
+            <ul className="mt-3 grid list-none gap-2 p-0 md:grid-cols-2">
+              {mapaObjetivos.map(({ m, n, key, fases }) => (
+                <li key={key} className="border-2 border-black bg-[var(--surface-2)] p-3">
+                  <div className="flex flex-wrap items-start justify-between gap-2">
+                    <div><p className="label" style={{ color: m.color }}>{m.nombre.replace("Mundo ", "")} · Nivel {n.nivel}</p><h3 className="mt-1 text-[16px]">{n.titulo}</h3></div>
+                    <button className="btn btn-xs" onClick={() => go({ v: "nivel", mundo: m.id, nivel: n.id })} aria-label={`Abrir ${n.titulo}`}>Estudiar →</button>
+                  </div>
+                  <ul className="mt-2 list-disc space-y-1 pl-5 text-[13px] text-[var(--text-2)]">{n.objetivos.map((o) => <li key={o}>{o}</li>)}</ul>
+                  <div className="mt-2 flex flex-wrap gap-1.5" role="group" aria-label="Estado de las fases">
+                    {([ ["teoria", "Teoría"], ["practica", "Práctica"], ["reto", "Reto"] ] as const).map(([id, label]) => <span key={id} className={cn("chip !py-0.5", fases[id] ? "!text-[var(--green)]" : "!text-[var(--text-3)]")} aria-label={`${label}: ${fases[id] ? "completada" : "pendiente"}`}>{fases[id] ? "✓" : "○"} {label}</span>)}
+                  </div>
+                </li>
+              ))}
+            </ul>
+            {!mapaObjetivos.length && <p className="mt-3 text-[14px] text-[var(--text-2)]">No quedan niveles pendientes con este filtro.</p>}
+          </details>
+        </section>
         <div className="mt-10"><SectionHead kicker={`${p.logros.length}/${LOGROS.length}`} title="Logros" /></div>
         <ul className="m-0 mt-4 grid list-none gap-3 p-0 sm:grid-cols-2 lg:grid-cols-3">
           {LOGROS.map((l) => { const ok = p.logros.includes(l.id); return (
@@ -290,7 +384,12 @@ export function Progreso({ go }: { go: (r: Ruta) => void }) {
               <div><p className="font-bold">{l.titulo}</p><p className="text-[14px] text-[var(--text-2)]">{l.desc}</p><span className="sr-only">{ok ? "desbloqueado" : "bloqueado"}</span></div>
             </li>); })}
         </ul>
-        <button className="btn btn-ghost btn-sm mt-8" onClick={() => { if (confirm("¿Seguro? Se borra todo tu progreso de este navegador.")) resetProgreso(); }}>Reiniciar progreso</button>
+        <section className="card mt-10 border-[var(--border-neutral)] p-4" aria-labelledby="datos-locales-title">
+          <p className="label !text-[var(--accent)]">Privacidad y control</p>
+          <h2 id="datos-locales-title" className="mt-1 text-[18px]">Tus datos se quedan en este navegador</h2>
+          <p className="mt-2 text-[14px] text-[var(--text-2)]">El avance se guarda localmente y no se envía a una cuenta o servidor. Si borras los datos del sitio o cambias de navegador, no hay recuperación. Puedes borrar el progreso guardado desde aquí; esta acción no se puede deshacer.</p>
+          <button className="btn btn-ghost btn-sm mt-3" onClick={() => { if (confirm("¿Borrar TODO el progreso, notas de proyectos, tarjetas de repaso, misión, nombre, logros, metas e intentos guardados en este navegador? Esta acción no se puede deshacer.")) resetProgreso(); }}>Borrar progreso de este navegador</button>
+        </section>
       </section>
     </main>
   );

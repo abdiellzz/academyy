@@ -40,7 +40,8 @@ export function Globe({
     canvas.height = LOW;
     const img = ctx.createImageData(SIZE, SIZE);
     const small = ctx.createImageData(LOW, LOW);
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const movimiento = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let movimientoReducido = movimiento.matches;
     const start = performance.now();
 
     const draw = (now: number) => {
@@ -51,15 +52,17 @@ export function Globe({
     };
     drawRef.current = draw;
 
-    if (reduce) {
-      draw(start + 1600);
-      return;
-    }
+    draw(start + 1600);
 
     let raf = 0;
     let last = 0;
+    let enPantalla = true;
+    let pestañaVisible = document.visibilityState === "visible";
+    const detener = () => { if (raf) cancelAnimationFrame(raf); raf = 0; };
     const loop = (now: number) => {
-      // ~30 fps: suficiente para que gire suave y sobra para el aire retro
+      raf = 0;
+      if (!enPantalla || !pestañaVisible) return;
+      // ~30 fps cuando está visible; se pausa fuera de pantalla o en otra pestaña.
       if (now - last >= 32) {
         last = now;
         rot.current += 0.0085 + vel.current;
@@ -69,8 +72,30 @@ export function Globe({
       }
       raf = requestAnimationFrame(loop);
     };
-    raf = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(raf);
+    const programar = () => {
+      if (enPantalla && pestañaVisible && !movimientoReducido && !raf) raf = requestAnimationFrame(loop);
+      else if (!enPantalla || !pestañaVisible || movimientoReducido) detener();
+    };
+    const alCambiarMovimiento = () => {
+      movimientoReducido = movimiento.matches;
+      if (movimientoReducido) draw(performance.now());
+      programar();
+    };
+    const observador = typeof IntersectionObserver !== "undefined" ? new IntersectionObserver(([entrada]) => {
+      enPantalla = entrada.isIntersecting;
+      programar();
+    }, { threshold: 0 }) : null;
+    observador?.observe(canvas);
+    const alCambiarVisibilidad = () => { pestañaVisible = document.visibilityState === "visible"; programar(); };
+    document.addEventListener("visibilitychange", alCambiarVisibilidad);
+    movimiento.addEventListener("change", alCambiarMovimiento);
+    programar();
+    return () => {
+      detener();
+      observador?.disconnect();
+      document.removeEventListener("visibilitychange", alCambiarVisibilidad);
+      movimiento.removeEventListener("change", alCambiarMovimiento);
+    };
   }, []);
 
   // al cambiar de mundo solo se redibuja: la animación no se reinicia

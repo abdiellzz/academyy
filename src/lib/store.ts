@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { C, totalNiveles } from "./content";
 import { sfx } from "./sonido";
+import { fechaLocalClave, siguienteRepaso } from "./review";
 
 export interface ExamenResultado {
   nota: number;      // 0-100
@@ -8,6 +9,25 @@ export interface ExamenResultado {
   total: number;
   fecha: string;     // ISO
   segundos: number;
+  estacionesPracticas?: number;
+}
+
+export interface TarjetaRepaso {
+  id: string;
+  tema: string;
+  pregunta: string;
+  opciones: string[];
+  respuesta: number;
+  explicacion: string;
+  proxima: string;
+  nivel: number;
+}
+
+export interface EstadoOperacion {
+  paso: number;
+  decisiones: number[];
+  completada: boolean;
+  xpOtorgada: boolean;
 }
 
 export interface Progreso {
@@ -18,31 +38,41 @@ export interface Progreso {
   phishingPlayed: number;
   logros: string[];
   labs: string[];
+  proyectosFinalizados: string[];
+  proyectosNotas: Record<string, string[]>;
+  repaso: TarjetaRepaso[];
+  operacion: EstadoOperacion;
   examenMejor: number;
+  examenMejorDetalle: ExamenResultado | null;
   examenes: number;
   ultimoExamen: ExamenResultado | null;
   estudiante: string;
+  metaEstudio: { objetivoSemanal: number; semana: string; nivelesCompletados: number; diasActivos: string[] };
 }
 
 const KEY = "factionvault-v4";
-const EMPTY: Progreso = { niveles: {}, retos: [], tutoriales: [], phishingBest: 0, phishingPlayed: 0, logros: [], labs: [], examenMejor: 0, examenes: 0, ultimoExamen: null, estudiante: "" };
+const EMPTY: Progreso = { niveles: {}, retos: [], tutoriales: [], phishingBest: 0, phishingPlayed: 0, logros: [], labs: [], proyectosFinalizados: [], proyectosNotas: {}, repaso: [], operacion: { paso: 0, decisiones: [], completada: false, xpOtorgada: false }, examenMejor: 0, examenMejorDetalle: null, examenes: 0, ultimoExamen: null, estudiante: "", metaEstudio: { objetivoSemanal: 3, semana: "", nivelesCompletados: 0, diasActivos: [] } };
 
 function load(): Progreso {
   try {
     const raw = localStorage.getItem(KEY);
-    return raw ? { ...EMPTY, ...JSON.parse(raw) } : EMPTY;
+    if (!raw) return EMPTY;
+    const saved = JSON.parse(raw) as Partial<Progreso>;
+    const ultimoExamen = saved.ultimoExamen ?? null;
+    const examenMejorDetalle = saved.examenMejorDetalle ?? (ultimoExamen && ultimoExamen.nota === (saved.examenMejor ?? 0) ? ultimoExamen : null);
+    return { ...EMPTY, ...saved, proyectosFinalizados: saved.proyectosFinalizados ?? [], proyectosNotas: saved.proyectosNotas ?? {}, repaso: saved.repaso ?? [], operacion: { ...EMPTY.operacion, ...saved.operacion, decisiones: saved.operacion?.decisiones ?? [] }, ultimoExamen, examenMejorDetalle, metaEstudio: { ...EMPTY.metaEstudio, ...saved.metaEstudio } };
   } catch {
     return EMPTY;
   }
 }
 
-/* XP: teoría 20 · práctica 40 · reto 60 (= 120 por nivel) · retos CTF = sus puntos · tutorial 50 · phishing 10 por acierto récord */
+/* XP: teoría 20 · práctica 40 · reto 60 · CTF por puntos · guía 50 · phishing 10 por récord · lab 30 · proyecto final 50 · Operación Bóveda 100 (una vez) · examen 2×nota */
 export function xpDe(p: Progreso): number {
   let xp = 0;
   for (const n of Object.values(p.niveles)) xp += (n.teoria ? 20 : 0) + (n.practica ? 40 : 0) + (n.reto ? 60 : 0);
   xp += C.retos.filter((r) => p.retos.includes(r.id)).reduce((a, r) => a + r.puntos, 0);
   xp += p.tutoriales.length * 50 + p.phishingBest * 10;
-  xp += p.labs.length * 30 + Math.round(p.examenMejor * 2);
+  xp += p.labs.length * 30 + p.proyectosFinalizados.length * 50 + (p.operacion?.xpOtorgada ? 100 : 0) + Math.round(p.examenMejor * 2);
   return xp;
 }
 
@@ -56,6 +86,44 @@ export function nivelDe(xp: number) {
 
 export const nivelCompleto = (p: Progreso, key: string) => !!p.niveles[key]?.reto;
 export const nivelesCompletos = (p: Progreso) => Object.values(p.niveles).filter((n) => n.reto).length;
+
+function fechaClave(fecha: Date): string { return fechaLocalClave(fecha); }
+
+export function registrarFalloRepaso(tarjeta: Omit<TarjetaRepaso, "proxima" | "nivel">) {
+  const anterior = state.repaso.find((x) => x.id === tarjeta.id);
+  const nueva: TarjetaRepaso = { ...tarjeta, proxima: fechaClave(new Date()), nivel: 0 };
+  commit({ ...state, repaso: [...state.repaso.filter((x) => x.id !== tarjeta.id), anterior ? { ...anterior, ...nueva } : nueva] });
+}
+
+export function calificarRepaso(id: string, loRecordo: boolean) {
+  const tarjeta = state.repaso.find((x) => x.id === id);
+  if (!tarjeta) return;
+  const plan = siguienteRepaso(tarjeta.nivel, loRecordo);
+  commit({ ...state, repaso: state.repaso.map((x) => x.id === id ? { ...x, nivel: plan.nivel, proxima: plan.proxima } : x) });
+}
+
+export function semanaActual(fecha = new Date()): string {
+  const lunes = new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate());
+  lunes.setDate(lunes.getDate() - ((lunes.getDay() + 6) % 7));
+  return fechaClave(lunes);
+}
+export function diasSemanaActual(fecha = new Date()): string[] {
+  const lunes = new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate());
+  lunes.setDate(lunes.getDate() - ((lunes.getDay() + 6) % 7));
+  return Array.from({ length: 7 }, (_, i) => { const d = new Date(lunes); d.setDate(lunes.getDate() + i); return fechaClave(d); });
+}
+export function rachaEstudio(p: Progreso, hoy = new Date()): number {
+  const activos = new Set(p.metaEstudio?.diasActivos ?? []);
+  const cursor = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+  if (!activos.has(fechaClave(cursor))) cursor.setDate(cursor.getDate() - 1);
+  let dias = 0;
+  while (activos.has(fechaClave(cursor))) { dias++; cursor.setDate(cursor.getDate() - 1); }
+  return dias;
+}
+export function actualizarObjetivoSemanal(objetivoSemanal: number) {
+  const objetivo = Math.max(1, Math.min(7, Math.round(objetivoSemanal)));
+  commit({ ...state, metaEstudio: { ...state.metaEstudio, objetivoSemanal: objetivo } });
+}
 
 export interface Logro { id: string; titulo: string; desc: string; icono: string; check: (p: Progreso) => boolean }
 export const LOGROS: Logro[] = [
@@ -98,7 +166,20 @@ export function useProgreso() {
 
 export function marcarFase(key: string, fase: "teoria" | "practica" | "reto") {
   if (state.niveles[key]?.[fase]) return;
-  commit({ ...state, niveles: { ...state.niveles, [key]: { ...state.niveles[key], [fase]: true } } });
+  const niveles = { ...state.niveles, [key]: { ...state.niveles[key], [fase]: true } };
+  let metaEstudio = state.metaEstudio;
+  if (fase === "reto") {
+    const hoy = fechaClave(new Date());
+    const semana = semanaActual();
+    const diasActivos = [...new Set([...(metaEstudio.diasActivos ?? []), hoy])].slice(-90);
+    metaEstudio = {
+      ...metaEstudio,
+      semana,
+      nivelesCompletados: metaEstudio.semana === semana ? metaEstudio.nivelesCompletados + 1 : 1,
+      diasActivos,
+    };
+  }
+  commit({ ...state, niveles, metaEstudio });
   sfx("ok");
 }
 
@@ -110,10 +191,44 @@ export function marcarLab(id: string) {
   sfx("ok");
 }
 
+export function guardarProyecto(id: string) {
+  if (state.proyectosFinalizados.includes(id)) return;
+  commit({ ...state, proyectosFinalizados: [...state.proyectosFinalizados, id] });
+  notify({ titulo: "Proyecto finalizado", texto: "+50 XP · guardado en este navegador", icono: "diamond" });
+  sfx("subir");
+}
+
+export function guardarNotaProyecto(id: string, paso: number, nota: string) {
+  const actual = state.proyectosNotas[id] ?? [];
+  if (actual[paso] === nota) return;
+  const notas = [...actual];
+  notas[paso] = nota;
+  commit({ ...state, proyectosNotas: { ...state.proyectosNotas, [id]: notas } });
+}
+
+export function guardarPasoOperacion(decision: number) {
+  const actual = state.operacion;
+  if (actual.completada || actual.paso >= 4) return;
+  const paso = actual.paso + 1;
+  const completada = paso >= 4;
+  const xpOtorgada = actual.xpOtorgada || completada;
+  commit({ ...state, operacion: { paso, decisiones: [...actual.decisiones, decision], completada, xpOtorgada } });
+  if (completada) {
+    notify({ titulo: "Operación completada", texto: `${actual.xpOtorgada ? "Repetición terminada" : "+100 XP · informe de incidente listo"}`, icono: "shield" });
+    sfx("subir");
+  }
+}
+
+export function reiniciarOperacion() {
+  commit({ ...state, operacion: { ...state.operacion, paso: 0, decisiones: [], completada: false } });
+}
+
 export function guardarExamen(r: ExamenResultado) {
+  const nuevoRecord = r.nota >= state.examenMejor ? r : state.examenMejorDetalle;
   commit({
     ...state,
     ultimoExamen: r,
+    examenMejorDetalle: nuevoRecord,
     examenes: state.examenes + 1,
     examenMejor: Math.max(state.examenMejor, r.nota),
   });

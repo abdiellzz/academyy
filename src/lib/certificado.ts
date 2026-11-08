@@ -12,6 +12,7 @@ export interface DatosCert {
   nota: number;
   progreso: { niveles: number; totalNiveles: number; labs: number; totalLabs: number; retos: number; totalRetos: number };
   mundos?: number;
+  estacionesPracticas?: number;
   fecha: string;
   id: string;
   demo?: boolean;
@@ -22,23 +23,24 @@ const W = 1400;
 const H = 990;
 
 const C = {
-  fondo: "#0d0b10",
-  oro: "#ffb02e",
-  oroClaro: "#ffd67a",
-  oroOscuro: "#3a2400",
-  crema: "#f3ecff",
-  texto2: "#c3b6df",
-  texto3: "#8d81a8",
-  verde: "#3ee07a",
-  negro: "#000000",
-  cinta: "#96283c",
-  cinta2: "#6e1a2a",
+  fondo: "#090b10",
+  panel: "#11151c",
+  oro: "#dfc184",
+  oroClaro: "#f0d99f",
+  oroOscuro: "#1a2528",
+  crema: "#f0f3f7",
+  texto2: "#c6ced8",
+  texto3: "#8994a3",
+  verde: "#78dbba",
+  negro: "#090b10",
+  cinta: "#18382f",
+  cinta2: "#24473e",
 };
 
 const F_TITULO = '"Press Start 2P", "Courier New", monospace';
-const F_LABEL = '"Silkscreen", "Courier New", monospace';
-const F_TEXTO = '"Pixelify Sans", "Trebuchet MS", system-ui, sans-serif';
-const F_MONO = '"VT323", "Courier New", monospace';
+const F_LABEL = '"Pixelify Sans", Arial, sans-serif';
+const F_TEXTO = '"Pixelify Sans", Arial, sans-serif';
+const F_MONO = 'ui-monospace, "Courier New", monospace';
 
 type Align = "left" | "center" | "right";
 
@@ -50,10 +52,11 @@ interface TxtOpts {
   espaciado?: number;
   sombra?: number;
   maxAncho?: number;
+  peso?: number;
 }
 
 function fuente(o: TxtOpts): string {
-  return `${o.size ?? 18}px ${o.font ?? F_TEXTO}`;
+  return `${o.peso ?? 500} ${o.size ?? 18}px ${o.font ?? F_TEXTO}`;
 }
 
 function medir(ctx: CanvasRenderingContext2D, texto: string, o: TxtOpts): number {
@@ -112,87 +115,61 @@ function envolver(ctx: CanvasRenderingContext2D, texto: string, o: TxtOpts, max:
 
 /** Borde punteado hecho de bloques, como en la versión HTML. */
 function bordePunteado(ctx: CanvasRenderingContext2D): void {
-  const inset = 12;
-  const grosor = 10;
-  const lado = 10;
-  const hueco = 12;
-  const x0 = inset;
-  const y0 = inset;
-  const x1 = W - inset - grosor;
-  const y1 = H - inset - grosor;
-
-  for (let x = x0; x < x1; x += lado + hueco) {
-    const w = Math.min(lado, x1 - x);
-    rect(ctx, x, y0, w, grosor, C.oro);
-    rect(ctx, x, y1, w, grosor, C.oro);
+  const m = 38;
+  rect(ctx, m, m, W - 2 * m, 3, "#425a47");
+  rect(ctx, m, H - m - 3, W - 2 * m, 3, "#425a47");
+  rect(ctx, m, m, 3, H - 2 * m, "#425a47");
+  rect(ctx, W - m - 3, m, 3, H - 2 * m, "#425a47");
+  rect(ctx, m + 8, m + 9, W - 2 * m - 16, 3, C.verde);
+  for (let x = m + 16; x < W - m - 16; x += 32) {
+    rect(ctx, x, H - m - 12, 16, 4, x % 3 === 0 ? C.oro : "#52766e");
   }
-  for (let y = y0; y < y1; y += lado + hueco) {
-    const h = Math.min(lado, y1 - y);
-    rect(ctx, x0, y, grosor, h, C.oro);
-    rect(ctx, x1, y, grosor, h, C.oro);
-  }
+  rect(ctx, 64, 64, W - 128, 1, "#29382f");
+  rect(ctx, 64, H - 65, W - 128, 1, "#29382f");
 }
 
 function esquinas(ctx: CanvasRenderingContext2D): void {
-  const s = 34;
-  const pos: [number, number][] = [
-    [6, 6],
-    [W - 6 - s, 6],
-    [6, H - 6 - s],
-    [W - 6 - s, H - 6 - s],
-  ];
-  for (const [x, y] of pos) {
-    rect(ctx, x - 3, y - 3, s + 6, s + 6, C.negro);
-    rect(ctx, x, y, s, s, C.oroClaro);
+  // Bloques escalonados de esmeralda y cobre, sin usar recursos de terceros.
+  const corners = [[58, 58, 1, 1], [W - 92, 58, -1, 1], [58, H - 92, 1, -1], [W - 92, H - 92, -1, -1]];
+  for (const [x, y, dx, dy] of corners) {
+    rect(ctx, x, y, 22, 22, "#17231b");
+    rect(ctx, x + 4 * dx, y + 4 * dy, 14, 14, "#4c8058");
+    rect(ctx, x + 8 * dx, y + 8 * dy, 7, 7, C.verde);
+    rect(ctx, x + 22 * dx, y + 4 * dy, 7, 7, C.oro);
+    rect(ctx, x + 4 * dx, y + 22 * dy, 7, 7, "#a76e3a");
   }
 }
 
 function fondo(ctx: CanvasRenderingContext2D): void {
   rect(ctx, 0, 0, W, H, C.fondo);
-  // trama de tablero de 8 px, muy suave
-  ctx.fillStyle = "rgba(255,255,255,.028)";
-  for (let y = 0; y < H; y += 8) {
-    for (let x = 0; x < W; x += 8) {
-      if (((x / 8) | 0) % 2 === ((y / 8) | 0) % 2) ctx.fillRect(x, y, 4, 4);
-    }
-  }
+  rect(ctx, 28, 28, W - 56, H - 56, C.panel);
 }
 
 function sello(ctx: CanvasRenderingContext2D, cx: number, cy: number, nota: number): void {
   const w = 128;
-  const h = 86;
+  const h = 90;
   const x = cx - w / 2;
   const y = cy - h / 2;
-
-  // cintas detrás, colgando de la medalla
-  rect(ctx, cx - 42, y + h - 18, 30, 80, C.cinta);
-  rect(ctx, cx + 12, y + h - 18, 30, 80, C.cinta2);
-
-  // medalla: borde negro, cuerpo oscuro y remate dorado
-  rect(ctx, x - 4, y - 4, w + 8, h + 8, C.negro);
-  rect(ctx, x, y, w, h, C.oroOscuro);
-  rect(ctx, x, y, w, 10, C.oroClaro);
-  rect(ctx, x, y + h - 6, w, 6, C.negro);
-
-  txt(ctx, "FV", cx, y + 52, { font: F_TITULO, size: 26, color: C.oroClaro, align: "center", sombra: 3 });
-  txt(ctx, `${nota}%`, cx, y + 76, { font: F_LABEL, size: 14, color: C.verde, align: "center" });
+  rect(ctx, x - 5, y - 5, w + 10, h + 10, "#090b10");
+  rect(ctx, x - 2, y - 2, w + 4, h + 4, "#617d58");
+  rect(ctx, x, y, w, h, "#17251b");
+  rect(ctx, x, y, w, 7, C.verde);
+  rect(ctx, x + 8, y + 12, 8, 8, C.oro);
+  rect(ctx, x + w - 16, y + h - 20, 8, 8, C.oro);
+  txt(ctx, "FV", cx, y + 48, { font: F_TITULO, size: 25, peso: 700, color: C.crema, align: "center" });
+  txt(ctx, `${nota}/100`, cx, y + 73, { font: F_LABEL, size: 17, peso: 700, color: C.verde, align: "center" });
 }
 
 function dibujarCabecera(ctx: CanvasRenderingContext2D, logo: HTMLImageElement | null): void {
   if (logo && logo.complete && logo.naturalWidth) {
-    // El logo trae el nombre al lado; aquí se recorta al mono para no
-    // repetir «FACTION VAULT» justo al lado del título.
     const lado = Math.min(logo.naturalWidth, logo.naturalHeight);
-    const tam = 74;
+    const tam = 64;
     ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(logo, 0, 0, lado, lado, 102, 80 - tam / 2, tam, tam);
+    ctx.drawImage(logo, 0, 0, lado, lado, 108, 88 - tam / 2, tam, tam);
   }
-  txt(ctx, "FACTION VAULT", 210, 116, { font: F_TITULO, size: 32, color: C.crema, sombra: 3 });
-  txt(ctx, "CENTRO DE MANDO · CERTIFICADO DE LA PLATAFORMA", 212, 160, {
-    font: F_LABEL,
-    size: 13,
-    color: C.texto3,
-    espaciado: 2.2,
+  txt(ctx, "FACTIONVAULT", 194, 99, { font: F_TITULO, size: 25, peso: 700, color: C.crema });
+  txt(ctx, "CONSTANCIA DE FINALIZACIÓN", 196, 128, {
+    font: F_LABEL, size: 12, peso: 600, color: C.texto3, espaciado: 1.3,
   });
 }
 
@@ -215,44 +192,52 @@ export function dibujarCertificado(canvas: HTMLCanvasElement, d: DatosCert, logo
   bordePunteado(ctx);
   esquinas(ctx);
   dibujarCabecera(ctx, logo);
+  rect(ctx, W - 352, 76, 236, 34, "#121d17");
+  rect(ctx, W - 352, 76, 6, 34, C.verde);
+  txt(ctx, "RUTA COMPLETADA", W - 232, 99, { font: F_LABEL, size: 12, peso: 700, color: C.verde, align: "center", espaciado: 1 });
 
-  txt(ctx, "CERTIFICADO", W / 2, 330, { font: F_TITULO, size: 66, color: C.oro, align: "center", espaciado: 1, sombra: 5 });
-  txt(ctx, "DE FINALIZACIÓN", W / 2, 424, { font: F_TITULO, size: 25, color: C.crema, align: "center", sombra: 4 });
+  rect(ctx, W / 2 - 150, 196, 300, 34, "#19271d");
+  rect(ctx, W / 2 - 150, 196, 8, 34, C.oro);
+  rect(ctx, W / 2 + 142, 196, 8, 34, C.oro);
+  txt(ctx, "LOGRO DESBLOQUEADO", W / 2, 218, { font: F_LABEL, size: 13, peso: 700, color: C.oroClaro, align: "center", espaciado: 1.1 });
+  txt(ctx, "CERTIFICADO", W / 2, 330, { font: F_TITULO, size: 58, peso: 700, color: C.crema, align: "center", espaciado: 1 });
+  txt(ctx, "DE FINALIZACIÓN", W / 2, 382, { font: F_TITULO, size: 21, peso: 600, color: C.verde, align: "center", espaciado: 3 });
 
-  txt(ctx, "OTORGADO A", W / 2, 496, { font: F_LABEL, size: 13, color: C.texto3, align: "center", espaciado: 2.6 });
-  txt(ctx, d.nombre || "Nombre del estudiante", W / 2, 538, {
+  txt(ctx, "OTORGADO A", W / 2, 455, { font: F_LABEL, size: 14, peso: 700, color: C.texto3, align: "center", espaciado: 2.6 });
+  txt(ctx, d.nombre || "Nombre del estudiante", W / 2, 505, {
     font: F_TITULO,
-    size: 27,
+    size: 34,
+    peso: 700,
     color: C.crema,
     align: "center",
-    sombra: 3,
   });
 
-  // línea dorada
-  const lw = 520;
-  rect(ctx, W / 2 - lw / 2, 566, lw, 6, C.negro);
-  rect(ctx, W / 2 - lw / 2, 562, lw, 5, C.oro);
+  // Separador fino en verde agua.
+  const lw = 480;
+  rect(ctx, W / 2 - lw / 2, 526, lw, 2, C.verde);
 
   // cuerpo
+  const practicaExamen = d.estacionesPracticas ? ` con ${d.estacionesPracticas} estaciones prácticas de Python y análisis de redes` : "";
   const cuerpo =
     `Por completar la ruta de ${d.mundos ?? 7} mundos de FactionVault —${d.progreso.totalNiveles} niveles, ` +
     `${d.progreso.totalLabs} laboratorios y ${d.progreso.totalRetos} retos CTF— y aprobar el examen final ` +
-    `con una nota de ${d.nota}/100, demostrando criterio técnico en seguridad informática, redes, ` +
-    `sistemas operativos, Python, criptografía, ingeniería social y desarrollo web seguro.`;
-  const opts: TxtOpts = { font: F_TEXTO, size: 19, color: C.texto2 };
-  const lineas = envolver(ctx, cuerpo, opts, 800);
-  lineas.forEach((l, i) => txt(ctx, l, W / 2, 608 + i * 27, { ...opts, align: "center" }));
+    `con una nota de ${d.nota}/100${practicaExamen}, demostrando criterio técnico en seguridad informática, ` +
+    `redes, sistemas operativos, Python, criptografía, ingeniería social y desarrollo web seguro.`;
+  const opts: TxtOpts = { font: F_TEXTO, size: 20, peso: 450, color: C.texto2 };
+  const lineas = envolver(ctx, cuerpo, opts, 900);
+  lineas.forEach((l, i) => txt(ctx, l, W / 2, 578 + i * 29, { ...opts, align: "center" }));
 
   // columna izquierda: progreso y nota
-  txt(ctx, "PROGRESO", 110, 748, { font: F_LABEL, size: 13, color: C.texto3, espaciado: 2.2 });
+  txt(ctx, "PROGRESO", 110, 748, { font: F_LABEL, size: 13, peso: 700, color: C.texto3, espaciado: 2.2 });
   txt(ctx, `${d.progreso.niveles}/${d.progreso.totalNiveles} niveles · ${d.progreso.labs}/${d.progreso.totalLabs} labs`, 110, 776, {
     font: F_MONO,
-    size: 21,
+    size: 19,
+    peso: 600,
     color: C.texto2,
   });
-  txt(ctx, `${d.progreso.retos}/${d.progreso.totalRetos} retos CTF`, 110, 802, { font: F_MONO, size: 21, color: C.texto2 });
-  txt(ctx, "NOTA FINAL", 110, 840, { font: F_LABEL, size: 13, color: C.texto3, espaciado: 2.2 });
-  txt(ctx, `${d.nota}/100`, 108, 878, { font: F_TITULO, size: 30, color: C.verde, sombra: 3 });
+  txt(ctx, `${d.progreso.retos}/${d.progreso.totalRetos} retos CTF`, 110, 802, { font: F_MONO, size: 19, peso: 600, color: C.texto2 });
+  txt(ctx, "NOTA FINAL", 110, 840, { font: F_LABEL, size: 13, peso: 700, color: C.texto3, espaciado: 2.2 });
+  txt(ctx, `${d.nota}/100`, 108, 878, { font: F_TITULO, size: 30, peso: 700, color: C.verde });
 
   // sello y firmas
   sello(ctx, W - 270, 770, d.nota);
@@ -276,14 +261,14 @@ export function dibujarCertificado(canvas: HTMLCanvasElement, d: DatosCert, logo
   txt(ctx, "CERTIFICADO DE FINALIZACIÓN DE LA PLATAFORMA · NO ES UNA CERTIFICACIÓN OFICIAL", 110, 950, {
     font: F_LABEL,
     size: 9,
-    color: "#6d6382",
+    color: "#a2adba",
     espaciado: 1.1,
   });
 
   if (d.demo) {
     ctx.save();
-    ctx.globalAlpha = 0.14;
-    txt(ctx, "EJEMPLO", W / 2, 700, { font: F_TITULO, size: 90, color: C.oro, align: "center", espaciado: 8 });
+    ctx.globalAlpha = 0.2;
+    txt(ctx, "VISTA PREVIA · SIN VALIDEZ", W / 2, 700, { font: F_TITULO, size: 36, peso: 700, color: C.oroClaro, align: "center", espaciado: 2 });
     ctx.restore();
   }
 }
@@ -333,6 +318,7 @@ export async function rasterizar(d: DatosCert, escala = escalaOptima()): Promise
 }
 
 export async function descargarPNG(d: DatosCert): Promise<void> {
+  if (d.demo) throw new Error("La vista de muestra no se puede exportar");
   const canvas = await rasterizar(d);
   const url = canvas.toDataURL("image/png");
   const a = document.createElement("a");
@@ -447,6 +433,7 @@ export function construirPDF(img: Imagen): Uint8Array {
 
 /** PNG → PDF: rasteriza, extrae los bytes RGB y arma el archivo. */
 export async function descargarPDF(d: DatosCert): Promise<void> {
+  if (d.demo) throw new Error("La vista de muestra no se puede exportar");
   const canvas = await rasterizar(d);
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("sin canvas");

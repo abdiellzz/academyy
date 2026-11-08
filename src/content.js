@@ -4,7 +4,7 @@
    phishing y snippets) vive aquí. La app lo lee desde window.FV_CONTENT.
    Para reemplazar el contenido: pega aquí tu objeto con el mismo esquema
    (ver README.md → «Esquema de content.js») y vuelve a construir.
-   © 2026 @abdiellzz · github.com/abdiellzz
+   © 2026 Abdiel Camargo (@abdiellzz) · github.com/abdiellzz · linkedin.com/in/camargoabdiel
    ═══════════════════════════════════════════════════════════════ */
 const FV_CONTENT = {
  "meta": {
@@ -12,6 +12,7 @@ const FV_CONTENT = {
   "subtitulo": "ciberseguridad de verdad",
   "autor": "@abdiellzz",
   "github": "https://github.com/abdiellzz",
+  "linkedin": "https://www.linkedin.com/in/camargoabdiel/",
   "version": "4.0"
  },
  "mundos": [
@@ -150,9 +151,9 @@ const FV_CONTENT = {
      "minutos": 10,
      "icono": "key",
      "objetivos": [
-      "Medir la fuerza real de una contraseña (entropía).",
-      "Explicar por qué una frase larga gana a un garabato corto.",
-      "Elegir el segundo factor que de verdad te protege."
+      "Interpretar una estimación didáctica de contraseñas y reconocer sus límites.",
+      "Explicar por qué longitud, aleatoriedad y unicidad importan más que cambiar letras por símbolos.",
+      "Elegir un segundo factor resistente al phishing cuando esté disponible."
      ],
      "teoria": [
       {
@@ -161,41 +162,41 @@ const FV_CONTENT = {
       },
       {
        "t": "p",
-       "text": "Una contraseña no se mide en símbolos raros: se mide en entropía, o sea, cuántas combinaciones hay que probar. Cada carácter extra multiplica el trabajo del atacante; un símbolo solo suma un poquito."
+       "text": "La longitud y la imprevisibilidad ayudan, pero no existe una cifra exacta de entropía para una contraseña que elige una persona. Los atacantes prueban primero contraseñas filtradas, palabras y patrones comunes; por eso cambiar a→@ no vuelve secreta una clave predecible. Usa una contraseña larga, aleatoria y única, idealmente generada y guardada por un gestor."
       },
       {
        "t": "table",
        "head": [
         "Contraseña",
-        "Tiempo estimado en caer",
+        "Lectura didáctica (no es una predicción)",
         "Por qué"
        ],
        "rows": [
         [
          "123456",
-         "Menos de 1 segundo",
-         "Está en todas las listas de contraseñas filtradas"
+         "Se prueba muy pronto",
+         "Secuencia corta y muy común; suele aparecer en listas de prueba"
         ],
         [
          "P@n4m4!",
-         "Minutos",
-         "Corta y con sustituciones predecibles: los programas ya las prueban"
+         "No se puede prometer un tiempo",
+         "Las sustituciones típicas (a→@) también se prueban; sigue siendo corta"
         ],
         [
          "correcaminos",
-         "Horas",
-         "Es una palabra de diccionario; los ataques usan diccionarios enormes"
+         "Prioridad alta para listas de palabras",
+         "Una sola palabra común es predecible aunque tenga muchos caracteres"
         ],
         [
          "cafe-caliente-arena-2026",
-         "Siglos",
-         "Cuatro palabras al azar: un espacio de búsqueda gigantesco"
+         "Depende de cómo se eligieron las palabras",
+         "Las palabras realmente aleatorias y únicas son más difíciles de adivinar; esta frase es solo un ejemplo, no la reutilices"
         ]
        ]
       },
       {
        "t": "porque",
-       "text": "La memoria humana es mala con «x7$Kq!» pero buenísima con imágenes. Por eso una frase de cuatro palabras al azar es a la vez fácil de recordar y difícil de adivinar. Y como no puedes memorizar 60 frases distintas, la solución real es un gestor de contraseñas: recuerdas una sola y él recuerda el resto."
+       "text": "Una frase larga puede ser más fácil de recordar, pero solo gana imprevisibilidad si las palabras se eligen al azar; citas, datos personales y combinaciones populares pueden adivinarse. Para no reciclar frases, usa un gestor de contraseñas: crea una clave única para cada cuenta y guarda una contraseña maestra fuerte."
       },
       {
        "t": "h",
@@ -207,13 +208,21 @@ const FV_CONTENT = {
         "Algo que sabes: la contraseña.",
         "Algo que tienes: tu celular, una llave física, un código temporal.",
         "Algo que eres: tu huella o tu cara.",
-        "El SMS es el segundo factor más débil: se puede robar tu número con un duplicado de SIM (SIM swapping).",
-        "Una app autenticadora (TOTP) o una passkey resisten muchísimo mejor."
+        "Los códigos por SMS dependen de tu número telefónico y pueden exponerse a SIM swap o phishing.",
+        "TOTP evita depender de SMS, pero todavía puede caer en phishing en tiempo real.",
+        "Las passkeys y llaves FIDO2/WebAuthn están vinculadas al sitio y ofrecen resistencia fuerte al phishing; el soporte depende del servicio."
        ]
       },
       {
        "t": "tip",
        "text": "Nunca reutilices la contraseña del correo. Si cae esa, con «olvidé mi contraseña» cae todo lo demás que tengas."
+      },
+      {
+       "t": "source",
+       "title": "OWASP · Authentication Cheat Sheet",
+       "url": "https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/Authentication_Cheat_Sheet.md",
+       "text": "Amplía la guía sobre controles de autenticación, políticas de contraseña y MFA. La entropía de contraseñas elegidas por personas es difícil de estimar: prioriza longitud, unicidad y bloqueo de claves comprometidas.",
+       "revisado": "2026-11-06"
       }
      ],
      "ejemplos": [
@@ -225,7 +234,7 @@ const FV_CONTENT = {
       {
        "juego": "minecraft",
        "titulo": "La frase del servidor",
-       "texto": "«bloque-tierra-luna-verde» es más fuerte que «M1n3cr4ft!». Cuatro palabras al azar tienen muchísimas más combinaciones que ocho letras con números cambiados."
+       "texto": "Una frase larga generada al azar suele resistir mejor que «M1n3cr4ft!», cuya sustitución es predecible. Este ejemplo es de juguete: no lo reutilices como contraseña real."
       },
       {
        "juego": "panama",
@@ -236,7 +245,7 @@ const FV_CONTENT = {
      "practica": [
       {
        "tipo": "password",
-       "porque": "El medidor calcula la entropía real y estima cuánto tardaría un ataque de fuerza bruta. Fíjate en algo: pasar de 8 a 16 caracteres multiplica por 128 el trabajo del atacante, mientras que cambiar una «a» por un «@» casi no mueve la aguja."
+       "porque": "Este medidor usa un modelo simplificado de espacio de búsqueda; no conoce listas filtradas, patrones ni límites del servicio y no puede predecir un tiempo real. Cada carácter imprevisible aumenta las combinaciones posibles, pero sustituir letras de una forma habitual aporta poco. Nunca uses el resultado como garantía."
       },
       {
        "tipo": "orden",
@@ -262,12 +271,12 @@ const FV_CONTENT = {
         "llave de seguridad"
        ],
        "pista": "Genera un código nuevo cada 30 segundos en tu propio teléfono, sin usar la red de tu operador.",
-       "explicacion": "Una app autenticadora (TOTP) o una passkey. El código se genera en tu dispositivo con un secreto compartido, así que clonar tu SIM no sirve de nada.",
+       "explicacion": "TOTP no depende del SMS y una passkey/llave FIDO2 ofrece resistencia aún mayor al phishing porque verifica el sitio. Ningún factor compensa reutilizar contraseñas o aprobar una solicitud que no iniciaste.",
        "porque": "El SMS depende de tu operador: si alguien convence a la tienda de que eres tú y saca un duplicado de tu SIM, recibe tus mensajes. Un secreto que vive en tu teléfono nunca pasa por la red del operador."
       }
      ],
      "reto": {
-      "pregunta": "¿Cuál de estas contraseñas es la más fuerte?",
+      "pregunta": "¿Cuál sería la mejor base para crear una clave nueva, larga y única (sin copiarla literalmente)?",
       "opciones": [
        "P@n4m4!2026",
        "Mi perro se llama Toby",
@@ -275,7 +284,7 @@ const FV_CONTENT = {
        "qwertyuiop123"
       ],
       "respuesta": 2,
-      "explicacion": "Cuatro palabras al azar (verde-camion-luna-taza) tienen muchísima más entropía que una palabra con números o sustituciones. Las frases largas ganan."
+      "explicacion": "La opción larga es la mejor base frente a sustituciones predecibles y palabras personales, pero solo una frase realmente generada al azar ofrece esa ventaja. Todas las opciones son ejemplos de clase: no uses ninguna como contraseña real."
      }
     },
     {
@@ -2614,7 +2623,7 @@ const FV_CONTENT = {
       },
       {
        "t": "result",
-       "text": "La fuerza bruta encuentra la clave en milisegundos. Con AES-256 harían falta más años que la edad del universo."
+       "text": "César solo tiene 26 desplazamientos: se prueban al instante. Enumerar 2²⁵⁶ claves de AES no es viable, pero en la práctica fallan contraseñas, manejo de claves, nonces o implementaciones; el tamaño de clave no arregla esos errores."
       }
      ],
      "ejemplos": [
@@ -3344,24 +3353,31 @@ const FV_CONTENT = {
      "teoria": [
       {
        "t": "why",
-       "text": "AES protege tu disco, tus backups, tu Wi-Fi (WPA2/3) y casi todo el tráfico de internet. Es el estándar mundial desde 2001 y nadie ha logrado romperlo."
+        "text": "AES es un cifrador simétrico estandarizado y se usa en modos autenticados como GCM. La seguridad práctica también depende de la clave, el nonce, la autenticación y una implementación correcta: el nombre del algoritmo no basta."
       },
       {
        "t": "p",
-       "text": "AES es simétrico: la misma clave cifra y descifra. Es rapidísimo. Su modo moderno, GCM, además pone un «sello» (etiqueta) que detecta cualquier modificación."
+        "text": "AES es simétrico: la misma clave cifra y descifra. GCM aporta cifrado autenticado: permite detectar modificaciones del texto cifrado o de los datos asociados cuando se usa correctamente."
       },
       {
        "t": "list",
        "items": [
-        "Clave: se deriva de tu contraseña con PBKDF2 (miles de repeticiones para hacerlo lento al atacante).",
-        "Sal: datos aleatorios para que dos contraseñas iguales no den la misma clave. No es secreta.",
-        "IV (vector inicial): número único por mensaje. Cifrar dos veces lo mismo da resultados distintos.",
-        "Etiqueta: el sello. Si cambias un solo carácter del cifrado, el descifrado falla."
+        "Clave: la demo deriva una clave AES de 256 bits con PBKDF2-HMAC-SHA-256 y 600.000 iteraciones. Es un ejemplo de KDF; para contraseñas almacenadas se prefieren hashes lentos como Argon2id.",
+        "Sal: dato aleatorio, no secreto; evita que la misma contraseña produzca la misma clave derivada.",
+        "IV/nonce de GCM: único por clave; no necesita ser secreto. Reutilizarlo con la misma clave puede romper la seguridad.",
+        "Etiqueta: permite detectar alteraciones. Si la verificación falla, no uses ni proceses el texto descifrado."
        ]
       },
       {
        "t": "warn",
-       "text": "La regla de oro de GCM: nunca reutilizar el mismo IV con la misma clave. Y nunca inventes tu propio cifrado: usa librerías probadas."
+       "text": "La regla de oro de GCM: nunca reutilices el nonce/IV con la misma clave. Una contraseña débil también puede permitir adivinar la clave derivada; la demo no reemplaza una biblioteca revisada ni un diseño de producción."
+      },
+      {
+       "t": "source",
+       "title": "OWASP · Cryptographic Storage Cheat Sheet",
+       "url": "https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/Cryptographic_Storage_Cheat_Sheet.md",
+       "text": "Referencia para elegir cifrado y modos seguros; esta actividad enseña el mecanismo, no un esquema listo para producción.",
+       "revisado": "2026-11-06"
       },
       {
        "t": "result",
@@ -3369,7 +3385,7 @@ const FV_CONTENT = {
       },
       {
        "t": "porque",
-       "text": "AES es un cifrado por bloques: mezcla cada bloque de 128 bits con la clave en varias rondas hasta que no queda relación con el original. Con GCM añades integridad, así que si alguien cambia un byte el descifrado falla en vez de devolver basura. Ese detalle es el 90% de la seguridad real."
+       "text": "AES procesa bloques de 128 bits mediante rondas definidas por el estándar. GCM combina cifrado autenticado: si cambia el ciphertext, el nonce o los datos asociados, la verificación debe fallar. El formato, la gestión de claves y la unicidad del nonce siguen siendo responsabilidad de la aplicación."
       }
      ],
      "ejemplos": [
@@ -5210,7 +5226,7 @@ const FV_CONTENT = {
    "pasos": [
     {
      "titulo": "Cifra tu primer mensaje",
-     "texto": "Ve a la lección de AES-GCM y usa la demo: escribe un mensaje y una contraseña. Obtendrás algo como FV1.salt.iv.datos. Cifra dos veces lo mismo: sale distinto. Bien.",
+     "texto": "Ve a la lección de AES-GCM y usa la demo con un mensaje ficticio. Obtendrás un paquete versionado FV2.salt.iv.datos. Cifra dos veces lo mismo: los nonces aleatorios hacen que el texto cifrado sea distinto. No uses secretos reales en ejemplos.",
      "accion": {
       "label": "Abrir demo AES",
       "vista": "cripto"
@@ -5218,7 +5234,7 @@ const FV_CONTENT = {
     },
     {
      "titulo": "Lee el formato",
-     "texto": "FV1 = versión. salt = sal aleatoria para derivar la clave (PBKDF2, 120.000 iteraciones). iv = vector único por mensaje. datos = cifrado + etiqueta de autenticación."
+     "texto": "FV2 = versión del formato nuevo. salt = sal aleatoria. PBKDF2-HMAC-SHA-256 deriva la clave con 600.000 iteraciones. iv = nonce único por clave. datos = cifrado + etiqueta de autenticación. El lector conserva compatibilidad con mensajes FV antiguos."
     },
     {
      "titulo": "Rompe algo a propósito",

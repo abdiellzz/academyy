@@ -3,10 +3,14 @@ import { CommandPalette } from "./components/CommandPalette";
 import { Examen } from "./views/Examen";
 import { Certificado } from "./views/Certificado";
 import { Laboratorio } from "./views/Labs";
+import { Proyectos } from "./views/Proyectos";
+import { Operacion } from "./views/Operacion";
+import { Repaso } from "./views/Repaso";
+import { Legal } from "./views/Legal";
 import { Nav } from "./components/Nav";
 import { Onboarding } from "./components/Onboarding";
 import { Footer } from "./components/Footer";
-import { Avisos, Hud } from "./components/ui";
+import { Avisos } from "./components/ui";
 import { mundoById } from "./lib/content";
 import { nivelDe, notify, useProgreso, xpDe } from "./lib/store";
 import { sfx } from "./lib/sonido";
@@ -21,6 +25,12 @@ function parse(): Ruta {
   const [a, b, c] = parts;
   if (!a) return { v: "inicio" };
   if (a === "laboratorio") return { v: "laboratorio" };
+  if (a === "proyectos") return { v: "proyectos", id: b };
+  if (a === "operacion") return { v: "operacion" };
+  if (a === "repaso") return { v: "repaso" };
+  if (a === "terminos") return { v: "terminos" };
+  if (a === "privacidad") return { v: "privacidad" };
+  if (a === "propiedad-intelectual") return { v: "propiedad" };
   if (a === "examen") return { v: "examen" };
   if (a === "certificado") return { v: "certificado" };
   if (a === "mundo" && b && c) return { v: "nivel", mundo: b, nivel: c, lab: parts[3] === "lab" };
@@ -31,6 +41,7 @@ function parse(): Ruta {
 }
 function toHash(r: Ruta): string {
   if (r.v === "inicio") return "#/";
+  if (r.v === "proyectos" && r.id) return `#/proyectos/${r.id}`;
   if (r.v === "mundo") return `#/mundo/${r.id}`;
   if (r.v === "nivel") return `#/mundo/${r.mundo}/${r.nivel}${r.lab ? "/lab" : ""}`;
   return `#/${r.v}`;
@@ -92,7 +103,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    const titles: Record<string, string> = { examen: "Examen final", certificado: "Certificado", laboratorio: "Laboratorio", retos: "Retos CTF", phishing: "Detector de phishing", tutoriales: "Guías", glosario: "Glosario", snippets: "Snippets", progreso: "Tu progreso" };
+    const titles: Record<string, string> = { examen: "Examen final", certificado: "Certificado", laboratorio: "Laboratorio", proyectos: "Proyectos finales", operacion: "Operación Bóveda", repaso: "Repaso inteligente", terminos: "Términos y condiciones", privacidad: "Privacidad", propiedad: "Propiedad intelectual", retos: "Retos CTF", phishing: "Detector de phishing", tutoriales: "Guías", glosario: "Glosario", snippets: "Snippets", progreso: "Tu progreso" };
     let t = "ciberseguridad de verdad";
     if (ruta.v === "mundo") t = mundoById(ruta.id)?.nombre ?? t;
     else if (ruta.v === "nivel") t = mundoById(ruta.mundo)?.niveles.find((n) => n.id === ruta.nivel)?.titulo ?? t;
@@ -102,8 +113,7 @@ export default function App() {
 
   return (
     <>
-      <div className="space" aria-hidden><div className="nebula" /><div className="stars" /><div className="stars2" /><div className="stars3" /><div className="space-dither" />
-        <div className="space-dither" /></div>
+      <div className="space" aria-hidden><div className="nebula" /><div className="stars" /><div className="stars2" /><div className="stars3" /><div className="space-dither" /></div>
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-2 focus:top-2 focus:z-[300] focus:bg-[var(--accent)] focus:p-2 focus:text-black">Saltar al contenido</a>
       <Nav ruta={ruta} go={go} onBuscar={() => setBuscar(true)} />
       <CommandPalette abierto={buscar} onCerrar={() => setBuscar(false)} go={go} />
@@ -112,6 +122,12 @@ export default function App() {
       {ruta.v === "mundo" && <WorldView id={ruta.id} go={go} />}
       {ruta.v === "nivel" && <LevelView mundo={ruta.mundo} nivel={ruta.nivel} lab={ruta.lab} go={go} />}
       {ruta.v === "laboratorio" && <Laboratorio go={go} />}
+      {ruta.v === "proyectos" && <Proyectos id={ruta.id} />}
+      {ruta.v === "operacion" && <Operacion />}
+      {ruta.v === "repaso" && <Repaso />}
+      {ruta.v === "terminos" && <Legal tipo="terminos" />}
+      {ruta.v === "privacidad" && <Legal tipo="privacidad" />}
+      {ruta.v === "propiedad" && <Legal tipo="propiedad" />}
       {ruta.v === "examen" && <Examen go={go} />}
       {ruta.v === "certificado" && <Certificado go={go} />}
       {ruta.v === "retos" && <Retos />}
@@ -120,10 +136,8 @@ export default function App() {
       {ruta.v === "glosario" && <Glosario />}
       {ruta.v === "snippets" && <Snippets />}
       {ruta.v === "progreso" && <Progreso go={go} />}
-      {!["inicio", "mundo", "nivel", "retos", "phishing", "tutoriales", "glosario", "snippets", "progreso"].includes(ruta.v) && <NotFound go={go} />}
+      {!["inicio", "mundo", "nivel", "laboratorio", "proyectos", "operacion", "repaso", "terminos", "privacidad", "propiedad", "examen", "certificado", "retos", "phishing", "tutoriales", "glosario", "snippets", "progreso"].includes(ruta.v) && <NotFound go={go} />}
       <Footer go={go} />
-      {/* HUD flotante siempre visible al hacer scroll en móvil */}
-      <div className="fixed bottom-3 left-3 z-40 border-2 border-black bg-[var(--surface)] p-1.5 shadow-[4px_4px_0_#000] sm:hidden"><Hud compact /></div>
       <Avisos />
       {warp && <div key={warp.k} className="warp" style={{ ["--world" as string]: warp.color }} onAnimationEnd={() => setWarp(null)} aria-hidden />}
     </>

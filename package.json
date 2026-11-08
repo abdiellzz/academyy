@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node scripts/verificar-build.mjs",
     "preview": "vite preview",
     "verify": "esbuild scripts/verificar.ts --bundle --format=esm --platform=node --external:react --external:react-dom --outfile=node_modules/.verificar.mjs --log-level=error && node node_modules/.verificar.mjs"
   },

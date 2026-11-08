@@ -51,7 +51,7 @@ function Caja({ icon, label, color, bg, children }: { icon: PixelIconName; label
 
 export function Term({ title = "terminal", children }: { title?: string; children: ReactNode }) {
   return (
-    <div className="term" data-allow-copy>
+    <div className="term">
       <div className="term-bar"><i style={{ background: "var(--red)" }} /><i style={{ background: "var(--accent)" }} /><i style={{ background: "var(--green)" }} /><span className="label ml-2">{title}</span></div>
       <div className="term-body">{children}</div>
     </div>
@@ -93,6 +93,7 @@ export function Bloque({ b }: { b: TeoriaBloque }) {
       </div>
     );
     case "term": return <Term title={b.title}>{b.text}</Term>;
+    case "source": return <aside className="learning-source" aria-label="Fuente para profundizar"><p>{b.text}</p><a href={b.url} target="_blank" rel="noopener noreferrer">{b.title}<span aria-hidden> ↗</span><span className="sr-only"> (abre en pestaña nueva)</span></a><small>Revisado el {new Intl.DateTimeFormat("es", { dateStyle: "medium" }).format(new Date(`${b.revisado}T12:00:00`))}</small></aside>;
   }
 }
 
@@ -102,10 +103,18 @@ export function Hud({ compact = false }: { compact?: boolean }) {
   const xp = xpDe(p);
   const { lvl, pct, falta } = nivelDe(xp);
   return (
-    <div className="flex items-center gap-2" role="status" aria-label={`Nivel ${lvl}, ${xp} XP, faltan ${falta} para el siguiente nivel`}>
+    <div className="flex items-center gap-2" role="group" aria-label={`Nivel ${lvl}, ${xp} XP, faltan ${falta} para el siguiente nivel`}>
       <span className="grid h-8 min-w-8 place-items-center border-2 border-black bg-[var(--green)] px-1 text-[10px] text-[#04220f]" style={{ fontFamily: "var(--font-title)" }}>{lvl}</span>
       <div className={compact ? "w-[72px]" : "w-[110px]"}>
-        <div className="xp-bar"><span style={{ width: `${Math.max(3, pct)}%` }} /></div>
+        <div
+          className="xp-bar"
+          role="progressbar"
+          aria-label={`Experiencia hacia el nivel ${lvl + 1}`}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={Math.round(pct)}
+          aria-valuetext={`${Math.round(pct)} por ciento`}
+        ><span style={{ width: `${Math.max(3, pct)}%` }} /></div>
         {!compact && <p className="label mt-1 !text-[9px]">{xp} XP · faltan {falta}</p>}
       </div>
     </div>
@@ -147,8 +156,9 @@ export function SectionHead({ kicker, title, children }: { kicker: string; title
   );
 }
 
-export function Bar({ value, color = "var(--accent)" }: { value: number; color?: string }) {
-  return <div className="xp-bar"><span style={{ width: `${Math.max(0, Math.min(100, value))}%`, background: color }} /></div>;
+export function Bar({ value, color = "var(--accent)", label = "Progreso" }: { value: number; color?: string; label?: string }) {
+  const pct = Math.max(0, Math.min(100, Math.round(value)));
+  return <div className="xp-bar" role="progressbar" aria-label={label} aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct} aria-valuetext={`${pct}%`}><span style={{ width: `${pct}%`, background: color }} /></div>;
 }
 
 export function CopyBtn({ value }: { value: string }) {

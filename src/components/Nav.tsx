@@ -10,11 +10,15 @@ import { cn } from "../utils/cn";
 /* Menú principal: cuatro puertas claras y una lista de mundos.
    Menos ruido, mismos sitios. */
 
-const HERRAMIENTAS: { v: Ruta["v"]; label: string; icon: PixelIconName; d: string }[] = [
-  { v: "tutoriales", label: "Guías", icon: "torch", d: "Paso a paso para tareas concretas" },
-  { v: "glosario", label: "Glosario", icon: "chest", d: "Cada término, en cristiano" },
-  { v: "snippets", label: "Snippets", icon: "snake", d: "Código listo para copiar" },
-  { v: "phishing", label: "Phishing", icon: "flag", d: "Entrena el ojo con mensajes reales" },
+const HERRAMIENTAS: { v: Ruta["v"]; label: string; d: string }[] = [
+  { v: "operacion", label: "Operación Bóveda", d: "Investiga un incidente simulado" },
+  { v: "repaso", label: "Repaso inteligente", d: "Recuerda preguntas que te costaron" },
+  { v: "tutoriales", label: "Guías", d: "Pasos cortos para hacer algo útil" },
+  { v: "glosario", label: "Glosario", d: "Significados claros, sin vueltas" },
+  { v: "snippets", label: "Snippets", d: "Comandos explicados antes de copiarlos" },
+  { v: "proyectos", label: "Proyectos", d: "Misiones finales con informe práctico" },
+  { v: "phishing", label: "Detector de phishing", d: "Practica reconocer mensajes trampa" },
+  { v: "certificado", label: "Certificado", d: "Consulta tu diploma y tus resultados" },
 ];
 
 const PRINCIPAL: { v: Ruta["v"]; label: string; icon: PixelIconName }[] = [
@@ -41,7 +45,9 @@ export function Nav({ ruta, go, onBuscar }: { ruta: Ruta; go: (r: Ruta) => void;
     const fuera = (e: MouseEvent) => {
       if (caja.current && !caja.current.contains(e.target as Node)) setMenu(null);
     };
-    const esc = (e: KeyboardEvent) => e.key === "Escape" && setMenu(null);
+    const esc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") { setMenu(null); setOpen(false); }
+    };
     document.addEventListener("mousedown", fuera);
     document.addEventListener("keydown", esc);
     return () => {
@@ -55,10 +61,8 @@ export function Nav({ ruta, go, onBuscar }: { ruta: Ruta; go: (r: Ruta) => void;
 
   const claseBtn = (on: boolean) =>
     cn(
-      "flex min-h-[42px] items-center gap-2 border-2 px-3 text-[8px] uppercase tracking-wide transition-colors",
-      on
-        ? "border-black bg-[var(--accent)] text-[#1a0f00] shadow-[3px_3px_0_#000]"
-        : "border-transparent text-[var(--text-2)] hover:border-black hover:bg-[var(--surface-2)] hover:text-[var(--text)]",
+      "nav-link flex min-h-[36px] items-center gap-1.5 px-2.5 transition-colors",
+      on ? "nav-link-active" : "",
     );
 
   return (
@@ -68,7 +72,7 @@ export function Nav({ ruta, go, onBuscar }: { ruta: Ruta; go: (r: Ruta) => void;
           <Logo />
         </button>
 
-        <nav aria-label="Navegación principal" className="ml-auto hidden items-center gap-0.5 min-[1180px]:flex" style={{ fontFamily: "var(--font-title)" }}>
+        <nav aria-label="Navegación principal" className="ml-auto hidden items-center gap-1 min-[1180px]:flex">
           <button className={claseBtn(ruta.v === "inicio")} onClick={() => go({ v: "inicio" })} aria-current={ruta.v === "inicio" ? "page" : undefined}>
             Inicio
           </button>
@@ -118,26 +122,27 @@ export function Nav({ ruta, go, onBuscar }: { ruta: Ruta; go: (r: Ruta) => void;
 
           <div className="relative">
             <button
-              className={claseBtn(!!activo("tutoriales") || menu === "herr")}
+              className={cn(claseBtn(menu === "herr" || ["operacion", "repaso", "tutoriales", "glosario", "snippets", "proyectos", "phishing", "certificado"].includes(ruta.v)), "nav-more")}
               onClick={() => setMenu(menu === "herr" ? null : "herr")}
+              aria-label="Más opciones"
+              title="Más opciones"
               aria-expanded={menu === "herr"}
-              aria-haspopup="true"
+              aria-controls="nav-overflow"
             >
-              Más <span aria-hidden>▾</span>
+              <Icon name="more-vertical" size={19} />
             </button>
             {menu === "herr" && (
-              <div className="absolute right-0 top-[calc(100%+6px)] w-[300px] border-2 border-black bg-[var(--surface)] p-1.5 shadow-[5px_5px_0_#000]">
-                {HERRAMIENTAS.map((h) => (
-                  <button
-                    key={h.v}
-                    onClick={() => go({ v: h.v } as Ruta)}
-                    className="flex w-full items-start gap-2.5 border-2 border-transparent px-2 py-1.5 text-left hover:border-black hover:bg-[var(--surface-2)]"
-                  >
-                    <PixelIcon name={h.icon} size={16} className="mt-0.5 shrink-0" />
-                    <span>
-                      <span className="block text-[15px] font-bold normal-case">{h.label}</span>
-                      <span className="block text-[12px] normal-case text-[var(--text-3)]">{h.d}</span>
-                    </span>
+              <div id="nav-overflow" className="nav-overflow absolute right-0 top-[calc(100%+9px)] w-[310px]" role="group" aria-label="Más secciones">
+                <p className="label nav-overflow-heading">Para aprender</p>
+                {HERRAMIENTAS.slice(0, 4).map((h) => (
+                  <button key={h.v} onClick={() => go({ v: h.v } as Ruta)} className="nav-overflow-item">
+                    <span><b>{h.label}</b><small>{h.d}</small></span><span className="nav-overflow-arrow" aria-hidden>↗</span>
+                  </button>
+                ))}
+                <p className="label nav-overflow-heading nav-overflow-heading-later">Para ponerlo a prueba</p>
+                {HERRAMIENTAS.slice(4).map((h) => (
+                  <button key={h.v} onClick={() => go({ v: h.v } as Ruta)} className="nav-overflow-item">
+                    <span><b>{h.label}</b><small>{h.d}</small></span><span className="nav-overflow-arrow" aria-hidden>↗</span>
                   </button>
                 ))}
               </div>
@@ -180,38 +185,38 @@ export function Nav({ ruta, go, onBuscar }: { ruta: Ruta; go: (r: Ruta) => void;
           aria-controls="menu-movil"
           onClick={() => setOpen((v) => !v)}
         >
-          <Icon name={open ? "x" : "menu"} size={18} />
+          <Icon name={open ? "x" : "more-vertical"} size={19} />
         </button>
       </div>
 
       {open && (
-        <nav id="menu-movil" aria-label="Navegación móvil" className="border-t-2 border-black bg-[var(--surface)] p-3 min-[1180px]:hidden">
-          <div className="mb-3">
-            <Hud />
-          </div>
-          <div className="grid grid-cols-2 gap-1.5">
-            <button onClick={() => go({ v: "inicio" })} className={cn("flex items-center gap-2 border-2 border-black px-3 py-2.5 text-left font-bold", ruta.v === "inicio" ? "bg-[var(--accent)] text-[#1a0f00]" : "bg-[var(--surface-2)]")}>
-              <PixelIcon name="home" size={16} /> Inicio
-            </button>
-            {[{ v: "laboratorio", label: "Laboratorio", icon: "pickaxe" as PixelIconName }, { v: "retos", label: "Retos", icon: "sword" as PixelIconName }, { v: "examen", label: "Examen", icon: "diamond" as PixelIconName }, { v: "progreso", label: "Progreso", icon: "chest" as PixelIconName }, ...HERRAMIENTAS].map((it) => (
-              <button
-                key={it.v}
-                onClick={() => go({ v: it.v } as Ruta)}
-                className={cn("flex items-center gap-2 border-2 border-black px-3 py-2.5 text-left font-bold", ruta.v === it.v ? "bg-[var(--accent)] text-[#1a0f00]" : "bg-[var(--surface-2)]")}
-              >
-                <PixelIcon name={it.icon} size={16} /> {it.label}
-              </button>
-            ))}
-          </div>
-          <p className="label mt-3 mb-1">Mundos</p>
-          <div className="grid gap-1.5">
-            {C.mundos.map((m) => (
-              <button key={m.id} onClick={() => go({ v: "mundo", id: m.id })} className="flex items-center gap-2 border-2 border-black bg-[var(--surface-2)] px-3 py-2 text-left">
-                <PixelIcon name={m.icono} size={16} />
-                <span className="font-bold">{m.nombre}</span>
-                <span className="label ml-auto">{m.bioma}</span>
-              </button>
-            ))}
+        <nav id="menu-movil" aria-label="Navegación móvil" className="nav-mobile min-[1180px]:hidden">
+          <div className="nav-mobile-inner">
+            <p className="label nav-mobile-heading">Sigue aprendiendo</p>
+            <div className="nav-mobile-core">
+              {PRINCIPAL.map((it) => (
+                <button key={it.v} onClick={() => go({ v: it.v } as Ruta)} aria-current={ruta.v === it.v ? "page" : undefined}>
+                  <PixelIcon name={it.icon} size={15} />{it.label}
+                </button>
+              ))}
+            </div>
+            <p className="label nav-mobile-heading">Explora</p>
+            <div className="nav-mobile-links">
+              {HERRAMIENTAS.map((it) => (
+                <button key={it.v} onClick={() => go({ v: it.v } as Ruta)} aria-current={ruta.v === it.v ? "page" : undefined}>
+                  <span>{it.label}</span><span className="nav-mobile-description">{it.d}</span>
+                </button>
+              ))}
+            </div>
+            <p className="label nav-mobile-heading">Mundos</p>
+            <div className="nav-mobile-worlds">
+              {C.mundos.map((m) => (
+                <button key={m.id} onClick={() => go({ v: "mundo", id: m.id })} aria-current={(ruta.v === "mundo" && ruta.id === m.id) || (ruta.v === "nivel" && ruta.mundo === m.id) ? "page" : undefined}>
+                  <span className="nav-world-dot" style={{ background: m.color }} aria-hidden />
+                  <span>{m.nombre.replace("Mundo ", "")}</span>
+                </button>
+              ))}
+            </div>
           </div>
         </nav>
       )}

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import { PixelIcon } from "./PixelArt";
 import { Bar, CopyBtn, Term } from "./ui";
 import { FlowStepper, LayerStack, MatchGame } from "./widgets/CommonWidgets";
@@ -6,7 +6,7 @@ import { BinaryWidget, EncapWidget, FirewallWidget, SubnetWidget } from "./widge
 import { ChmodWidget, MemoryWidget, ProcessWidget, SchedulerWidget, TerminalWidget } from "./widgets/OsWidgets";
 import { aesCifrar, aesDescifrar, caesar, entropia, modPow, normalizar, sha, tiempoCrack } from "../lib/crypto";
 import { BruteLab, FirmaLab, FrecuenciaLab, KdfLab, RsaLab, VigenereLab, XorLab } from "./widgets/CryptoWidgets";
-import { LogsLab, PaquetesLab, PythonLab, RedesLab } from "./widgets/LabWidgets";
+import { LogsLab, PaquetesLab, PythonChallengeLab, PythonLab, RedesLab } from "./widgets/LabWidgets";
 import { C } from "../lib/content";
 import type { MensajePhishing, Practica } from "../types";
 import { cn } from "../utils/cn";
@@ -36,6 +36,7 @@ function Hecho({ onDone, texto = "Ya lo practiqué" }: { onDone: Done; texto?: s
 
 /* ───────── Código con ejecución simulada (salida verificada con Python real) ───────── */
 function Codigo({ p, onDone }: { p: Extract<Practica, { tipo: "codigo" }>; onDone: Done }) {
+  const id = useId().replace(/:/g, "");
   const [shown, setShown] = useState(0);
   const [running, setRunning] = useState(false);
   const [guess, setGuess] = useState("");
@@ -52,11 +53,11 @@ function Codigo({ p, onDone }: { p: Extract<Practica, { tipo: "codigo" }>; onDon
   return (
     <Shell title="main.py · Python 3" icon="snake">
       <div className="flex items-center justify-between gap-2"><p className="label">Código</p><CopyBtn value={p.codigo} /></div>
-      <pre className="code-pixel mt-1.5 p-3" data-allow-copy>{p.codigo}</pre>
+      <pre className="code-pixel mt-1.5 p-3">{p.codigo}</pre>
       <div className="mt-3 border-2 border-black bg-[var(--surface-2)] p-3">
-        <label className="label !text-[var(--accent)]" htmlFor={`g-${firstLine}`}>Antes de ejecutar: ¿qué crees que imprime la primera línea?</label>
+        <label className="label !text-[var(--accent)]" htmlFor={`g-${id}`}>Antes de ejecutar: ¿qué crees que imprime la primera línea?</label>
         <div className="mt-2 flex flex-col gap-2 sm:flex-row">
-          <input id={`g-${firstLine}`} className="field mono" value={guess} onChange={(e) => { setGuess(e.target.value); setGuessed(null); }} placeholder="tu predicción…" />
+          <input id={`g-${id}`} className="field mono" value={guess} onChange={(e) => { setGuess(e.target.value); setGuessed(null); }} placeholder="tu predicción…" />
           <button className="btn btn-sm" onClick={() => setGuessed(normalizar(guess) === normalizar(firstLine))}>Comprobar</button>
         </div>
         {guessed !== null && <p className={cn("mt-2", guessed ? "text-[var(--green)]" : "text-[var(--accent)]")}>{guessed ? "¡Exacto! Leíste el código como una máquina." : "No exactamente. Ejecútalo y compara: así se entrena el ojo."}</p>}
@@ -106,23 +107,25 @@ function Orden({ p, onDone }: { p: Extract<Practica, { tipo: "orden" }>; onDone:
 
 /* ───────── Escribir la respuesta ───────── */
 function Escribir({ p, onDone }: { p: Extract<Practica, { tipo: "escribir" }>; onDone: Done }) {
+  const id = useId().replace(/:/g, "");
   const [v, setV] = useState("");
   const [res, setRes] = useState<null | boolean>(null);
   const [pista, setPista] = useState(false);
-  function check() { const ok = p.respuestas.some((r) => normalizar(r) === normalizar(v)); setRes(ok); if (ok) onDone(); }
+  const [intentos, setIntentos] = useState(0);
+  function check() { const ok = p.respuestas.some((r) => normalizar(r) === normalizar(v)); setRes(ok); if (ok) onDone(); else setIntentos((n) => n + 1); }
   return (
     <Shell title="Responde tú" icon="key">
-      <label htmlFor={`e-${p.pregunta}`} className="block text-[18px] font-bold">{p.pregunta}</label>
+      <label htmlFor={`e-${id}`} className="block text-[18px] font-bold">{p.pregunta}</label>
       <div className="mt-2 flex flex-col gap-2 sm:flex-row">
-        <input id={`e-${p.pregunta}`} className={cn("field mono", res === false && "shake")} value={v} onChange={(e) => { setV(e.target.value); setRes(null); }} onKeyDown={(e) => e.key === "Enter" && check()} />
+        <input id={`e-${id}`} className={cn("field mono", res === false && "shake")} value={v} onChange={(e) => { setV(e.target.value); setRes(null); }} onKeyDown={(e) => e.key === "Enter" && check()} />
         <button className="btn btn-primary btn-sm" onClick={check}>Comprobar</button>
       </div>
       <div className="mt-2 flex flex-wrap items-center gap-3">
-        {p.pista && <button className="text-[14px] text-[var(--accent)] underline" onClick={() => setPista((x) => !x)}>{pista ? "Ocultar pista" : "Ver pista"}</button>}
+        {p.pista && <button className="text-[14px] text-[var(--accent)] underline" aria-expanded={pista} onClick={() => setPista((x) => !x)}>{pista ? "Ocultar pista" : "Ver pista"}</button>}
         <span className="text-[13px] text-[var(--text-3)]">No importan mayúsculas ni tildes.</span>
       </div>
       {pista && <p className="mono mt-1 text-[var(--text-2)]">{p.pista}</p>}
-      {res !== null && <p className={cn("mt-2 border-2 border-black p-2.5", res ? "bg-[#16301f]" : "bg-[#2a1d0c]")}>{res ? <><b className="text-[var(--green)]">¡Correcto! </b>{p.explicacion}</> : "Mmm, no. Revisa la pista e inténtalo otra vez."}</p>}
+      {res !== null && <div className={cn("mt-2 border-2 border-black p-2.5", res ? "bg-[#16301f]" : "bg-[#2a1d0c]")} role="status" aria-live="polite">{res ? <><b className="text-[var(--green)]">¡Correcto! </b>{p.explicacion}</> : <><b className="text-[var(--accent)]">Aún no coincide. </b>{intentos < 2 ? p.pista ? "Prueba una variación breve; puedes pedir una pista sin penalización." : "Prueba otra formulación y vuelve al objetivo de la teoría." : <>Una respuesta aceptada es <b className="mono">{p.respuestas[0]}</b>. {p.explicacion}</>}</>}</div>}
     </Shell>
   );
 }
@@ -156,7 +159,7 @@ export function PhishingGame({ cantidad = 5, onFinish }: { cantidad?: number; on
   const correct = answer !== null && answer === m.es_phishing;
   return (
     <Shell title={`Detector de phishing · ${i + 1}/${ronda.length}`} icon="flag">
-      <Bar value={(i / ronda.length) * 100} />
+      <Bar value={(i / ronda.length) * 100} label="Progreso de la ronda de phishing" />
       <div className="mt-3 border-2 border-black p-3" style={{ background: CANAL[m.canal].bg }}>
         <div className="flex flex-wrap items-center gap-2"><span className="chip">{CANAL[m.canal].label}</span><span className="mono text-[var(--text-2)]">{m.remitente}</span></div>
         {m.asunto && <p className="mt-2 font-bold">Asunto: {m.asunto}</p>}
@@ -224,26 +227,27 @@ function Hash({ onDone }: { onDone: Done }) {
 }
 
 function Password({ onDone }: { onDone: Done }) {
+  const id = useId().replace(/:/g, "");
   const [pw, setPw] = useState("panama2026");
   const [show, setShow] = useState(false);
   const bits = entropia(pw);
   const col = bits < 40 ? "var(--red)" : bits < 60 ? "var(--accent)" : bits < 80 ? "var(--green)" : "var(--cyan)";
-  const verdict = bits < 40 ? "Muy débil" : bits < 60 ? "Floja" : bits < 80 ? "Fuerte" : "Blindada";
+  const verdict = bits < 40 ? "Baja (estimada)" : bits < 60 ? "Media (estimada)" : bits < 80 ? "Alta (estimada)" : "Muy alta (teórica)";
   return (
     <Shell title="Medidor de contraseñas" icon="key">
-      <label className="label" htmlFor="pw">Escribe una contraseña (no sale de tu navegador)</label>
+      <label className="label" htmlFor={`pw-${id}`}>Escribe una contraseña (no sale de tu navegador)</label>
       <div className="mt-1 flex gap-2">
-        <input id="pw" type={show ? "text" : "password"} className="field mono" value={pw} onChange={(e) => setPw(e.target.value)} autoComplete="off" />
+        <input id={`pw-${id}`} type={show ? "text" : "password"} className="field mono" value={pw} onChange={(e) => setPw(e.target.value)} autoComplete="off" />
         <button className="btn btn-sm" onClick={() => setShow((x) => !x)} aria-label={show ? "Ocultar contraseña" : "Mostrar contraseña"}>{show ? "Ocultar" : "Ver"}</button>
       </div>
       <div className="mt-2 flex flex-wrap gap-1">{["123456", "P@ssw0rd!", "Panama2026", "taza-montaña-río-bosque-42"].map((x) => <button key={x} className="chip hover:text-white" onClick={() => setPw(x)}>{x}</button>)}</div>
       <div className="mt-3 grid grid-cols-3 gap-2 text-center">
         <div className="border-2 border-black bg-[var(--bg-sunken)] p-2"><p className="label">Entropía</p><p className="mono text-[28px]" style={{ color: col }}>{bits} bits</p></div>
         <div className="border-2 border-black bg-[var(--bg-sunken)] p-2"><p className="label">Veredicto</p><p className="mt-1 font-bold" style={{ color: col }}>{verdict}</p></div>
-        <div className="border-2 border-black bg-[var(--bg-sunken)] p-2"><p className="label">Fuerza bruta</p><p className="mt-1 text-[14px] font-bold">{tiempoCrack(bits)}</p></div>
+        <div className="border-2 border-black bg-[var(--bg-sunken)] p-2"><p className="label">Búsqueda uniforme teórica</p><p className="mt-1 text-[14px] font-bold">{tiempoCrack(bits)}</p></div>
       </div>
-      <div className="mt-2"><Bar value={(bits / 110) * 100} color={col} /></div>
-      <p className="mt-2 text-[14px] text-[var(--text-3)]">Supone un atacante con tarjetas gráficas (10.000 millones de intentos por segundo). Las palabras comunes cuentan la mitad.</p>
+      <div className="mt-2"><Bar value={(bits / 110) * 100} color={col} label="Estimación didáctica del espacio de búsqueda de la contraseña" /></div>
+      <p className="mt-2 text-[14px] text-[var(--text-2)]">Es una aproximación didáctica: no revisa filtraciones, reutilización, patrones del usuario ni límites de intentos. No pegues aquí una contraseña real. Para cuentas reales, usa claves únicas y largas con un gestor y activa MFA.</p>
       <Hecho onDone={onDone} />
     </Shell>
   );
@@ -256,6 +260,7 @@ function Aes({ onDone }: { onDone: Done }) {
   const [res, setRes] = useState<null | { ok: boolean; texto: string }>(null);
   return (
     <Shell title="AES-256-GCM real (WebCrypto)" icon="chest">
+      <p className="mb-3 text-[14px] leading-relaxed text-[var(--text-2)]">Demo local con sal e IV aleatorios, PBKDF2-SHA-256 (600.000 iteraciones) y etiqueta GCM. Es una práctica educativa, no un gestor de secretos ni un formato de producción.</p>
       <div className="grid gap-2 sm:grid-cols-2">
         <label><span className="label">Mensaje</span><input className="field mt-1" value={msg} onChange={(e) => setMsg(e.target.value)} /></label>
         <label><span className="label">Contraseña</span><input className="field mono mt-1" value={pass} onChange={(e) => setPass(e.target.value)} /></label>
@@ -309,6 +314,10 @@ function Widget({ w, props, onDone }: { w: string; props?: any; onDone: Done }) 
     xor: <XorLab />, rsa: <RsaLab />, firma: <FirmaLab />, frecuencia: <FrecuenciaLab />,
     kdf: <KdfLab />, brute: <BruteLab />, vigenere: <VigenereLab />,
     python: <PythonLab />, paquetes: <PaquetesLab />, redes: <RedesLab />, logs: <LogsLab />,
+    "python-inventario": <PythonChallengeLab mission="inventario" onDone={onDone} />,
+    "python-puertos": <PythonChallengeLab mission="puertos" onDone={onDone} />,
+    "python-logs": <PythonChallengeLab mission="logs" onDone={onDone} />,
+    "python-indicadores": <PythonChallengeLab mission="indicadores" onDone={onDone} />,
   };
   return <div>{map[w] ?? <p>Simulador «{w}» no disponible.</p>}<Hecho onDone={onDone} /></div>;
 }

@@ -123,19 +123,23 @@ export const MUNDO_WEB: Mundo = {
       objetivos: [
         "Entender qué es XSS y por qué es grave.",
         "Distinguir reflejado, almacenado y DOM.",
-        "Defenderlo con escape, CSP y HttpOnly."
+        "Evitarlo con renderizado seguro y escape según el contexto.",
+        "Entender CSP y HttpOnly como capas de defensa, no como cura."
       ],
       teoria: [
-        { t: "why", text: "XSS mete código tuyo en la página de otra persona. Ese código corre con SUS permisos: puede leer su sesión, cambiar su contraseña o mandar su token a un servidor ajeno." },
+        { t: "why", text: "XSS hace que el navegador trate datos no confiables como código del sitio. Ese código puede actuar con los permisos de la víctima y cambiar lo que ve o hace. Si la cookie es HttpOnly, el script no la lee directamente, pero todavía podría realizar acciones desde esa sesión." },
         { t: "p", text: "Ocurre cuando la web mete datos del usuario en el HTML sin escaparlos. Si un comentario dice `<script>…</script>` y el servidor lo pinta tal cual, el navegador lo ejecuta como parte de la página." },
         { t: "list", items: [
           "Reflejado: el dato vuelve en la misma respuesta (un buscador, un mensaje de error).",
-          "Almacenado: el dato se guarda y se sirve a todos los que visitan (el más peligroso).",
-          "DOM: el propio JavaScript de la página inserta datos sin sanear (innerHTML).",
-          "Defensa: escapar la salida, usar textContent en vez de innerHTML, CSP y cookies HttpOnly."
+          "Almacenado: el dato queda guardado y puede afectar a muchas personas hasta que se corrige o elimina.",
+          "DOM: el JavaScript de la página coloca datos en una zona que interpreta HTML (por ejemplo, innerHTML).",
+          "Primera defensa: usa APIs que tratan los datos como texto y el escape automático del framework.",
+          "Si necesitas HTML enriquecido, usa un sanitizador mantenido; valida el formato, pero no lo confundas con escape de salida.",
+          "CSP y cookies HttpOnly limitan ciertos impactos: son capas adicionales, no reemplazan la prevención."
         ]},
-        { t: "warn", text: "Las cookies de sesión deben ir con HttpOnly: así el script inyectado no puede leerlas aunque logre ejecutarse." },
-        { t: "result", text: "Deberías poder mirar un comentario y saber si se va a pintar o a ejecutar." }
+        { t: "warn", text: "HttpOnly impide que JavaScript lea el valor de la cookie, pero no detiene el XSS ni todas las acciones hechas desde una sesión comprometida." },
+        { t: "source", title: "OWASP · Cross Site Scripting Prevention Cheat Sheet", url: "https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.md", text: "Guía técnica para escoger una defensa según el contexto de salida y evitar APIs DOM inseguras.", revisado: "2026-11-06" },
+        { t: "result", text: "Deberías distinguir entre mostrar un dato como texto, insertarlo como HTML y usar una defensa secundaria como CSP." }
       ],
       ejemplos: [
         { juego: "minecraft", titulo: "El libro firmado", texto: "Si alguien puede escribir en tu libro y tú copias el texto sin mirar, acabas firmando lo que esa persona escribió. Pintar HTML ajeno es firmar su código." },
@@ -173,10 +177,12 @@ export const MUNDO_WEB: Mundo = {
         { t: "p", text: "La consulta clásica es `SELECT * FROM usuarios WHERE usuario = '<dato>'`. Si el dato es `' OR 1=1 --`, la consulta se convierte en «tráeme todos los usuarios» y el resto se comenta." },
         { t: "list", items: [
           "La defensa real: consultas parametrizadas (el dato nunca se concatena).",
-          "Validar y limitar también ayuda, pero no sustituye a parametrizar.",
-          "La cuenta de la base de datos no debe poder borrar tablas si solo lee.",
-          "Los errores de SQL nunca se muestran al usuario: filtran la estructura."
+          "Validar formato y longitud también ayuda, pero no sustituye a parametrizar.",
+          "Los parámetros protegen valores; nombres de tablas o columnas deben salir de opciones fijas controladas por la app.",
+          "La cuenta de la base de datos recibe solo los permisos que necesita.",
+          "No muestres errores internos de SQL al usuario; registra el detalle de forma segura."
         ]},
+        { t: "source", title: "OWASP · SQL Injection Prevention Cheat Sheet", url: "https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.md", text: "Referencia sobre consultas parametrizadas, elección segura de partes dinámicas y principio de menor privilegio.", revisado: "2026-11-06" },
         { t: "term", title: "la consulta, paso a paso", text: "SELECT * FROM usuarios\nWHERE usuario = '<lo que escribe el usuario>'\n\nsi el usuario escribe:  ' OR 1=1 --\n\nla consulta queda:\nSELECT * FROM usuarios WHERE usuario = '' OR 1=1 --'\n                                        ^ siempre verdadero" },
         { t: "result", text: "Deberías poder explicar por qué `' OR 1=1 --` funciona y cómo lo detiene un parámetro." }
       ],
@@ -216,12 +222,14 @@ export const MUNDO_WEB: Mundo = {
         { t: "p", text: "Al iniciar sesión el servidor crea una sesión y te da un identificador. En cada petición lo devuelves. Si alguien lo copia, entra sin contraseña." },
         { t: "list", items: [
           "Cookie de sesión: HttpOnly (que el JS no la lea), Secure (solo por HTTPS) y SameSite=Lax o Strict.",
-          "JWT: el token lleva datos firmados; nunca metas secretos dentro, cualquiera lo lee.",
-          "IDOR: cambiar /factura/1024 por /factura/1025 y ver la de otro. Se arregla comprobando el dueño en el servidor.",
-          "CSRF: otra web envía una petición en tu nombre. SameSite y un token anti-CSRF lo frenan."
+          "Un identificador de sesión equivale temporalmente a la credencial: evita filtrarlo y revócalo al cerrar sesión.",
+          "JWT: el contenido normalmente se puede leer; la firma permite detectar cambios, no ocultar secretos.",
+          "IDOR: cambiar /factura/1024 por /factura/1025 y ver la de otro. El servidor debe autorizar cada objeto en cada petición.",
+          "CSRF: otra web intenta enviar una petición en tu nombre. SameSite ayuda; las acciones sensibles también requieren defensas anti-CSRF."
         ]},
-        { t: "tip", text: "Cierra sesión en equipos ajenos y revisa los dispositivos conectados de tu correo. Una sesión abierta no pide contraseña." },
-        { t: "result", text: "Deberías poder decir qué tres atributos debe llevar la cookie de sesión de tu banco." }
+        { t: "tip", text: "Cierra sesión en equipos ajenos y revisa los dispositivos conectados de tu correo. El cierre debe invalidar la sesión del lado del servidor." },
+        { t: "source", title: "OWASP · Session Management Cheat Sheet", url: "https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/Session_Management_Cheat_Sheet.md", text: "Profundiza en identificadores de sesión, su ciclo de vida y la revocación al cerrar sesión.", revisado: "2026-11-06" },
+        { t: "result", text: "Deberías explicar cómo se protege y revoca una sesión y por qué cada petición necesita autorización." }
       ],
       ejemplos: [
         { juego: "minecraft", titulo: "La llave del cofre", texto: "Entrar con sesión iniciada es llevar la llave puesta. Si alguien la copia, no necesita saber tu contraseña: abre igual." },

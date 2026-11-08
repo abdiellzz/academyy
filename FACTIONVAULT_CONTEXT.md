@@ -3,10 +3,10 @@
 > **Empieza por `AGENT_NOTES.md`**: estado actual, cómo correr/verificar, trampas y backlog priorizado.
 > Este documento es la referencia de arquitectura y diseño.
 >
-> Estado (2026-11-06): **7 mundos · 50 niveles · 42 retos · 25 laboratorios · 20 logros**, examen final,
+> Estado (2026-11-06): **7 mundos · 50 niveles · 42 retos · 29 laboratorios · 20 logros**, examen final,
 > certificado en PDF/PNG, PWA y sonidos opcionales. Verifica siempre con `npm run verify`.
 
-Dueño y autor: **@abdiellzz** (github.com/abdiellzz). El crédito «HECHA POR @abdiellzz (github.com/abdiellzz)» vive en el Footer, los avisos de consola y LICENSE. **No eliminarlo.**
+Creador: **Abdiel Camargo (@abdiellzz)** ([GitHub](https://github.com/abdiellzz) · [LinkedIn](https://www.linkedin.com/in/camargoabdiel/)). El crédito y ambos perfiles viven en Footer, documentos legales y README; el aviso de consola conserva el nombre y perfiles. **No eliminarlo.**
 
 ## Qué es
 Ciberseguridad de verdad, en español panameño, siempre oscura y en pixel art. Cada nivel tiene 4 fases: **Teoría → Ejemplo → Práctica → Reto**.
@@ -32,8 +32,8 @@ src/index.css         sistema visual: paleta oficial, .card .chip .btn .btn-prim
                       cielo con estrellas, .grass, .warp, reduced-motion
 src/lib/content.ts    C = window.FV_CONTENT; helpers
 src/assets/logo.ts    logo oficial (mono + cofre) en data URI: el build sigue siendo un archivo
-src/lib/py.ts         mini Python → JS para el laboratorio (variables, f-strings, listas,
-                      if/elif/else, for-in, range) con print real
+src/lib/py.ts         intérprete educativo y acotado de Python (variables, f-strings, listas,
+                      condiciones, bucles y funciones básicas), sin eval/new Function
 src/lib/busqueda.ts   puente de una línea para que el buscador rellene el glosario
 src/lib/planet.ts     motor de la Tierra en 3D sin DOM: máscara de continentes (equirect 256×128),
                       albedo, geometría precalculada y render de un frame RGBA (atmósfera, nubes
@@ -41,7 +41,7 @@ src/lib/planet.ts     motor de la Tierra en 3D sin DOM: máscara de continentes 
                       cada mundo)
 src/lib/store.ts      progreso en localStorage "factionvault-v4", XP (teoría 20 / práctica 40 / reto 60,
                       CTF = puntos, guía 50, phishing 10 por acierto récord, lab 30, examen 2×nota),
-                      nivelDe (80·n²), 20 LOGROS, labs[], examenMejor/examenes/ultimoExamen, estudiante, notify()
+                      nivelDe (80·n²), 20 LOGROS, labs[], mejor/último examen con detalle de estaciones prácticas, metas semanales y racha.
 src/lib/pwa.ts        registra public/sw.js solo en producción (en dev desregistra para no cachear)
 src/lib/sonido.ts     efectos 8-bit con WebAudio (oscilador cuadrado + envolvente), apagados por defecto,
                       preferencia en localStorage y suscripción para el interruptor del menú
@@ -52,14 +52,14 @@ src/mundo-web.ts      Mundo Web: 5 niveles (HTTP, formularios, XSS, SQLi, sesion
                       content.ts lo inyecta con agregarMundoWeb(C) junto a extra-niveles
 src/extra-niveles.ts  6 niveles añadidos (social 4 + cripto 2). content.ts llama ampliar(C) ANTES de
                       calcular totalNiveles, para que todo el resto los vea como niveles normales
-src/views/Examen.tsx  20 preguntas al azar (banco = 45 retos de nivel), 20 min, nota /100, guarda la mejor
+src/views/Examen.tsx  18 preguntas estratificadas de un banco de 64 (2–3 por mundo) + 2 estaciones prácticas, 25 min; guarda detalle del mejor intento
 src/views/Certificado.tsx  documento CSS (no canvas) rellenable con el nombre, ID de emisión y @media print
 src/lib/crypto.ts     caesar, normalizar, sha (WebCrypto), entropia, tiempoCrack, modPow, AES-GCM + PBKDF2
-src/lib/protect.ts    aviso self-XSS en consola y copia masiva con atribución. El anti-iframe está
-                      desactivado (rompía las vistas previas embebidas)
+src/lib/protect.ts    solo aviso self-XSS en consola; no bloquea selección/copia porque el frontend
+                      no puede evitar extracción y el bloqueo afecta accesibilidad
 src/components/
-  Globe.tsx           la Tierra del inicio: canvas 256×256, ~30 fps, arrastrable con el mouse y con
-                      la atmósfera del color del mundo elegido (usa lib/planet.ts)
+  Globe.tsx           Tierra 256×256: pausa fuera de viewport/pestaña visible y respeta cambios de
+                      prefers-reduced-motion; arrastrable, color del mundo (usa lib/planet.ts)
   ui.tsx              Logo, GameBox, Bloque (render de teoría), Term, Hud, Avisos, Bar, CopyBtn, SectionHead
   Practices.tsx       PracticaView dispatcher + motores: Codigo, Orden, Escribir, PhishingGame, Cesar, Hash,
                       Password, Aes, DH, Widget (puente a widgets/)
@@ -72,11 +72,10 @@ src/components/
                       y snippets; navega con ↑↓/Enter
   widgets/CryptoWidgets.tsx  xor, vigenere, frecuencia, rsa, firma, kdf y brute
   Nav.tsx / Footer.tsx
-src/views/            Labs (Laboratorio: 25 simuladores en 5 áreas, tarjeta explicativa y widget
-                      en línea), Home («centro de mando»: Allen y Hailey, Tierra 3D con cohete en la esquina,
-                      lista de destinos con preview, tablero, laboratorio abierto y accesos a todas
-                      las secciones), World (WorldView + LevelView + reto),
-                      Sections (Retos, Phishing, Tutoriales, Glosario, Snippets, Progreso)
+src/views/            Labs (29 simuladores, modos Guiado/Reto, pistas y reinicio sin borrar progreso),
+                      Home (centro de mando, planeta 3D pausado cuando no es visible), World (mapa y reto
+                      con feedback gradual), Sections (mapa filtrable de objetivos y estado de fases,
+                      progreso local con borrado explícito y retos con solución inline accesible)
 ```
 
 ## Reglas de diseño (no romper)
@@ -109,17 +108,28 @@ y mass assignment, XSS (reflejado/almacenado/DOM), SQLi y consultas parametrizad
 (cookies HttpOnly/Secure/SameSite, JWT, IDOR, CSRF). Todo explicado con casos de Panamá y de Minecraft.
 Su paleta vive en `PALETAS` de `src/components/Biome.tsx` con la clave `web`.
 
+## Rutas de aprendizaje y proyectos
+- La portada ofrece un CTA a la primera misión de ocho minutos y tres rutas sugeridas (`src/lib/learning.ts`): principiante, protección personal y análisis técnico.
+- Cada ruta enlaza niveles ya existentes y un proyecto final seguro con datos sintéticos. `#/proyectos` contiene tres talleres de cuatro pasos: instrucciones, evidencia, decisión razonada y nota obligatoria guardada localmente por paso; al final genera una hoja de trabajo explicativa en pantalla. Completarlos una vez suma 50 XP. No se ofrece exportación.
+- El progreso puede borrarse desde su página; no hay exportación/restauración de copia, por decisión del usuario.
+
 ## Examen y certificado
-- `#/examen`: 20 preguntas al azar de los 45 niveles, 20 minutos, nota entera sobre 100, aprobado en 70.
+- `#/examen`: 18 preguntas estratificadas de un banco de 64 (2–3 por mundo; 50 retos de nivel y 14 casos de transferencia) + 2 estaciones interactivas (Python y análisis de tráfico ficticio), 25 minutos, nota sobre 100, aprobado en 70. Bloqueado hasta completar los 50 niveles.
   Se guarda la mejor nota (no la última); el resultado lista los fallos con su explicación.
-- `#/certificado`: solo con 70+. Documento en HTML/CSS (marco punteado, esquinas, sello y cintas) con
-  nombre editable, progreso real, nota, fecha e ID derivado (`FV-XXYY-ZZZZ`). `Ctrl+P` → PDF.
+- `#/certificado`: requiere completar los niveles de todos los mundos y aprobar el examen con 70+.
+  Documento oscuro y de alta legibilidad con progreso real, nota, fecha e ID derivado (`FV-XXYY-ZZZZ`).
   Dice explícitamente que **es un certificado de finalización de la plataforma, no una certificación oficial**.
 - Descarga: «Descargar PDF» rasteriza a 2× (1.6× en móvil), extrae los bytes RGB y arma el PDF; «PNG» guarda
-  la misma imagen. «Imprimir» sigue ahí como plan B. Sin aprobar se puede ver con `verEjemplo` (marca «EJEMPLO»).
+  la misma imagen. La vista de muestra usa datos ficticios, marca de agua y no ofrece edición, impresión ni descarga.
 
-## Backlog
-- Fuentes offline embebidas (woff2 en base64) para que el archivo sea 100% autónomo.
+## Documentos legales
+- `#/operacion` (`src/views/Operacion.tsx`) es una misión defensiva de cuatro etapas con datos ficticios; `#/repaso` (`src/views/Repaso.tsx`) programa tarjetas falladas con intervalos crecientes. Ambos estados se guardan solo en `localStorage`. `#/terminos`, `#/privacidad` y `#/propiedad-intelectual` se sirven desde `src/views/Legal.tsx` y están enlazados en el footer; la política explica límites reales de anti-copia.
+- Describen con transparencia los datos locales, caché offline, Google Fonts, servicios externos y uso seguro; son borradores informativos, no una afirmación de cumplimiento legal. Requieren revisión jurídica antes de usarlos como contrato/política definitiva.
+
+## QA pendiente
+- `npm run verify`, TypeScript y `npm run build` deben pasar; el HTML único respeta el presupuesto 950 kB / 315 kB gzip.
+- La auditoría real con teclado, lector de pantalla y teléfonos está documentada en `docs/QA-EDUCATIVA.md` y aún requiere ejecución manual.
+- Se revisan objetivos y referencias con fecha; la revisión de estudiantes/especialistas sigue pendiente y no se sustituye por pruebas de datos.
 - Mundo «Web/OWASP» (XSS, SQLi simulados) y mundo «Forense».
 - Certificado por mundo (no solo el final) y verificación del ID en línea.
 - Sonidos: más variedad y un volumen ajustable.
