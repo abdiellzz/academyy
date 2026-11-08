@@ -388,7 +388,7 @@ export function Progreso({ go }: { go: (r: Ruta) => void }) {
           <p className="label !text-[var(--accent)]">Privacidad y control</p>
           <h2 id="datos-locales-title" className="mt-1 text-[18px]">Tus datos se quedan en este navegador</h2>
           <p className="mt-2 text-[14px] text-[var(--text-2)]">El avance se guarda localmente y no se envía a una cuenta o servidor. Si borras los datos del sitio o cambias de navegador, no hay recuperación. Puedes borrar el progreso guardado desde aquí; esta acción no se puede deshacer.</p>
-          <button className="btn btn-ghost btn-sm mt-3" onClick={() => { if (confirm("¿Borrar TODO el progreso, nombre, logros, metas e intentos guardados en este navegador? Esta acción no se puede deshacer.")) resetProgreso(); }}>Borrar progreso de este navegador</button>
+          <button className="btn btn-ghost btn-sm mt-3" onClick={() => { if (confirm("¿Borrar TODO el progreso, notas de proyectos, tarjetas de repaso, misión, nombre, logros, metas e intentos guardados en este navegador? Esta acción no se puede deshacer.")) resetProgreso(); }}>Borrar progreso de este navegador</button>
         </section>
       </section>
     </main>

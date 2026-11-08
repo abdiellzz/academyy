@@ -39,6 +39,7 @@ export interface Progreso {
   logros: string[];
   labs: string[];
   proyectosFinalizados: string[];
+  proyectosNotas: Record<string, string[]>;
   repaso: TarjetaRepaso[];
   operacion: EstadoOperacion;
   examenMejor: number;
@@ -50,7 +51,7 @@ export interface Progreso {
 }
 
 const KEY = "factionvault-v4";
-const EMPTY: Progreso = { niveles: {}, retos: [], tutoriales: [], phishingBest: 0, phishingPlayed: 0, logros: [], labs: [], proyectosFinalizados: [], repaso: [], operacion: { paso: 0, decisiones: [], completada: false, xpOtorgada: false }, examenMejor: 0, examenMejorDetalle: null, examenes: 0, ultimoExamen: null, estudiante: "", metaEstudio: { objetivoSemanal: 3, semana: "", nivelesCompletados: 0, diasActivos: [] } };
+const EMPTY: Progreso = { niveles: {}, retos: [], tutoriales: [], phishingBest: 0, phishingPlayed: 0, logros: [], labs: [], proyectosFinalizados: [], proyectosNotas: {}, repaso: [], operacion: { paso: 0, decisiones: [], completada: false, xpOtorgada: false }, examenMejor: 0, examenMejorDetalle: null, examenes: 0, ultimoExamen: null, estudiante: "", metaEstudio: { objetivoSemanal: 3, semana: "", nivelesCompletados: 0, diasActivos: [] } };
 
 function load(): Progreso {
   try {
@@ -59,7 +60,7 @@ function load(): Progreso {
     const saved = JSON.parse(raw) as Partial<Progreso>;
     const ultimoExamen = saved.ultimoExamen ?? null;
     const examenMejorDetalle = saved.examenMejorDetalle ?? (ultimoExamen && ultimoExamen.nota === (saved.examenMejor ?? 0) ? ultimoExamen : null);
-    return { ...EMPTY, ...saved, proyectosFinalizados: saved.proyectosFinalizados ?? [], repaso: saved.repaso ?? [], operacion: { ...EMPTY.operacion, ...saved.operacion, decisiones: saved.operacion?.decisiones ?? [] }, ultimoExamen, examenMejorDetalle, metaEstudio: { ...EMPTY.metaEstudio, ...saved.metaEstudio } };
+    return { ...EMPTY, ...saved, proyectosFinalizados: saved.proyectosFinalizados ?? [], proyectosNotas: saved.proyectosNotas ?? {}, repaso: saved.repaso ?? [], operacion: { ...EMPTY.operacion, ...saved.operacion, decisiones: saved.operacion?.decisiones ?? [] }, ultimoExamen, examenMejorDetalle, metaEstudio: { ...EMPTY.metaEstudio, ...saved.metaEstudio } };
   } catch {
     return EMPTY;
   }
@@ -195,6 +196,14 @@ export function guardarProyecto(id: string) {
   commit({ ...state, proyectosFinalizados: [...state.proyectosFinalizados, id] });
   notify({ titulo: "Proyecto finalizado", texto: "+50 XP · guardado en este navegador", icono: "diamond" });
   sfx("subir");
+}
+
+export function guardarNotaProyecto(id: string, paso: number, nota: string) {
+  const actual = state.proyectosNotas[id] ?? [];
+  if (actual[paso] === nota) return;
+  const notas = [...actual];
+  notas[paso] = nota;
+  commit({ ...state, proyectosNotas: { ...state.proyectosNotas, [id]: notas } });
 }
 
 export function guardarPasoOperacion(decision: number) {

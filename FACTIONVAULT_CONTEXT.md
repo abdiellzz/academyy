@@ -110,7 +110,7 @@ Su paleta vive en `PALETAS` de `src/components/Biome.tsx` con la clave `web`.
 
 ## Rutas de aprendizaje y proyectos
 - La portada ofrece un CTA a la primera misión de ocho minutos y tres rutas sugeridas (`src/lib/learning.ts`): principiante, protección personal y análisis técnico.
-- Cada ruta enlaza niveles ya existentes y un proyecto final seguro con datos sintéticos. `#/proyectos` contiene tres misiones y genera un informe de decisiones en pantalla; completarlas una vez suma 50 XP y queda guardado localmente.
+- Cada ruta enlaza niveles ya existentes y un proyecto final seguro con datos sintéticos. `#/proyectos` contiene tres talleres de cuatro pasos: instrucciones, evidencia, decisión razonada y nota obligatoria guardada localmente por paso; al final genera una hoja de trabajo explicativa en pantalla. Completarlos una vez suma 50 XP. No se ofrece exportación.
 - El progreso puede borrarse desde su página; no hay exportación/restauración de copia, por decisión del usuario.
 
 ## Examen y certificado

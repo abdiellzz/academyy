@@ -111,7 +111,7 @@ Los stubs mínimos para SSR: `localStorage` (Map), `window` (`addEventListener`,
 | Portada | Promesa clara, CTA a la primera misión de 8 min, tres rutas por objetivo con progreso y proyecto de cierre; pixel art responsive. Prueba física pendiente. |
 | Contenido | 50 niveles con objetivos explícitos, teoría/ejemplo/práctica/reto y 42 retos; retroalimentación gradual al fallar. |
 | Laboratorio | 29 simuladores en cinco áreas, con modos Guiado/Reto, pistas graduadas y reinicio local de práctica. |
-| Proyectos | Tres proyectos seguros de decisiones defensivas; informe final en pantalla y progreso/50 XP persistido localmente. |
+| Proyectos | Tres talleres seguros de 4 pasos con instrucciones accionables, evidencia ficticia, anotación local por paso, explicación y hoja de trabajo final en pantalla; 50 XP una vez, sin exportación. |
 | Examen | Bloqueado hasta completar los niveles; 18 preguntas estratificadas (2–3 por mundo) de un banco de 64, más dos estaciones prácticas; 25 min y repaso. Muestreo cubierto por pruebas. |
 | Certificado | PDF/PNG con estética voxel/pixel; se basa en el mejor intento y expone las prácticas cuando corresponden. La muestra tiene marca de agua. |
 | Progreso | Mapa filtrable de objetivos por mundo y fase, XP, labs, proyectos, examen, logros y metas semanales. El avance vive localmente y se puede borrar; no se ofrece exportación de copia. |

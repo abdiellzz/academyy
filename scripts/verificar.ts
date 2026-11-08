@@ -140,8 +140,9 @@ for (const ruta of RUTAS_APRENDIZAJE) {
   }
 }
 for (const proyecto of PROYECTOS) {
-  if (proyecto.pasos.length < 3 || !proyecto.objetivo || !proyecto.producto) mal(`Proyecto ${proyecto.id}: cierre sin pasos, objetivo o entrega`);
+  if (proyecto.pasos.length < 4 || !proyecto.objetivo || !proyecto.producto) mal(`Proyecto ${proyecto.id}: requiere al menos 4 pasos, objetivo y una entrega`);
   for (const [i, paso] of proyecto.pasos.entries()) {
+    if (paso.instrucciones.length < 3 || !paso.evidencia || !paso.entregaParcial || !paso.registro) mal(`Proyecto ${proyecto.id}, paso ${i + 1}: faltan instrucciones, evidencia o espacio de anotación`);
     if (paso.opciones.length < 3 || paso.correcta < 0 || paso.correcta >= paso.opciones.length || !paso.porQue) mal(`Proyecto ${proyecto.id}, paso ${i + 1}: pregunta o explicación inválida`);
   }
 }
@@ -234,9 +235,12 @@ if (!C.meta.linkedin?.startsWith("https://www.linkedin.com/in/")) mal("Metadatos
 const nav = readFileSync(fileURLToPath(new URL("../src/components/Nav.tsx", import.meta.url)), "utf8");
 const operacion = readFileSync(fileURLToPath(new URL("../src/views/Operacion.tsx", import.meta.url)), "utf8");
 const repaso = readFileSync(fileURLToPath(new URL("../src/views/Repaso.tsx", import.meta.url)), "utf8");
+const proyectosUI = readFileSync(fileURLToPath(new URL("../src/views/Proyectos.tsx", import.meta.url)), "utf8");
+const store = readFileSync(fileURLToPath(new URL("../src/lib/store.ts", import.meta.url)), "utf8");
 if (!app.includes("a === \"operacion\"") || !app.includes("a === \"repaso\"") || !app.includes("ruta.v === \"operacion\"") || !app.includes("ruta.v === \"repaso\"") || !footer.includes("#/operacion") || !footer.includes("#/repaso") || !nav.includes("Operación Bóveda") || !nav.includes("Repaso inteligente")) mal("Misión y repaso: faltan rutas o puntos de entrada");
 if (!operacion.includes("203.0.113") || !operacion.includes(".example") || !operacion.includes("Caso íntegramente ficticio") || !operacion.includes("guardarPasoOperacion") || (operacion.match(/correcta: true/g) ?? []).length !== 4 || operacion.includes("fetch(") || operacion.includes("new WebSocket") || operacion.includes("XMLHttpRequest")) mal("Operación Bóveda: evidencia/etapas ficticias, guardado local o aislamiento de red incompletos");
 if (!repaso.includes("calificarRepaso") || !repaso.includes("intervalos crecientes") || !legal.includes("tarjetas de repaso")) mal("Repaso: flujo de tarjetas o transparencia de almacenamiento local incompletos");
+if (!store.includes("proyectosNotas") || !store.includes("guardarNotaProyecto") || !proyectosUI.includes("pregunta.instrucciones.map") || !proyectosUI.includes("pregunta.evidencia") || !proyectosUI.includes("guardarNotaProyecto") || !proyectosUI.includes("informe se muestra aquí; no se exporta") || !legal.includes("notas que escribas en los proyectos")) mal("Proyectos: instrucciones paso a paso, evidencia, notas locales o transparencia de privacidad/exportación incompletas");
 const proteccionCliente = readFileSync(fileURLToPath(new URL("../src/lib/protect.ts", import.meta.url)), "utf8");
 if (proteccionCliente.includes('addEventListener("copy"')) mal("Protección cliente: no interceptar el portapapeles como mecanismo anti-copia");
 else console.log("✔ Términos, privacidad, propiedad intelectual, navegación legal y metadatos validados.");
