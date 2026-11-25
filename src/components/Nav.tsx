@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "./Icon";
-import { PixelIcon, type PixelIconName } from "./PixelArt";
+import { Adventurer, PixelIcon, type PixelIconName } from "./PixelArt";
 import { Hud, Logo } from "./ui";
 import { C } from "../lib/content";
 import { alternarSonido, sonidoActivo, suscribirSonido } from "../lib/sonido";
@@ -176,6 +176,9 @@ export function Nav({ ruta, go, onBuscar }: { ruta: Ruta; go: (r: Ruta) => void;
         <div className="min-[1180px]:ml-1">
           <Hud compact />
         </div>
+        <button type="button" onClick={() => go({ v: "progreso" })} className={cn("grid h-11 w-11 shrink-0 place-items-center border-2 border-black bg-[var(--surface-2)] hover:bg-[var(--surface-3)]", ruta.v === "progreso" && "border-[var(--green)]")} aria-current={ruta.v === "progreso" ? "page" : undefined} aria-label="Abrir mi perfil de progreso" title="Mi perfil de progreso">
+          <Adventurer who="diel" height={34} />
+        </button>
 
         <button
           className="grid h-10 w-10 place-items-center border-2 border-black bg-[var(--surface-2)] min-[1180px]:hidden"

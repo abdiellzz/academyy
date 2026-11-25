@@ -118,7 +118,7 @@ export function Home({ go }: { go: (r: Ruta) => void }) {
           <div className="flex justify-end pb-8 pt-2 lg:pb-12 lg:pt-10">
             <div className="w-full max-w-[560px]">
               <h1 id="destino-title" className="hero-title">
-                Aprende <span className="text-[var(--accent)]">ciberseguridad</span> de verdad
+                Aprende <span className="inline-block whitespace-nowrap text-[var(--accent)]">ciberseguridad</span> de verdad
               </h1>
               <p className="mt-3 text-[17px] leading-relaxed text-[var(--text-2)]">
                 {C.mundos.length} mundos, {totalNiveles} niveles y laboratorios que funcionan en el navegador.
