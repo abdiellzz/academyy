@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { tomarBusqueda } from "../lib/busqueda";
-import { PixelIcon, type PixelIconName } from "../components/PixelArt";
+import { Adventurer, PixelIcon, type PixelIconName } from "../components/PixelArt";
 import { PhishingGame } from "../components/Practices";
 import { LearningFlow } from "../components/LearningFlow";
 import { Bar, CopyBtn, SectionHead, Term } from "../components/ui";
@@ -271,10 +271,24 @@ export function Progreso({ go }: { go: (r: Ruta) => void }) {
   })).filter(({ m, fases }) => (mundoMapa === "todos" || m.id === mundoMapa) && (!soloPendientes || !fases.reto));
   return (
     <main id="main">
-      <Hero icon="diamond" kicker={`Nivel ${lvl} · ${xp} XP`} title="Tu progreso">Todo se guarda en este navegador (sin cuentas ni servidores). Si borras los datos del sitio, empiezas de nuevo.</Hero>
+      <section className="border-b-2 border-black bg-[#101820]">
+        <div className="mx-auto max-w-[1100px] px-4 py-6 sm:py-8">
+          <div className="relative overflow-hidden border-2 border-black bg-[#18221a] p-4 shadow-[5px_5px_0_#000] sm:p-7">
+            <div aria-hidden="true" className="absolute inset-0 opacity-15" style={{ backgroundImage: "linear-gradient(90deg, transparent 49%, #8ee0a7 50%, transparent 51%), linear-gradient(transparent 49%, #8ee0a7 50%, transparent 51%)", backgroundSize: "24px 24px" }} />
+            <div className="relative flex flex-wrap items-center gap-4 sm:gap-6">
+              <span className="grid h-[88px] w-[88px] shrink-0 place-items-center border-2 border-black bg-[#101711] shadow-[4px_4px_0_#000] sm:h-[104px] sm:w-[104px]"><Adventurer who="diel" height={82} /></span>
+              <div className="min-w-0 flex-1"><p className="label !text-[var(--green)]">Perfil local · nivel {lvl}</p><h1 className="mt-1 text-[clamp(2rem,6vw,3.5rem)] !leading-none">{p.estudiante.trim() || "Explorador"}</h1><p className="mt-2 text-[13px] text-[var(--text-2)]">Tu progreso de aprendizaje · guardado en este navegador</p></div>
+              <div className="grid w-full max-w-[360px] grid-cols-2 border-2 border-black bg-[#101711] sm:ml-auto sm:w-[320px]">
+                <div className="border-r border-white/10 p-3 sm:p-4"><p className="label !text-[var(--text-3)]">XP</p><p className="mono mt-1 text-[24px] text-[var(--accent)]">{xp}</p></div>
+                <div className="p-3 sm:p-4"><p className="label !text-[var(--text-3)]">Retos</p><p className="mono mt-1 text-[24px] text-[var(--text)]">{p.retos.length}<span className="text-[13px] text-[var(--text-3)]">/{C.retos.length}</span></p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
       <section className="mx-auto max-w-[1100px] px-4 py-8">
         <div className="grid gap-3 sm:grid-cols-4">
-          {[["Nivel", lvl, "var(--green)"], ["XP", xp, "var(--accent)"], ["Niveles", `${done}/${totalNiveles}`, "var(--cyan)"], ["Retos", `${p.retos.length}/${C.retos.length}`, "var(--violet)"], ["Laboratorios", `${p.labs.length}/${LABS.length}`, "var(--green)"], ["Examen", p.examenes ? `${p.examenMejor}/100` : "—", "var(--accent)"]].map(([l, v, c]) => (
+          {[ ["Nivel", lvl, "var(--green)"], ["Niveles", `${done}/${totalNiveles}`, "var(--cyan)"], ["Laboratorios", `${p.labs.length}/${LABS.length}`, "var(--green)"], ["Examen", p.examenes ? `${p.examenMejor}/100` : "—", "var(--accent)"]].map(([l, v, c]) => (
             <div key={l as string} className="card p-4 text-center"><p className="label">{l}</p><p className="mt-2 text-[18px]" style={{ fontFamily: "var(--font-title)", color: c as string }}>{v}</p></div>
           ))}
         </div>
